@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Viewer</title></head>
+<body style="margin:0;background:#111;">
+<div id="app" style="width:100vw;height:100vh;"></div>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const app=document.getElementById('app');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x222222);
+const camera=new THREE.PerspectiveCamera(45,app.clientWidth/app.clientHeight,0.1,100);camera.position.set(0,-15,5);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(app.clientWidth,app.clientHeight);app.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0xffffff,0.7));
+const light=new THREE.DirectionalLight(0xffffff,1.2);light.position.set(5,10,5);scene.add(light);
+const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,0,0);
+const dirs=['page100100','page1100100','page2100100','page3100100'];
+let cur=0;
+async function load(i){
+while(scene.children.length>1)scene.remove(scene.children[scene.children.length-1]);
+const d=dirs[i];
+const json=await fetch('pages/'+d+'/page.json').then(r=>r.json());
+const glb=await new GLTFLoader().loadAsync('pages/'+d+'/scene.glb');
+scene.add(glb.scene);
+const p=json.camera.camera_position||[0,-15,5];
+const t=json.camera.camera_look_at||[0,0,0];
+camera.position.set(p[0],p[1],p[2]);camera.lookAt(t[0],t[1],t[2]);controls.target.set(t[0],t[1],t[2]);
+if(json.camera.fov)camera.fov=json.camera.fov;
+camera.updateProjectionMatrix();
+}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'&&cur<dirs.length-1){cur++;load(cur);}if(e.key==='ArrowLeft'&&cur>0){cur--;load(cur);}});
+load(0);
+function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera);}
+animate();
+</script>
+</body></html>

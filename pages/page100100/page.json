@@ -1,0 +1,39 @@
+{
+  "page_id": "page100100",
+  "title": "Page 1",
+  "thumbnail": "thumb.png",
+  "camera": {
+    "camera_position": [
+      0.0,
+      -12.0,
+      1.52
+    ],
+    "camera_look_at": [
+      0.0,
+      0.0,
+      1.52
+    ],
+    "fov": 39.597755,
+    "position": [
+      0.0,
+      -12.0,
+      1.52
+    ],
+    "target": [
+      0.0,
+      0.0,
+      1.52
+    ]
+  },
+  "dialogue": {
+    "text": "",
+    "speaker": "",
+    "audio": null
+  },
+  "model": {
+    "glb": "scene.glb",
+    "splat": null
+  },
+  "next": "page1100100",
+  "prev": null
+}
