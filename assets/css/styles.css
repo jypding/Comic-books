@@ -1,0 +1,13 @@
+
+body { margin: 0; background: #05070a; color: #e7e9ee; font-family: -apple-system, sans-serif; overflow: hidden; }
+#canvas-container { width: 100vw; height: 100vh; outline: none; }
+#ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; box-sizing: border-box; }
+.header { pointer-events: none; }
+.title { font-size: 24px; color: #38bdf8; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+.controls { pointer-events: auto; display: flex; gap: 10px; align-items: center; }
+.btn { background: rgba(30, 38, 54, 0.8); border: 1px solid #334155; color: #fff; padding: 10px 20px; border-radius: 20px; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+.btn:hover { border-color: #38bdf8; background: rgba(30, 38, 54, 1); }
+#loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #05070a; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; transition: opacity 0.5s; }
+.spinner { width: 40px; height: 40px; border: 3px solid rgba(56, 189, 248, 0.2); border-top-color: #38bdf8; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#error-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 7, 10, 0.9); display: none; align-items: center; justify-content: center; z-index: 200; color: #f87171; text-align: center; padding: 20px; }

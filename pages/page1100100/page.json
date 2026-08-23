@@ -3,27 +3,18 @@
   "title": "Page 2",
   "thumbnail": "thumb.png",
   "camera": {
-    "camera_position": [
-      0.0,
-      -12.0,
-      1.52
-    ],
-    "camera_look_at": [
-      0.0,
-      0.0,
-      1.52
-    ],
-    "fov": 39.597755,
     "position": [
       0.0,
-      -12.0,
+      -30.0,
       1.52
     ],
     "target": [
       0.0,
       0.0,
       1.52
-    ]
+    ],
+    "fov": 39.597755,
+    "blender_camera_name": "Camera.0001"
   },
   "dialogue": {
     "text": "",
@@ -34,6 +25,6 @@
     "glb": "scene.glb",
     "splat": null
   },
-  "next": null,
+  "next": "page2100100",
   "prev": "page100100"
 }

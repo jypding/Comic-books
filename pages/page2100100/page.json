@@ -3,17 +3,6 @@
   "title": "Page 3",
   "thumbnail": "thumb.png",
   "camera": {
-    "camera_position": [
-      0.0,
-      -12.0,
-      1.52
-    ],
-    "camera_look_at": [
-      0.0,
-      0.0,
-      1.52
-    ],
-    "fov": 39.597755,
     "position": [
       0.0,
       -12.0,
@@ -23,7 +12,9 @@
       0.0,
       0.0,
       1.52
-    ]
+    ],
+    "fov": 39.597755,
+    "blender_camera_name": "Camera.0002"
   },
   "dialogue": {
     "text": "",
