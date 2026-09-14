@@ -1,0 +1,101 @@
+{
+  "ui_layout": {
+    "layout_type": "image-text-bottom",
+    "masks": [
+      {
+        "bounds": {
+          "x0": 0.3,
+          "y0": 0.14444440205891926,
+          "x1": 0.7,
+          "y1": 0.855555534362793
+        },
+        "ui_role": "mask",
+        "ui_layout": "fullscreen",
+        "ui_mask_region": "full",
+        "ui_color": [
+          0.05,
+          0.05,
+          0.05,
+          0.6
+        ],
+        "name": "Guide_Full_UI"
+      },
+      {
+        "bounds": {
+          "x0": 0.3,
+          "y0": 0.14444440205891926,
+          "x1": 0.7,
+          "y1": 0.855555534362793
+        },
+        "ui_role": "mask",
+        "ui_layout": "image-text-bottom",
+        "ui_mask_region": "bottom_text",
+        "name": "Guide_Bottom"
+      },
+      {
+        "bounds": {
+          "x0": 0.3,
+          "y0": 0.14444440205891926,
+          "x1": 0.7,
+          "y1": 0.855555534362793
+        },
+        "ui_role": "mask",
+        "ui_layout": "image-text-right",
+        "ui_mask_region": "right_side",
+        "name": "Guide_Right"
+      }
+    ],
+    "textAreas": [
+      {
+        "bounds": {
+          "x0": -0.34740001226425055,
+          "y0": 0.2575110541449653,
+          "x1": 0.4965999945998192,
+          "y1": 0.5444444216622268
+        },
+        "ui_role": "title",
+        "ui_layout": "image-text-bottom",
+        "text": "TXT_Title",
+        "name": "TXT_Title"
+      },
+      {
+        "bounds": {
+          "x0": -0.3958001136779785,
+          "y0": 0.2575110541449653,
+          "x1": 0.4965999945998192,
+          "y1": 0.5817777633666992
+        },
+        "ui_role": "body",
+        "ui_layout": "image-text-bottom",
+        "text": "TXT_Body",
+        "name": "TXT_Body"
+      }
+    ],
+    "buttons": [
+      {
+        "bounds": {
+          "x0": 0.3,
+          "y0": 0.14444440205891926,
+          "x1": 0.7,
+          "y1": 0.855555534362793
+        },
+        "ui_role": "button",
+        "ui_action": "page_prev",
+        "ui_layout": "image-text-bottom",
+        "name": "BTN_PREV"
+      },
+      {
+        "bounds": {
+          "x0": 0.3,
+          "y0": 0.14444440205891926,
+          "x1": 0.7,
+          "y1": 0.855555534362793
+        },
+        "ui_role": "button",
+        "ui_action": "page_next",
+        "ui_layout": "image-text-bottom",
+        "name": "BTN_NEXT"
+      }
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Voice Book Theme Schema",
+  "type": "object",
+  "properties": {
+    "theme": {
+      "type": "object",
+      "properties": {
+        "light": { "$ref": "#/definitions/themeColors" },
+        "dark": { "$ref": "#/definitions/themeColors" },
+        "font-serif": { "type": "string" },
+        "font-sans": { "type": "string" }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "properties": {
+        "stage-height": { "type": "string" },
+        "panel-padding": { "type": "string" },
+        "button-radius": { "type": "string" },
+        "transition-speed": { "type": "string" }
+      }
+    },
+    "components": {
+      "type": "object",
+      "properties": {
+        "subtitles": {
+          "type": "object",
+          "properties": {
+            "font-size": { "type": "string" },
+            "line-height": { "type": "string" }
+          }
+        },
+        "controls": {
+          "type": "object",
+          "properties": {
+            "bg": { "type": "string" },
+            "border": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "themeColors": {
+      "type": "object",
+      "properties": {
+        "paper": { "type": "string", "format": "color" },
+        "ink": { "type": "string", "format": "color" },
+        "gray": { "type": "string", "format": "color" },
+        "accent": { "type": "string", "format": "color" },
+        "ink-rgb": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>3D Comic Viewer</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text">加载漫画中...</div>
+    </div>
+    <div id="error-overlay"></div>
+    
+    <div id="canvas-container"></div>
+    <div id="vertical-scroll-container"></div>
+    
+    <div id="ui-overlay">
+        <div class="header">
+            <h1 class="title" id="book-title">3D Comic</h1>
+            <div id="page-indicator" style="color: #94a3b8; font-size: 14px; margin-top: 5px;">Page - / -</div>
+        </div>
+        <div class="controls">
+            <button id="btn-prev" class="btn">◀ 上一页</button>
+            <button id="btn-next" class="btn">下一页 ▶</button>
+            <button id="btn-toggle-mode" class="btn" style="border-color: #38bdf8;">切换模式：分页</button>
+            <div id="paging-hint" style="color: #64748b; font-size: 12px; margin-left: 10px;">[左右方向键翻页]</div>
+        </div>
+                <audio id="page-audio" src="./audio/001.MP3" preload="metadata">
+                <div class="audio-controls">
+                    <button id="audio-play-btn">▶</button>
+                    <span id="audio-time">0:00 / 0:00</span>
+                </div>
+    </div>
+
+    <!-- Vendor Scripts (UMD) -->
+    <script src="assets/js/vendors/three.min.js"></script>
+    <script src="assets/js/vendors/GLTFLoader.js"></script>
+    <script src="assets/js/vendors/OrbitControls.js"></script>
+    
+    <!-- App Script -->
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

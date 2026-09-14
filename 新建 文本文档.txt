@@ -1,0 +1,5 @@
+cd "D:\GitRepos\Comic-books\viewer-needle"
+npm run dev
+ http://127.0.0.1:5173/Comic-books/
+
+http://127.0.0.1:5173/Comic-books/?book=mmdd111&mode=voice

@@ -1,0 +1,40 @@
+﻿node_modules/
+dist/
+*.blend1
+*.blend2
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+
+# ===== Blender 补充备份 =====
+*.blend11
+*.blend12
+
+# ===== 临时/调试文件 =====
+*.tmp
+*.bak
+*.bak_*
+*.bak-*
+*.crash.txt
+*.log
+
+# ===== Python 补充 =====
+*.pyo
+
+# ===== 构建缓存 =====
+.vite/
+build/
+
+
+# ===== Blender 源文件（网页不需要） =====
+books/**/*.blend
+books/**/*.blend1
+books/**/*.blend11
+
+# ===== 调试脚本 =====
+books/**/reader_sample/add_audio.py
+books/**/reader_sample/fix_draco.py
+books/**/fix_*.py
+books/**/_*.py

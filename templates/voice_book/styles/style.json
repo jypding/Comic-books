@@ -1,0 +1,26 @@
+{
+  "style_id": "gatelessgate",
+  "name": "天门书禅意风格",
+  "theme": {
+    "light": {
+      "paper": "#F3EDDF",
+      "ink": "#1E1E24",
+      "gray": "#55555E",
+      "accent": "#C73E3A",
+      "inkRgb": [30, 30, 36]
+    },
+    "dark": {
+      "paper": "#17171B",
+      "ink": "#E9E3D5",
+      "gray": "#9C978C",
+      "accent": "#DD5B54",
+      "inkRgb": [233, 227, 213]
+    },
+    "fontFamily": "Georgia, 'Times New Roman', serif"
+  },
+  "animation": {
+    "transition": "fade",
+    "duration": 0.8,
+    "easing": "ease-in-out"
+  }
+}

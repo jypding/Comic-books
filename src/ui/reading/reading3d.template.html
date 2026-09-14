@@ -1,0 +1,53 @@
+<!-- 上半区：3D 视口容器 -->
+<div class="reading3d-stage">
+    <!-- Needle Engine 画布将挂载到这里，ID 改为专门的容器 ID -->
+    <div id="reading3d-stage-root" style="width: 100%; height: 100%;"></div>
+    
+    <!-- 右上角悬浮按钮组 -->
+    <div class="reading3d-toolbar">
+        <button class="reading3d-tool-btn btn-music" title="Music">🎵</button>
+        <button class="reading3d-tool-btn btn-visible" title="Visibility">👁️</button>
+        <button class="reading3d-tool-btn btn-camera" title="Reset Camera">📷</button>
+        <button class="reading3d-tool-btn btn-fullscreen" title="Fullscreen">⛶</button>
+    </div>
+</div>
+
+<!-- 下半区：滚动文本阅读面板 -->
+<div class="reading3d-panel">
+    <!-- 导航按钮行 -->
+    <div class="reading3d-nav-bar">
+        <button class="reading3d-btn btn-contents">‹ Contents</button>
+        <button class="reading3d-btn btn-prev">‹</button>
+        <button class="reading3d-btn btn-next">›</button>
+        
+        <div class="spacer"></div>
+        
+        <button class="reading3d-btn btn-theme" title="Dark Mode">🌙</button>
+        <button class="reading3d-btn btn-sit">Sit</button>
+    </div>
+
+    <!-- 标题区块 -->
+    <div class="reading3d-head">
+        <div class="reading3d-seal">{{pageNumber}}</div>
+        <h2 class="reading3d-title">{{pageTitle}}</h2>
+    </div>
+
+    <!-- Read aloud 按钮 -->
+    <div class="reading3d-read-aloud">
+        <button class="reading3d-btn btn-read-aloud">
+            <span style="margin-right: 8px;">▶</span> Read aloud
+        </button>
+    </div>
+
+    <!-- 章节标签与正文 -->
+    <div class="reading3d-section">
+        <div class="reading3d-section-label">
+            {{sectionLabel}}
+            <span class="reading3d-speak-btn">🔊</span>
+        </div>
+        <div class="reading3d-text">{{longText}}</div>
+    </div>
+</div>
+
+<!-- 隐藏的音频元素 -->
+<audio class="reading3d-audio"></audio>

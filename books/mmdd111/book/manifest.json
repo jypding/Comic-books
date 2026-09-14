@@ -1,0 +1,10 @@
+{
+    "id":  "voice_book_template",
+    "title":  "Voice Interactive Book Template",
+    "mode":  "voice",
+    "accent":  "#C73E3A",
+    "ambience":  "audio/wind_ambience.mp3",
+    "pages":  [
+                  "pages/joshu_dog_sample"
+              ]
+}

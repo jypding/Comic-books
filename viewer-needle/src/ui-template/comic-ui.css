@@ -1,0 +1,46 @@
+﻿.comic-overlay{
+    width:100%;
+    height:100%;
+    position:fixed;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    pointer-events:none;
+}
+.dialog-box{
+    pointer-events:auto;
+    background:rgba(0,0,0,0.75);
+    color:#ffffff;
+    margin:24px 40px;
+    padding:16px 20px;
+    border-radius:10px;
+    max-width:720px;
+}
+.dialog-speaker{
+    font-weight:bold;
+    margin-bottom:6px;
+    color:#ffdd77;
+}
+.dialog-text{
+    line-height:1.6;
+}
+.subtitle-area{
+    pointer-events:auto;
+    color:#fff;
+    text-align:center;
+    font-size:22px;
+    text-shadow:0 0 4px #000;
+    margin-bottom:120px;
+}
+.control-panel{
+    pointer-events:auto;
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    margin-bottom:40px;
+}
+.btn-prev,.btn-next{
+    padding:8px 20px;
+    font-size:16px;
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Voice Book Page",
+  "type": "object",
+  "properties": {
+    "page_id": { "type": "string" },
+    "title": { "type": "string" },
+    "layout": { "type": "string", "enum": ["split", "full_scene", "full_text"] },
+    "text": {
+      "type": "object",
+      "properties": {
+        "case": { "type": "string" },
+        "comment": { "type": "string" },
+        "verse": { "type": "string" }
+      }
+    },
+    "narration": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "scene": { "type": "string" },
+    "camera": {
+      "type": "object",
+      "properties": {
+        "position": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "target": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "heading": { "type": "number" },
+        "pitch": { "type": "number" }
+      }
+    },
+    "interactions": {
+      "type": "array",
+      "items": { "$ref": "interaction.schema.json" }
+    },
+    "transitions": {
+      "type": "object",
+      "properties": {
+        "in": { "type": "string" },
+        "out": { "type": "string" }
+      }
+    }
+  },
+  "required": ["page_id", "title"]
+}

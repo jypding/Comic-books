@@ -1,0 +1,12 @@
+{
+  "book_title": "mmdd111",
+  "pages": [
+    {
+      "page_id": "page0001",
+      "title": "Page 1",
+      "thumbnail": "page0001/thumb.png",
+      "width": 1920,
+      "height": 1080
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["../src/core/*"],
+      "@modes/*": ["../src/modes/*"],
+      "@ui/*": ["../src/ui/*"],
+      "@comic-runtime/*": ["./src/comic-runtime/*"],
+      "@ext/*": ["./src/extensions/*"],
+      "@runtime/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "../src"]
+}

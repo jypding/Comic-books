@@ -1,39 +1,38 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Comic Viewer</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="manifest" href="manifest.json">
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+        iframe { border: none; width: 100%; height: 100%; }
+    </style>
 </head>
 <body>
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-        <div id="loading-text">加载漫画中...</div>
-    </div>
-    <div id="error-overlay"></div>
+    <!-- 方案 A: 路由到 viewer-needle 目录下的 index.html -->
+    <!-- 方案 B: 直接在这里加载运行时。为了保持架构纯净，我们采用方案 B -->
     
-    <div id="canvas-container"></div>
-    
-    <div id="ui-overlay">
-        <div class="header">
-            <h1 class="title" id="book-title">3D Comic</h1>
-            <div id="page-indicator" style="color: #94a3b8; font-size: 14px; margin-top: 5px;">Page - / -</div>
-        </div>
-        <div class="controls">
-            <button id="btn-prev" class="btn">◀ 上一页</button>
-            <button id="btn-next" class="btn">下一页 ▶</button>
-            <div style="color: #64748b; font-size: 12px; margin-left: 10px;">[左右方向键翻页]</div>
+    <!-- 模式根容器：ReaderFactory 分发的 Reader 自行挂载内容 -->
+    <div id="reading-root" style="display: none; position: fixed; inset: 0;"></div>
+    <div id="cinematic-root" style="display: none; position: fixed; inset: 0;"></div>
+
+    <!-- UI 浮层 -->
+    <div id="comic-ui-root" style="position: fixed; inset: 0; pointer-events: none; z-index: 100;">
+        <div id="status" style="position: absolute; top: 8px; left: 12px; color: #94a3b8; font-size: 13px; font-family: sans-serif;"></div>
+        <div id="subtitle" style="display: none; position: absolute; bottom: 96px; left: 0; right: 0; text-align: center; color: #fff; font-size: 22px; text-shadow: 0 0 4px #000; font-family: sans-serif;"></div>
+        <div class="control-panel" style="position: absolute; bottom: 32px; left: 0; right: 0; display: flex; gap: 12px; justify-content: center; pointer-events: auto;">
+            <button id="btn-prev">上一页</button>
+            <button id="btn-play">播放/暂停</button>
+            <button id="btn-next">下一页</button>
         </div>
     </div>
 
-    <!-- Vendor Scripts (UMD) -->
-    <script src="assets/js/vendors/three.min.js"></script>
-    <script src="assets/js/vendors/GLTFLoader.js"></script>
-    <script src="assets/js/vendors/OrbitControls.js"></script>
-    
-    <!-- App Script -->
-    <script src="assets/js/app.js"></script>
+    <!-- 唯一入口 -->
+    <script type="module">
+        // 注意：这里需要正确处理模块路径。
+        // 如果是本地开发，通常使用 Vite 代理或直接引用 viewer-needle/src/main.ts
+        import "./viewer-needle/src/main.ts";
+    </script>
 </body>
 </html>

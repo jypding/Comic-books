@@ -1,0 +1,31 @@
+<!-- reading / voice 模式专属 DOM 结构（无任何 3D 元素） -->
+<!-- 由 ImageReader.ts 通过 ?raw 构建期导入，注入到 #reading-root -->
+<div class="reading-container">
+    <!-- 图片区 -->
+    <div class="reading-image-area">
+        <img class="reading-image" alt="page-image" />
+    </div>
+
+    <!-- 长文本区（可滚动） -->
+    <div class="reading-text-area">
+        <h2 class="reading-chapter-title"></h2>
+        <div class="reading-narration-text" style="font-style: italic; margin-bottom: 1em; color: #666;"></div>
+        <div class="reading-long-text"></div>
+    </div>
+
+    <!-- 对白区 -->
+    <div class="reading-dialogue-area">
+        <div class="reading-speaker"></div>
+        <div class="reading-dialogue-text"></div>
+    </div>
+
+    <!-- 播放进度条（仅 voice 模式显示） -->
+    <div class="reading-progress-wrap" style="display:none;">
+        <div class="reading-progress-bar">
+            <div class="reading-progress" style="width:0%;"></div>
+        </div>
+    </div>
+
+    <!-- 音频元素（隐藏，由按钮控制） -->
+    <audio class="reading-audio"></audio>
+</div>

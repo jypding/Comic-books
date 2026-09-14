@@ -1,0 +1,370 @@
+:root {
+  --paper: #F3EDDF;
+  --ink: #1E1E24;
+  --gray: #55555E;
+  --accent: #C73E3A;
+  --ink-rgb: 30,30,36;
+  --seal-ink: var(--paper);
+  --serif: Georgia, 'Times New Roman', serif;
+}
+
+#reading-root.reading3d-layout {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--paper);
+  font-family: var(--serif);
+}
+
+/* 3D 视口容器 */
+.reading3d-stage {
+  height: 48%;
+  min-height: 200px;
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+  flex: none; /* 取消 flex:1 以确保百分比高度生效 */
+}
+
+/* 确保 Needle Engine 组件填满 */
+.reading3d-stage #reading3d-stage-root,
+.reading3d-stage #app,
+.reading3d-stage needle-engine {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  position: relative;
+}
+
+/* 文本阅读面板 */
+.reading3d-panel {
+  height: 52%;
+  flex: none;
+  position: relative;
+  overflow-y: auto;
+  background: var(--paper);
+  color: var(--ink);
+  border-top: 1px solid rgba(var(--ink-rgb), 0.12);
+  padding: 40px 44px 56px;
+  box-sizing: border-box;
+}
+
+.reading3d-panel.dark {
+  --paper: #17171B;
+  --ink: #E9E3D5;
+  --gray: #9C978C;
+  --accent: #DD5B54;
+  --ink-rgb: 233,227,213;
+  --seal-ink: #F3EDDF;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.reading3d-panel.paper {
+  --paper: #f4ecd8;
+  --ink: #2b2b2b;
+  --gray: #5f5f5f;
+  --accent: #8b0000;
+  --ink-rgb: 43,43,43;
+  background-color: var(--paper);
+  background-image: url("../../images/paper_texture.webp");
+  background-blend-mode: multiply;
+  color: var(--ink);
+}
+
+/* 导航栏 */
+.reading3d-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -8px 0 18px;
+}
+
+.reading3d-btn {
+  font-family: var(--serif);
+  background: none;
+  border: 1px solid rgba(var(--ink-rgb), 0.3);
+  color: var(--ink);
+  padding: 6px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.reading3d-btn:hover:not(:disabled) {
+  background: rgba(var(--ink-rgb), 0.05);
+  border-color: rgba(var(--ink-rgb), 0.55);
+}
+
+.reading3d-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.reading3d-nav-bar .spacer {
+  flex: 1;
+}
+
+/* 标题区块 */
+.reading3d-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.reading3d-seal {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  background: var(--accent);
+  color: var(--seal-ink);
+  border-radius: 3px;
+  font-size: 17px;
+  font-weight: normal;
+}
+
+.reading3d-title {
+  font-weight: normal;
+  font-size: 30px;
+  letter-spacing: 0.04em;
+  margin: 0;
+  flex: 1;
+}
+
+/* Read aloud 按钮 */
+.reading3d-read-aloud {
+  margin-top: 10px;
+}
+
+/* 章节标签 */
+.reading3d-section {
+  margin-top: 24px;
+}
+
+.reading3d-section-label {
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+  color: var(--gray);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reading3d-speak-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 15px;
+  padding: 0 2px;
+  transition: opacity 0.2s;
+}
+
+.reading3d-speak-btn:hover {
+  opacity: 0.7;
+}
+
+.reading3d-text {
+  margin-top: 8px;
+  line-height: 1.72;
+  white-space: pre-wrap;
+  font-size: 16.5px;
+}
+
+.paragraph-wrap {
+  position: relative;
+  transition: background 0.3s;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.paragraph-wrap:hover {
+  background: rgba(var(--ink-rgb), 0.03);
+}
+
+.segment-note {
+  flex: none;
+  opacity: 0.4;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.segment-note:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.reading3d-panel.dark .paragraph-wrap:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* 悬浮按钮组 */
+.reading3d-toolbar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 100;
+  display: flex;
+  gap: 6px;
+}
+
+.reading3d-tool-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(243, 237, 223, 0.82);
+  border: 1px solid rgba(30, 30, 36, 0.28);
+  color: var(--ink);
+  border-radius: 3px;
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+  font-size: 15px;
+  padding: 0;
+  transition: border-color 0.2s;
+}
+
+.reading3d-tool-btn:hover {
+  border-color: rgba(30, 30, 36, 0.55);
+}
+
+.reading3d-tool-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.reading3d-panel.hidden {
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top: none;
+  overflow: hidden;
+}
+
+.reading3d-panel.hidden + * {
+  /* 当面板隐藏时，视口填满 */
+}
+
+#reading-root.reading3d-layout:has(.reading3d-panel.hidden) .reading3d-stage {
+  height: 100%;
+}
+
+/* 响应式适配 */
+@media (max-aspect-ratio: 1/1), (max-width: 620px) {
+  .reading3d-panel {
+    height: 52%;
+    padding: 22px 24px 40px;
+  }
+}
+
+/* Voice Player Widget Styles */
+.voice-player-widget {
+  margin-top: 15px;
+  padding: 12px;
+  background: rgba(var(--ink-rgb), 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(var(--ink-rgb), 0.08);
+}
+
+.voice-progress-container {
+  height: 6px;
+  background: rgba(var(--ink-rgb), 0.1);
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.voice-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+.voice-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.voice-btn {
+  background: none;
+  border: 1px solid rgba(var(--ink-rgb), 0.2);
+  color: var(--ink);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.voice-btn:hover {
+  background: rgba(var(--ink-rgb), 0.05);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-voice-play-pause {
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+}
+
+.btn-voice-play-pause:hover {
+  background: var(--accent);
+  filter: brightness(1.1);
+  color: white;
+  transform: scale(1.05);
+}
+
+.voice-time-display {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--gray);
+  margin-left: auto;
+}
+
+/* 强制 3D 视口全屏，不受父容器挤压 */
+#reading3d-stage-root {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 400px;
+  min-height: 300px;
+  overflow: hidden;
+  background: #F3EDDF;
+}
+
+#reading3d-stage-root canvas {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+/* 清除任何可能的红色默认背景 */
+html, body {
+  background: #F3EDDF !important;
+}

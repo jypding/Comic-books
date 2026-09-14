@@ -1,0 +1,8 @@
+{
+  "mode": "voice",
+  "bookTitle": "语音书样例",
+  "pages": ["pages/page-001.json"],
+  "audioDir": "audio",
+  "imagesDir": "images",
+  "autoNextOnEnded": true
+}

@@ -1,0 +1,22 @@
+{
+  "name": "viewer-needle",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "3DComicToolkit 新 Needle Engine Runtime（Vite + @needle-tools/engine + three.js）",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@needle-tools/engine": "^5.1.2",
+    "three": "npm:@needle-tools/three@0.169.19"
+  },
+  "devDependencies": {
+    "@types/three": "0.169.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.4.0"
+  }
+}

@@ -1,0 +1,10 @@
+﻿{
+    "mode":  "cinematic",
+    "bookTitle":  "镜头映画样例",
+    "pages":  [
+                  "pages/seq-001.json"
+              ],
+    "audioDir":  "audio",
+    "imagesDir":  "images",
+    "autoNextOnEnded":  false
+}

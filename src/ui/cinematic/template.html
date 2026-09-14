@@ -1,0 +1,12 @@
+<!-- cinematic 模式专属 UI 浮层（不包含 3D 画布；画布由 Cinematic3DReader 动态创建挂载到 #app） -->
+<!-- 注入到 #comic-ui-root，追加在现有按钮之后；复用 viewer-needle/src/ui-template overlay 样式风格 -->
+<div class="cinematic-overlay">
+    <!-- 对白容器 -->
+    <div class="cinematic-dialog-box">
+        <div class="cinematic-speaker"></div>
+        <div class="cinematic-dialog-text"></div>
+    </div>
+
+    <!-- 特效容器：闪光、震动等特效挂载节点 -->
+    <div class="cinematic-effect-layer"></div>
+</div>

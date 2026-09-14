@@ -1,0 +1,8 @@
+{
+  "mode": "reading",
+  "bookTitle": "长文配图样例",
+  "pages": ["pages/page-001.json"],
+  "audioDir": "audio",
+  "imagesDir": "images",
+  "autoNextOnEnded": false
+}
