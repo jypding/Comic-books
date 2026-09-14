@@ -1,0 +1,12 @@
+{
+  "book_title": "an001",
+  "pages": [
+    {
+      "page_id": "page0000",
+      "title": "Page 1",
+      "thumbnail": "page0000/thumb.png",
+      "width": 1024,
+      "height": 1024
+    }
+  ]
+}
