@@ -28,6 +28,13 @@ jobs:
           mkdir -p ./viewer-needle/dist/books
           rsync -av --exclude='*.blend' --exclude='*.blend1' --exclude='*.blend11' --exclude='*.bak_*' --exclude='__pycache__' ./books/ ./viewer-needle/dist/books/
 
+      - name: Disable LFS filters for deploy
+        run: |
+          git config --local filter.lfs.clean "cat"
+          git config --local filter.lfs.smudge "cat"
+          git config --local filter.lfs.process ""
+          git config --local filter.lfs.required false
+
       - name: Deploy Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
