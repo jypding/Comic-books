@@ -38,3 +38,9 @@ books/**/reader_sample/add_audio.py
 books/**/reader_sample/fix_draco.py
 books/**/fix_*.py
 books/**/_*.py
+
+
+# ===== 3D 漫画源文件（网页不需要） =====
+projects/**/*.blend
+projects/**/*.blend1
+projects/**/*.blend11
