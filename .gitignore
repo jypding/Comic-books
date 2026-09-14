@@ -44,3 +44,6 @@ books/**/_*.py
 projects/**/*.blend
 projects/**/*.blend1
 projects/**/*.blend11
+
+# 临时排除超大 GLB 项目
+books/page2/
