@@ -1,0 +1,35 @@
+name: Deploy GitHub Pages
+on:
+  push:
+    branches: [ main ]
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: viewer-needle/package-lock.json
+      - name: Install & Build
+        working-directory: ./viewer-needle
+        run: |
+          npm ci
+          npm run build
+      - name: Copy books to dist
+        run: |
+          mkdir -p ./viewer-needle/dist/books
+          rsync -av --exclude='*.blend' --exclude='*.blend1' --exclude='*.blend11' --exclude='*.bak_*' --exclude='__pycache__' ./books/ ./viewer-needle/dist/books/
+
+      - name: Deploy Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./viewer-needle/dist
