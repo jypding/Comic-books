@@ -1,4 +1,8 @@
-﻿param(
+﻿import io
+
+path = r"D:\GitRepos\Comic-books\Deploy-ComicToViewer.ps1"
+
+content = '''param(
     [Parameter(Mandatory=$true)]
     [string]$ProjectId,
     [switch]$SetCurrent
@@ -15,32 +19,22 @@ if (-not (Test-Path $srcProj)) {
     exit 1
 }
 
-# 自动检测源结构: s01e01/ (3D漫画) 或 book/ (语音书)
-if (Test-Path "$srcProj/s01e01/manifest.json") {
-    $srcRoot = "$srcProj/s01e01"
-    Write-Host "检测到 3D 漫画结构 (s01e01)"
-} elseif (Test-Path "$srcProj/book/manifest.json") {
-    $srcRoot = "$srcProj/book"
-    Write-Host "检测到语音书结构 (book)"
-} else {
-    Write-Error "找不到 manifest.json (checked s01e01/ and book/)"
+$manifestPath = "$srcProj/book/manifest.json"
+if (-not (Test-Path $manifestPath)) {
+    Write-Error "manifest.json 不存在: $manifestPath"
     exit 1
 }
 
-$manifestPath = "$srcRoot/manifest.json"
 $manifest = Get-Content $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
 Write-Host "检测模式: $($manifest.mode)"
 
-# 1. 部署到 /books/<ProjectId>/book/
+# 1. 部署到 /books/<ProjectId>/
 if (Test-Path $dstBook) { Remove-Item $dstBook -Recurse -Force }
-New-Item -ItemType Directory -Force "$dstBook/book" | Out-Null
+New-Item -ItemType Directory -Force $dstBook | Out-Null
 
-# 拷 manifest + pages + assets 到 book/
-Get-ChildItem "$srcRoot/*" -ErrorAction SilentlyContinue | Where-Object {
-    $_.Name -ne "blender" -and $_.Extension -notin @(".blend", ".blend1", ".blend11")
-} | ForEach-Object {
-    Copy-Item $_.FullName "$dstBook/book/" -Recurse -Force
-}
+# book/ (manifest + pages)
+New-Item -ItemType Directory -Force "$dstBook/book" | Out-Null
+Copy-Item "$srcProj/book/*" "$dstBook/book/" -Recurse -Force
 
 # audio/
 if (Test-Path "$srcProj/audio") {
@@ -49,15 +43,29 @@ if (Test-Path "$srcProj/audio") {
 }
 
 # images/
-if (Test-Path "$srcRoot/images") {
+if (Test-Path "$srcProj/images") {
     New-Item -ItemType Directory -Force "$dstBook/images" | Out-Null
-    Copy-Item "$srcRoot/images/*" "$dstBook/images/" -Recurse -Force
+    Copy-Item "$srcProj/images/*" "$dstBook/images/" -Recurse -Force
+}
+
+# assets/
+if (Test-Path "$srcProj/assets") {
+    New-Item -ItemType Directory -Force "$dstBook/assets" | Out-Null
+    Copy-Item "$srcProj/assets/*" "$dstBook/assets/" -Recurse -Force
 }
 
 # styles/
 if (Test-Path "$srcProj/styles") {
     New-Item -ItemType Directory -Force "$dstBook/styles" | Out-Null
     Copy-Item "$srcProj/styles/*" "$dstBook/styles/" -Recurse -Force
+}
+
+# blender/ (仅拷贝 GLB，不拷源 blend)
+if (Test-Path "$srcProj/blender") {
+    New-Item -ItemType Directory -Force "$dstBook/blender" | Out-Null
+    Get-ChildItem "$srcProj/blender" -Filter "*.glb" -ErrorAction SilentlyContinue | ForEach-Object {
+        Copy-Item $_.FullName "$dstBook/blender/" -Force
+    }
 }
 
 # 2. 如果指定 SetCurrent，写入 viewer-needle/books/current
@@ -86,7 +94,20 @@ if (Test-Path "$dstBook/images") {
     Copy-Item "$dstBook/images/*" "$viewer/assets/" -Recurse -Force
 }
 
+if (Test-Path "$dstBook/assets") {
+    if (-not (Test-Path "$viewer/assets")) {
+        New-Item -ItemType Directory -Force "$viewer/assets" | Out-Null
+    }
+    Copy-Item "$dstBook/assets/*" "$viewer/assets/" -Recurse -Force
+}
+
 Write-Host "部署完成"
 Write-Host "   主路径: $dstBook"
 Write-Host "   viewer: $viewer (legacy dev fallback)"
 Write-Host "   预览: cd viewer-needle ; npm run dev"
+'''
+
+# 写入 UTF-8 with BOM (PowerShell 5.x 需要 BOM 才能正确读中文)
+with io.open(path, "w", encoding="utf-8-sig") as f:
+    f.write(content)
+print("已重写: Deploy-ComicToViewer.ps1 (UTF-8 with BOM)")

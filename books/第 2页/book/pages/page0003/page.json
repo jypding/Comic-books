@@ -1,0 +1,27 @@
+{
+  "page_id": "page0003",
+  "title": "Page 4",
+  "thumbnail": "thumb.png",
+  "width": 1024,
+  "height": 1024,
+  "camera": {
+    "blender_camera_name": "Camera.0003"
+  },
+  "dialogue": {
+    "text": "",
+    "speaker": "",
+    "audio": null
+  },
+  "media": [],
+  "animations": {
+    "active_actions": [
+      "2图像动作"
+    ]
+  },
+  "model": {
+    "glb": "scene.glb",
+    "splat": null
+  },
+  "next": null,
+  "prev": "page0002"
+}

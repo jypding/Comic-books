@@ -1,4 +1,8 @@
-﻿param(
+﻿import io
+
+path = r"D:\GitRepos\Comic-books\Deploy-ComicToViewer.ps1"
+
+content = '''param(
     [Parameter(Mandatory=$true)]
     [string]$ProjectId,
     [switch]$SetCurrent
@@ -36,9 +40,7 @@ if (Test-Path $dstBook) { Remove-Item $dstBook -Recurse -Force }
 New-Item -ItemType Directory -Force "$dstBook/book" | Out-Null
 
 # 拷 manifest + pages + assets 到 book/
-Get-ChildItem "$srcRoot/*" -ErrorAction SilentlyContinue | Where-Object {
-    $_.Name -ne "blender" -and $_.Extension -notin @(".blend", ".blend1", ".blend11")
-} | ForEach-Object {
+Get-ChildItem "$srcRoot/*" -ErrorAction SilentlyContinue | ForEach-Object {
     Copy-Item $_.FullName "$dstBook/book/" -Recurse -Force
 }
 
@@ -90,3 +92,8 @@ Write-Host "部署完成"
 Write-Host "   主路径: $dstBook"
 Write-Host "   viewer: $viewer (legacy dev fallback)"
 Write-Host "   预览: cd viewer-needle ; npm run dev"
+'''
+
+with io.open(path, "w", encoding="utf-8-sig") as f:
+    f.write(content)
+print("已重写: Deploy-ComicToViewer.ps1")
