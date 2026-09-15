@@ -1,11 +1,11 @@
 {
-  "page_id": "page0001",
-  "title": "Page 2",
+  "page_id": "page0002",
+  "title": "Page 3",
   "thumbnail": "thumb.png",
   "width": 1024,
   "height": 1024,
   "camera": {
-    "blender_camera_name": "Camera.0001"
+    "blender_camera_name": "Camera.0002"
   },
   "dialogue": {
     "text": "",
@@ -22,6 +22,6 @@
     "glb": "scene.glb",
     "splat": null
   },
-  "next": "page0002",
-  "prev": "page0000"
+  "next": "page0003",
+  "prev": "page0001"
 }
