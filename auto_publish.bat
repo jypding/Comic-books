@@ -23,6 +23,10 @@ call publish.bat
 
 echo.
 echo [3/3] Open JYP site...
-start "" "https://jypding.github.io/Comic-books/index.html?book=%~1"
+if exist "books\%~1\book\pages\joshu_dog_sample\reader_sample\index.html" (
+    start "" "https://jypding.github.io/Comic-books/books/%~1/book/pages/joshu_dog_sample/reader_sample/index.html"
+) else (
+    start "" "https://jypding.github.io/Comic-books/index.html?book=%~1"
+)
 
 exit /b 0
