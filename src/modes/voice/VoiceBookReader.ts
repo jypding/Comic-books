@@ -49,7 +49,7 @@ export class VoiceBookReader extends Reading3DReader {
             if (res.ok) {
                 this.themeData = await res.json();
                 // 默认应用 light 主题
-                this.applyVoiceTheme("light");
+                this.applyVoiceTheme("paper");
             }
         } catch (e) {
             console.warn("[VoiceBookReader] voice-theme.json not found, using defaults");
