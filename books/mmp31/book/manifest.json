@@ -1,0 +1,10 @@
+{
+    "id": "joshu_dog",
+    "title": "Joshu's Dog",
+    "mode": "voice",
+    "accent": "#C73E3A",
+    "bgm": "audio/chime.mp3",
+    "pages": [
+        "pages/p001.json"
+    ]
+}

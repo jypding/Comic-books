@@ -1,0 +1,18 @@
+{
+  "page_id": "joshu_dog_sample",
+  "pageId": "joshu_dog_sample",
+  "title": "Joshu's Dog (Sample)",
+  "layout": "voice",
+  "chapterTitle": "Joshu's Dog",
+  "longText": "A monk asked Joshu, a Chinese Zen master: 'Has a dog Buddha-nature or not?'\nJoshu answered: 'Mu.'\n\nTo realize Zen one has to pass through the barrier of the patriarchs. Enlightenment always comes after the road of thinking is blocked. If you do not pass the barrier of the patriarchs or if your thinking road is not blocked, whatever you think, whatever you do, is like a tangling ghost. You may ask: What is a barrier of a patriarch? This one word, Mu, is it.",
+  "narrationAudio": "001.MP3",
+  "model": {
+    "glb": "scene.glb"
+  },
+  "camera": {
+    "blender_camera_name": "Camera_Main"
+  },
+  "labels": {
+    "section": "THE CASE"
+  }
+}

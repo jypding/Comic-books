@@ -1,0 +1,16 @@
+{
+  "page_id": "page-001",
+  "pageId": "page-001",
+  "title": "第一章 开篇",
+  "chapterTitle": "第一章 开篇",
+  "longText": "这里是语音书第一章的长文正文内容。\n当对应 narration 音频播放完毕后，会自动翻到下一页。",
+  "image": "cover.jpg",
+  "narrationAudio": "page-001.mp3",
+  "dialogues": [
+    { "speaker": "旁白", "text": "这里是语音书第一章的旁白对白。", "audio": "page-001-dialogue-01.mp3" }
+  ],
+  "dialogue": { "speaker": "旁白", "text": "这里是语音书第一章的旁白对白。", "audio": "page-001-dialogue-01.mp3" },
+  "autoNextOnEnded": true,
+  "next": null,
+  "prev": null
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic‑Needle Viewer</title>
+    <link rel="icon" href="/Comic-books/assets/favicon-D01A7XLV.png">
+    <link rel="stylesheet" href="./src/ui-template/main.css">
+    <style>
+        html,body { margin:0; width:100%; height:100%; overflow:hidden; }
+        /* 模式根容器：reading/cinematic 各自独立，由对应 Reader 自行挂载/显隐 */
+        #reading-root, #cinematic-root {
+            position: fixed;
+            inset: 0;
+        }
+        /* 默认均隐藏，避免空容器抢占版面；Reader 实现时自行 display:block */
+        #reading-root, #cinematic-root { display: none; }
+        /* UI 浮层：按钮/字幕/状态，由 UiController 绑定 */
+        #comic-ui-root {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+        #comic-ui-root > * {
+            pointer-events: auto;
+        }
+        #status {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            color: #94a3b8;
+            font-size: 13px;
+            font-family: system-ui, sans-serif;
+        }
+        #subtitle {
+            position: absolute;
+            bottom: 96px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #fff;
+            font-size: 22px;
+            text-shadow: 0 0 4px #000;
+            font-family: system-ui, sans-serif;
+        }
+        .control-panel {
+            position: absolute;
+            bottom: 32px;
+            left: 0;
+            right: 0;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .control-panel button {
+            padding: 8px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+  <script type="module" crossorigin src="/Comic-books/assets/index-LdjZZ_th.js"></script>
+  <link rel="stylesheet" crossorigin href="/Comic-books/assets/index-B1OB07eu.css">
+</head>
+<body>
+    <!-- 模式根容器：ReaderFactory 分发的 Reader 自行挂载内容 -->
+    <div id="reading-root"></div>
+    <div id="cinematic-root"></div>
+
+    <!-- UI 浮层：按钮/字幕/状态，由 UiController 绑定 -->
+    <!-- 已移除 ?runtime=legacy 双运行时切换按钮(#btn-runtime) -->
+    <div id="comic-ui-root">
+        <div id="status"></div>
+        <div id="subtitle" style="display:none;"></div>
+        <div class="control-panel">
+            <button id="btn-prev">上一页</button>
+            <button id="btn-play">播放/暂停</button>
+            <button id="btn-next">下一页</button>
+        </div>
+    </div>
+
+</body>
+</html>

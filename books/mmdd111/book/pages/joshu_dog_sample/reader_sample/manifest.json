@@ -1,0 +1,96 @@
+{
+  "bookId": "joshu_dog_sample",
+  "title": "天门书 Web Reader 样板",
+  "pages": [
+    {
+      "pageId": "p01",
+      "title": "页面 A：样板主场景",
+      "body": "几何体缓慢自转，相机构图对齐参考Demo，支持鼠标操控镜头。",
+      "layout": "top-bottom",
+      "viewportRatio": "16:9",
+      "orbitControls": {
+        "enable": true,
+        "enableDamping": true,
+        "minDistance": 3.5,
+        "maxDistance": 16
+      },
+      "animation": {
+        "enable": true,
+        "cubeSpeed": 0.12,
+        "sphereSpeed": 0.08,
+        "torusSpeed": 0.09
+      },
+      "cameraOverride": null,
+      "cameraTargetOverride": null
+    },
+    {
+      "pageId": "p02",
+      "title": "页面 B：左图右文",
+      "body": "此模式适合连环画与故事阅读。文字在右侧独立显示，3D 画面在左侧占据约 60% 的宽度。",
+      "layout": "left-right",
+      "viewportRatio": "16:9",
+      "orbitControls": {
+        "enable": true,
+        "enableDamping": true,
+        "minDistance": 3.5,
+        "maxDistance": 16
+      },
+      "animation": {
+        "enable": true,
+        "cubeSpeed": 0.12,
+        "sphereSpeed": 0.08,
+        "torusSpeed": 0.09
+      },
+      "cameraOverride": {
+        "position": [
+          0,
+          1.5,
+          9.0
+        ],
+        "target": [
+          0,
+          -0.15,
+          0
+        ]
+      }
+    },
+    {
+      "pageId": "p03",
+      "title": "页面 C：全屏场景",
+      "body": "文字以 HUD 方式悬浮显示。此布局下 3D 场景占据整个屏幕，能够提供最佳的沉浸感体验。",
+      "layout": "fullscreen",
+      "viewportRatio": "16:9",
+      "orbitControls": {
+        "enable": true,
+        "enableDamping": true,
+        "minDistance": 3.5,
+        "maxDistance": 16
+      },
+      "animation": {
+        "enable": true,
+        "cubeSpeed": 0.12,
+        "sphereSpeed": 0.08,
+        "torusSpeed": 0.09
+      }
+    },
+    {
+      "pageId": "p04",
+      "title": "页面 D：参数面板",
+      "body": "展示相机位置、目标点、距离与控制参数。你可以观察右下角的相机状态面板来获取实时数据。",
+      "layout": "top-bottom",
+      "viewportRatio": "16:9",
+      "orbitControls": {
+        "enable": true,
+        "enableDamping": true,
+        "minDistance": 3.5,
+        "maxDistance": 16
+      },
+      "animation": {
+        "enable": true,
+        "cubeSpeed": 0.12,
+        "sphereSpeed": 0.08,
+        "torusSpeed": 0.09
+      }
+    }
+  ]
+}
