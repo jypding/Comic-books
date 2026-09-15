@@ -61,19 +61,49 @@ export class PageManager {
     // 卸载上一页
     this.unloadCurrentPage();
 
+    console.log('[GLB-URL]', glbUrl);
     const glb = await loadGlb(glbUrl);
     this.loadedScene = glb.scene;
+    // 白名单：只保留 Cube / Sphere / TorusKnot / Ground
+    const keepNames = ['Cube', 'Sphere', 'TorusKnot', 'Ground'];
+    const toRemove: any[] = [];
+    glb.scene.traverse((o: any) => {
+      if (o.isMesh) {
+        const keep = keepNames.some((n) => o.name === n || o.name.startsWith(n + '.'));
+        if (!keep) toRemove.push(o);
+      }
+    });
+    toRemove.forEach((o) => {
+      console.log('[GLB-REMOVE]', o.name);
+      if (o.parent) o.parent.remove(o);
+    });
+
+    console.log('[GLB-ROOT]', glb.scene.children.map((c: any) => c.name || c.type));
+    glb.scene.traverse((o: any) => {
+      if (o.isMesh) {
+        console.log('[GLB-MESH]', o.name, '| material:', o.material?.name || '(none)');
+      }
+    });
     // 强制相机对准 GLB 场景
     this.scene.add(glb.scene);
 
-    const box = new THREE.Box3().setFromObject(glb.scene);
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
+    // 相机适配：排除 Ground（48x48 地面会撑大包围盒）
+    const contentBox = new THREE.Box3();
+    glb.scene.traverse((o: any) => {
+      if (!o.isMesh) return;
+      if (o.name === 'Ground' || o.name.startsWith('Ground.')) return;
+      contentBox.expandByObject(o);
+    });
+    if (contentBox.isEmpty()) {
+      contentBox.setFromObject(glb.scene);
+    }
+    const center = contentBox.getCenter(new THREE.Vector3());
+    const size = contentBox.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z, 1);
 
-    console.log('[CAM] center=', center.x.toFixed(2), center.y.toFixed(2), center.z.toFixed(2));
-    console.log('[CAM] size=', size.x.toFixed(2), size.y.toFixed(2), size.z.toFixed(2));
-    console.log('[CAM] maxDim=', maxDim.toFixed(2));
+    console.log('[CAM-CONTENT] center=', center.x.toFixed(2), center.y.toFixed(2), center.z.toFixed(2));
+    console.log('[CAM-CONTENT] size=', size.x.toFixed(2), size.y.toFixed(2), size.z.toFixed(2));
+    console.log('[CAM-CONTENT] maxDim=', maxDim.toFixed(2));
 
     this.fallbackCamera.fov = 50;
     this.fallbackCamera.near = 0.1;

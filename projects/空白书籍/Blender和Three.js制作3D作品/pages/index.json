@@ -1,0 +1,12 @@
+{
+  "book_title": "Blender和Three.js制作3D作品",
+  "pages": [
+    {
+      "page_id": "page0001",
+      "title": "Page 1",
+      "thumbnail": "page0001/thumb.png",
+      "width": 2048,
+      "height": 2048
+    }
+  ]
+}
