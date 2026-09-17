@@ -1,0 +1,3 @@
+左边（books\mmdd111）：是工程源数据（scene.glb、images、styles 里的 json 配置）。
+• 右边（projects\books\mmdd111）：是导出的网页包（index.html、assets/css/styles.css、assets/js/app.js、pages/）。
+你的网页之所以黑屏、没有绿皮肤，就是因为 GitHub 上的 books\mmdd111 里根本没有 index.html 和 assets 这套网页壳子。
