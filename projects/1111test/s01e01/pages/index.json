@@ -1,0 +1,12 @@
+{
+  "book_title": "s01e01",
+  "pages": [
+    {
+      "page_id": "page0002",
+      "title": "Page 1",
+      "thumbnail": "page0002/thumb.png",
+      "width": 1024,
+      "height": 1024
+    }
+  ]
+}

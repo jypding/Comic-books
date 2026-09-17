@@ -1,11 +1,11 @@
 {
-  "page_id": "page0000",
+  "page_id": "page0002",
   "title": "Page 1",
   "thumbnail": "thumb.png",
   "width": 1024,
   "height": 1024,
   "camera": {
-    "blender_camera_name": "Camera.0000"
+    "blender_camera_name": "Camera.0002"
   },
   "dialogue": {
     "text": "",

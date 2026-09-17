@@ -5,7 +5,7 @@
   "width": 1920,
   "height": 1080,
   "camera": {
-    "blender_camera_name": "Main Camera"
+    "blender_camera_name": "KoanCamera"
   },
   "dialogue": {
     "text": "",
@@ -19,7 +19,7 @@
     ]
   },
   "model": {
-    "glb": "scene.glb",
+    "glb": null,
     "splat": null
   },
   "next": null,
