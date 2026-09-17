@@ -1,10 +1,12 @@
 {
   "page_id": "page0001",
   "title": "Page 1",
-  "thumbnail": null,
+  "thumbnail": "thumb.png",
   "width": 1920,
   "height": 1080,
-  "camera": null,
+  "camera": {
+    "blender_camera_name": "Main Camera"
+  },
   "dialogue": {
     "text": "",
     "speaker": "",
@@ -17,7 +19,7 @@
     ]
   },
   "model": {
-    "glb": null,
+    "glb": "scene.glb",
     "splat": null
   },
   "next": null,
