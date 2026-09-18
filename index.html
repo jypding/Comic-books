@@ -10,10 +10,10 @@
     </style>
 </head>
 <body>
-    <!-- 方案 A: 路由到 viewer-needle 目录下的 index.html -->
-    <!-- 方案 B: 直接在这里加载运行时。为了保持架构纯净，我们采用方案 B -->
+    <!-- 方案 A: 路由�?viewer-needle 目录下的 index.html -->
+    <!-- 方案 B: 直接在这里加载运行时。为了保持架构纯净，我们采用方�?B -->
     
-    <!-- 模式根容器：ReaderFactory 分发的 Reader 自行挂载内容 -->
+    <!-- 模式根容器：ReaderFactory 分发�?Reader 自行挂载内容 -->
     <div id="reading-root" style="display: none; position: fixed; inset: 0;"></div>
     <div id="cinematic-root" style="display: none; position: fixed; inset: 0;"></div>
 
@@ -22,16 +22,16 @@
         <div id="status" style="position: absolute; top: 8px; left: 12px; color: #94a3b8; font-size: 13px; font-family: sans-serif;"></div>
         <div id="subtitle" style="display: none; position: absolute; bottom: 96px; left: 0; right: 0; text-align: center; color: #fff; font-size: 22px; text-shadow: 0 0 4px #000; font-family: sans-serif;"></div>
         <div class="control-panel" style="position: absolute; bottom: 32px; left: 0; right: 0; display: flex; gap: 12px; justify-content: center; pointer-events: auto;">
-            <button id="btn-prev">上一页</button>
+            <button id="btn-prev">上一�?/button>
             <button id="btn-play">播放/暂停</button>
-            <button id="btn-next">下一页</button>
+            <button id="btn-next">下一�?/button>
         </div>
     </div>
 
     <!-- 唯一入口 -->
     <script type="module">
-        // 注意：这里需要正确处理模块路径。
-        // 如果是本地开发，通常使用 Vite 代理或直接引用 viewer-needle/src/main.js
+        // 注意：这里需要正确处理模块路径�?
+        // 如果是本地开发，通常使用 Vite 代理或直接引�?viewer-needle/src/main.js
     </script>
 </body>
 </html>
