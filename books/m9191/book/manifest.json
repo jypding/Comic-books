@@ -1,0 +1,14 @@
+{
+  "id": "m9191",
+  "title": "m9191",
+  "mode": "voice",
+  "accent": "#FF0000",
+  "narration": {
+    "model": "gemini-3.1-flash-tts-preview",
+    "voice": "Charon",
+    "preset": "british"
+  },
+  "pages": [
+    "pages/p001.json"
+  ]
+}

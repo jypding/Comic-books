@@ -1,0 +1,9 @@
+{
+  "isPackage": true,
+  "style": "style.json",
+  "layout": "layout.json",
+  "timeline": "timeline.json",
+  "interaction": "interaction.json",
+  "audio": "audio.json",
+  "ui": "ui.json"
+}

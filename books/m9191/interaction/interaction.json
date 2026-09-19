@@ -1,0 +1,12 @@
+{
+  "input": {
+    "mouse": true,
+    "touch": true,
+    "hover": true
+  },
+  "feedback": {
+    "cursor": "pointer",
+    "highlight": true,
+    "highlightColor": "rgba(199,62,58,0.08)"
+  }
+}

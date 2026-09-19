@@ -1,0 +1,42 @@
+{
+  "page_id": "p001",
+  "pageId": "p001",
+  "mode": null,
+  "title": "Page 1",
+  "thumbnail": null,
+  "width": 1024,
+  "height": 1024,
+  "chapterTitle": "",
+  "longText": "",
+  "image": "images/page-001.jpg",
+  "layout": "standard",
+  "panels": [],
+  "dialogue": {
+    "text": "",
+    "speaker": "",
+    "audio": null
+  },
+  "dialogues": [],
+  "narration": "",
+  "narrationAudio": "audio/page-001.mp3",
+  "style": "default",
+  "ui": "default",
+  "interaction": [],
+  "camera": {
+    "blender_camera_name": null
+  },
+  "effects": [],
+  "transition": "fade",
+  "media": [],
+  "animations": {
+    "active_actions": []
+  },
+  "model": {
+    "glb": "scene.glb",
+    "splat": null
+  },
+  "glbAnimationClip": null,
+  "pageDuration": null,
+  "next": null,
+  "prev": null
+}
