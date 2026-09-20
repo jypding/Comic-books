@@ -1,4 +1,7 @@
-import * as THREE from 'three';
+﻿import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass }     from 'three/addons/postprocessing/ShaderPass.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -58,6 +61,74 @@ async function init() {
   loadGLB();
   goToPage(0);
   renderer.setAnimationLoop(animate);
+
+  // ===== 天门书黑白 sketchy 后处理 =====
+  const composer = new EffectComposer(renderer);
+  composer.setSize(container.clientWidth, container.clientHeight);
+  composer.setPixelRatio(window.devicePixelRatio);
+
+  composer.addPass(new RenderPass(scene, camera));
+
+  function makePlaceholderSheet() {
+    const size = 256;
+    const data = new Uint8Array(size * size * 4);
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const i = (y * size + x) * 4;
+        const v = ((x + y) % 16) / 16;
+        data[i + 0] = v * 255;
+        data[i + 1] = (1 - v) * 255;
+        data[i + 2] = ((x * y) % 32) / 32 * 255;
+        data[i + 3] = 255;
+      }
+    }
+    const tex = new THREE.DataTexture(data, size, size);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+    return tex;
+  }
+
+  const sheetA = makePlaceholderSheet();
+  const sheetB = makePlaceholderSheet();
+
+  const sketchPass = new ShaderPass({
+    uniforms: {
+      tDiffuse:       { value: null },
+      tSheetA:        { value: sheetA },
+      tSheetB:        { value: sheetB },
+      uResolution:    { value: new THREE.Vector2(container.clientWidth, container.clientHeight) },
+      uMarkScale:     { value: 5.5 },
+      uStyle:         { value: 2.0 },
+      uMarkSoftness:  { value: 0.4 },
+      uInkStrength:   { value: 1.0 },
+      uToneBlack:     { value: 0.0 },
+      uToneWhite:     { value: 1.2 },
+      uBands:         { value: 3.0 },
+      uBandSharpness: { value: 0.5 },
+      uShadeAmount:   { value: 0.18 },
+      uInkColor:      { value: new THREE.Color(0x1a1410) },
+      uPaperColor:    { value: new THREE.Color(0xffffff) },
+      uFlicker:       { value: new THREE.Vector2(0, 0) },
+    },
+    vertexShader:   "",
+    fragmentShader: "",
+  });
+
+  (async () => {
+    const v = await (await fetch("./shaders/blackwhite.vert")).text();
+    const f = await (await fetch("./shaders/blackwhite.frag")).text();
+    sketchPass.material.vertexShader   = v;
+    sketchPass.material.fragmentShader = f;
+    sketchPass.material.needsUpdate = true;
+    console.log("[sketch] shader loaded");
+  })();
+
+  composer.addPass(sketchPass);
+  // ===== 天门书后处理结束 =====
+
+
 }
 
 function buildPageNav() {
@@ -260,7 +331,7 @@ function animate() {
 
   if (mixer) mixer.update(deltaTime);
   if (controls && controls.enableDamping) controls.update();
-  renderer.render(scene, camera);
+  composer.render();
   updateHUD();
 }
 
