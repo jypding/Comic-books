@@ -140,7 +140,7 @@ function buildPageNav() {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
         <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
       </svg>
-      Page ${page.pageId.replace('p0', '')}
+      Page ${(typeof page === 'string' ? page.split('/').pop().replace('.json','') : (page.pageId || page.id || ('p' + (index+1)))).replace('p0','')}
     `;
     btn.onclick = () => goToPage(index);
     pageNav.appendChild(btn);
