@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>Tianmen WebGL Test — 3D: robot.glb</title>
+<style>
+  html,body { margin:0; height:100%; background:#222; color:#eee; font-family:monospace; }
+  #wrap { display:flex; height:100%; }
+  #left  { flex:1; position:relative; }
+  #right { width:320px; padding:16px; background:#111; }
+  canvas { display:block; width:100%; height:100%; }
+  label { display:block; margin:12px 0 4px; }
+  input[type=range] { width:100%; }
+  .row { font-size:12px; color:#aaa; }
+  .title { font-size:13px; color:#4fc; margin-bottom:8px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="left"><canvas id="c"></canvas></div>
+  <div id="right">
+    <div class="title">Stage 1 — 3D robot.glb</div>
+    <div class="row">鼠标拖动 = 转视角；滚轮 = 缩放</div>
+
+    <label>Tone Black <span id="v_tb"></span></label>
+    <input id="tb" type="range" min="0" max="1" step="0.01" value="0.0">
+
+    <label>Tone White <span id="v_tw"></span></label>
+    <input id="tw" type="range" min="0.3" max="1.5" step="0.01" value="0.8">
+
+    <label>Bands <span id="v_bd"></span></label>
+    <input id="bd" type="range" min="1" max="8" step="1" value="4">
+
+    <label>Hatch Density <span id="v_hd"></span></label>
+    <input id="hd" type="range" min="0.5" max="20" step="0.1" value="6">
+
+    <label>Outline Width <span id="v_ow"></span></label>
+    <input id="ow" type="range" min="0.001" max="0.1" step="0.001" value="0.02">
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader }   from 'three/addons/loaders/DRACOLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass }     from 'three/addons/postprocessing/ShaderPass.js';
+import { attachTianmenOutline } from './js/tianmenOutline.js';
+
+const canvas = document.getElementById('c');
+const left   = document.getElementById('left');
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(left.clientWidth, left.clientHeight, false);
+renderer.setClearColor(0xf3eddf, 1);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, left.clientWidth / left.clientHeight, 0.1, 100);
+camera.position.set(3, 2, 6);
+
+let outlineCtl = null;
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1, 0);
+controls.enableDamping = true;
+controls.update();
+
+// 灯光：一个方向光 + 一个环境光，让模型有明暗
+const dir = new THREE.DirectionalLight(0xffffff, 2.2);
+dir.position.set(3, 5, 4);
+dir.castShadow = true;
+dir.shadow.mapSize.set(2048, 2048);
+dir.shadow.camera.left   = -5;
+dir.shadow.camera.right  =  5;
+dir.shadow.camera.top    =  5;
+dir.shadow.camera.bottom = -5;
+dir.shadow.camera.near   =  0.1;
+dir.shadow.camera.far    =  20;
+dir.shadow.bias = -0.0005;
+scene.add(dir);
+
+const amb = new THREE.AmbientLight(0xffffff, 0.9);
+scene.add(amb);
+
+// 地面
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(20, 20),
+  new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 1.0 })
+);
+ground.receiveShadow = true;
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = 0;
+scene.add(ground);
+
+// 加载 robot.glb
+const draco = new DRACOLoader();
+draco.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/');
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(draco);
+
+gltfLoader.load('./robot.glb', (gltf) => {
+  gltf.scene.traverse(o => {
+    if (o.isMesh) {
+      o.castShadow = true;
+      o.receiveShadow = true;
+      // 保留 GLB 原材质与原贴图
+      if (Array.isArray(o.material)) {
+        o.material.forEach(m => { m.side = THREE.FrontSide; });
+      } else if (o.material) {
+        o.material.side = THREE.FrontSide;
+      }
+    }
+  });
+  scene.add(gltf.scene);
+
+  outlineCtl = attachTianmenOutline(gltf.scene, { width: 0.02, color: 0x0a0a0a });
+  window.__outlineCtl = outlineCtl;
+  console.log('[3d] outline attached');
+
+  // 让模型居中显示
+  const box = new THREE.Box3().setFromObject(gltf.scene);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  gltf.scene.position.sub(center);
+  gltf.scene.position.y += size.y / 2;
+  controls.target.set(0, size.y / 2, 0);
+  controls.update();
+  console.log('[3d] robot loaded', size.x.toFixed(2), size.y.toFixed(2), size.z.toFixed(2));
+}, undefined, (err) => {
+  console.error('[3d] load error', err);
+});
+
+// 后处理
+const composer = new EffectComposer(renderer);
+composer.setSize(left.clientWidth, left.clientHeight);
+composer.addPass(new RenderPass(scene, camera));
+
+const sketchPass = new ShaderPass({
+  uniforms: {
+    tDiffuse:    { value: null },
+    uResolution: { value: new THREE.Vector2(left.clientWidth, left.clientHeight) },
+    uToneBlack:  { value: 0.0 },
+    uToneWhite:  { value: 0.8 },
+    uBands:      { value: 4.0 },
+    uHatchDensity: { value: 6.0 },
+  },
+});
+
+sketchPass.material.vertexShader = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+sketchPass.material.fragmentShader = `
+uniform sampler2D tDiffuse;
+uniform vec2      uResolution;
+uniform float     uToneBlack;
+uniform float     uToneWhite;
+uniform float     uBands;
+varying vec2 vUv;
+void main() {
+  vec3 src = texture2D(tDiffuse, vUv).rgb;
+  float lit = dot(src, vec3(0.2126, 0.7152, 0.0722));
+  float tone = smoothstep(uToneBlack, uToneWhite, lit);
+  tone = clamp(tone, 0.0, 1.0);
+  float bands = max(uBands, 1.0);
+  float scaled = tone * bands;
+  float lower  = floor(scaled);
+  float frac   = scaled - lower;
+  float stepv  = step(0.5, frac);
+  float banded = clamp((lower + stepv) / bands, 0.0, 1.0);
+  gl_FragColor = vec4(vec3(banded), 1.0);
+}
+`;
+sketchPass.material.needsUpdate = true;
+
+composer.addPass(sketchPass);
+
+// Resize
+function resize() {
+  const w = left.clientWidth;
+  const h = left.clientHeight;
+  renderer.setSize(w, h, false);
+  composer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  sketchPass.uniforms.uResolution.value.set(w, h);
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Render loop
+function animate() {
+  if (outlineCtl) outlineCtl.update();
+  controls.update();
+  composer.render();
+}
+renderer.setAnimationLoop(animate);
+
+// ===== Stage A: 从 style_grayscale.json 读取风格参数 =====
+async function applyStyleFromJSON() {
+  try {
+    const res = await fetch('./style_grayscale.json', { cache: 'no-store' });
+    if (!res.ok) {
+      console.error('[style] 无法加载 style_grayscale.json，HTTP ' + res.status);
+      return;
+    }
+    const style = await res.json();
+    const p = style.params || {};
+
+    sketchPass.uniforms.uToneBlack.value    = (p.toneBlack    ?? 0.0);
+    sketchPass.uniforms.uToneWhite.value    = (p.toneWhite    ?? 0.8);
+    sketchPass.uniforms.uBands.value        = (p.bands        ?? 4.0);
+    sketchPass.uniforms.uHatchDensity.value = (p.hatchDensity ?? 6.0);
+
+    if (window.__outlineCtl) {
+      if (p.outlineWidth !== undefined) window.__outlineCtl.setWidth(p.outlineWidth);
+      if (p.outlineColor !== undefined) window.__outlineCtl.setColor(p.outlineColor);
+    }
+
+    const setSlider = (id, value) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = value;
+      el.dispatchEvent(new Event('input'));
+    };
+    setSlider('tb', p.toneBlack    ?? 0.0);
+    setSlider('tw', p.toneWhite    ?? 0.8);
+    setSlider('bd', p.bands        ?? 4.0);
+    setSlider('hd', p.hatchDensity ?? 6.0);
+
+    console.log('[style] style_grayscale.json loaded', p);
+  } catch (e) {
+    console.error('[style] 读取 style_grayscale.json 失败:', e);
+  }
+}
+
+// 绑定滑杆
+function bind(id, key, span) {
+  const el = document.getElementById(id);
+  const sp = document.getElementById(span);
+  const upd = () => {
+    const v = parseFloat(el.value);
+    sketchPass.uniforms[key].value = v;
+    sp.textContent = v;
+  };
+  el.addEventListener('input', upd); upd();
+}
+bind('tb', 'uToneBlack', 'v_tb');
+bind('tw', 'uToneWhite', 'v_tw');
+bind('bd', 'uBands', 'v_bd');
+bind('hd', 'uHatchDensity', 'v_hd');
+
+(function(){
+  const el = document.getElementById('ow');
+  const sp = document.getElementById('v_ow');
+  const upd = () => {
+    const v = parseFloat(el.value);
+    sp.textContent = v.toFixed(3);
+    if (outlineCtl) outlineCtl.setWidth(v);
+  };
+  el.addEventListener('input', upd); upd();
+})();
+applyStyleFromJSON();
+</script>
+</body>
+</html>

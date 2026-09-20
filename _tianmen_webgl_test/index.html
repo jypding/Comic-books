@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>Tianmen WebGL Test — Stage 1: grayscale + tone</title>
+<style>
+  html,body { margin:0; height:100%; background:#222; color:#eee; font-family:monospace; }
+  #wrap { display:flex; height:100%; }
+  #left  { flex:1; display:flex; align-items:center; justify-content:center; }
+  #right { width:320px; padding:16px; background:#111; }
+  canvas { display:block; max-width:100%; max-height:100%; }
+  label { display:block; margin:12px 0 4px; }
+  input[type=range] { width:100%; }
+  .row { font-size:12px; color:#aaa; }
+  .title { font-size:13px; color:#4fc; margin-bottom:8px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="left"><canvas id="c"></canvas></div>
+  <div id="right">
+    <div class="title">Stage 1 — grayscale + tone + bands</div>
+    <div class="row">目标：与 8770 的 C 分屏对照，逐步逼近</div>
+
+    <label>Tone Black <span id="v_tb"></span></label>
+    <input id="tb" type="range" min="0" max="1" step="0.01" value="0.0">
+
+    <label>Tone White <span id="v_tw"></span></label>
+    <input id="tw" type="range" min="0.3" max="1.5" step="0.01" value="0.9">
+
+    <label>Bands <span id="v_bd"></span></label>
+    <input id="bd" type="range" min="1" max="8" step="1" value="3">
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass }     from 'three/addons/postprocessing/ShaderPass.js';
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+
+const scene  = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+const loader = new THREE.TextureLoader();
+const tex = loader.load('./test.jpg', t => {
+  t.colorSpace = THREE.SRGBColorSpace;
+  resize();
+  console.log('[tianmen-webgl] image loaded', t.image.width, 'x', t.image.height);
+});
+
+const quad = new THREE.Mesh(
+  new THREE.PlaneGeometry(2, 2),
+  new THREE.MeshBasicMaterial({ map: tex })
+);
+scene.add(quad);
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+
+const sketchPass = new ShaderPass({
+  uniforms: {
+    tDiffuse:    { value: null },
+    uResolution: { value: new THREE.Vector2(1, 1) },
+    uToneBlack:  { value: 0.0 },
+    uToneWhite:  { value: 0.9 },
+    uBands:      { value: 3.0 },
+  },
+});
+
+// 内联 frag，彻底避开 fetch
+sketchPass.material.vertexShader = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+sketchPass.material.fragmentShader = `
+uniform sampler2D tDiffuse;
+uniform vec2      uResolution;
+uniform float     uToneBlack;
+uniform float     uToneWhite;
+uniform float     uBands;
+varying vec2 vUv;
+void main() {
+  vec3 src = texture2D(tDiffuse, vUv).rgb;
+  float lit = dot(src, vec3(0.2126, 0.7152, 0.0722));
+  float tone = smoothstep(uToneBlack, uToneWhite, lit);
+  tone = clamp(tone, 0.0, 1.0);
+  float bands = max(uBands, 1.0);
+  float scaled = tone * bands;
+  float lower  = floor(scaled);
+  float frac   = scaled - lower;
+  float stepv  = step(0.5, frac);
+  float banded = clamp((lower + stepv) / bands, 0.0, 1.0);
+  gl_FragColor = vec4(vec3(banded), 1.0);
+}
+`;
+// 不覆盖 vertexShader —— 让 ShaderPass 用内置的
+sketchPass.material.needsUpdate = true;
+console.log('[tianmen-webgl] inline frag loaded');
+
+composer.addPass(sketchPass);
+
+function resize() {
+  const w = window.innerWidth - 320;
+  const h = window.innerHeight;
+  renderer.setSize(w, h, false);
+  composer.setSize(w, h);
+  sketchPass.uniforms.uResolution.value.set(w, h);
+  const ar = tex.image ? tex.image.width / tex.image.height : 1;
+  let cw = w, ch = w / ar;
+  if (ch > h) { ch = h; cw = h * ar; }
+  canvas.style.width = cw + 'px';
+  canvas.style.height = ch + 'px';
+}
+window.addEventListener('resize', resize);
+resize();
+
+function animate() { composer.render(); }
+renderer.setAnimationLoop(animate);
+
+function bind(id, key, span) {
+  const el = document.getElementById(id);
+  const sp = document.getElementById(span);
+  const upd = () => {
+    const v = parseFloat(el.value);
+    sketchPass.uniforms[key].value = v;
+    sp.textContent = v;
+  };
+  el.addEventListener('input', upd); upd();
+}
+bind('tb', 'uToneBlack', 'v_tb');
+bind('tw', 'uToneWhite', 'v_tw');
+bind('bd', 'uBands', 'v_bd');
+</script>
+</body>
+</html>
