@@ -1,0 +1,5 @@
+# 3D book web assets must be stored as REAL binaries, not LFS pointers.
+# GitHub Pages serves LFS pointer text instead of the actual file,
+# which breaks GLB/PNG/JPG loading on the website.
+# Scope: this book only. Voice-book line untouched.
+** -filter -diff -merge -text
