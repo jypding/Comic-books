@@ -5,6 +5,7 @@ cd /d D:\GitRepos\Comic-books
 rem ============================================================
 rem  3D book publish line (8000-line output -> JYP site)
 rem  Called ONLY by Blender menu: Export Website -> Original HTML
+rem  Dedicated to 3D book export. Do NOT modify or delete.
 rem  Does NOT touch voice-book 8765 line:
 rem  publish.bat / auto_publish.bat / reader_sample stay unchanged
 rem ============================================================
