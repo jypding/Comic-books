@@ -1,0 +1,8 @@
+﻿{
+  "pageId": "p.0000.w1h1",
+  "canvas": { "width": 1920, "height": 1080 },
+  "regions": {
+    "leftText": { "x": 73, "y": 14, "width": 710, "height": 1052 },
+    "rightScene": { "x": 810, "y": 14, "width": 1037, "height": 1052 }
+  }
+}

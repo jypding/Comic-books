@@ -1,0 +1,28 @@
+{
+  "page_id": "page0001",
+  "scene": "p.0001.w100h100",
+  "title": "Page 2",
+  "thumbnail": "thumb.png",
+  "width": 1024,
+  "height": 1024,
+  "camera": {
+    "blender_camera_name": "Camera.0001"
+  },
+  "dialogue": {
+    "text": "说话人可自定义",
+    "speaker": "老僧",
+    "audio": "bubble_388200.wav"
+  },
+  "media": [],
+  "animations": {
+    "active_actions": [
+      "2图像动作"
+    ]
+  },
+  "model": {
+    "glb": "scene.glb",
+    "splat": null
+  },
+  "next": null,
+  "prev": "page0000"
+}

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>天门�?Web Reader 样板</title>
-  <link rel="stylesheet" href="./voice.css">
+  <link rel="stylesheet" href="./voice.css?v=2">
   <style>
     :root {
       --bg-color: #faf7f0;
@@ -33,15 +33,23 @@
 
     /* Top Navigation */
     #top-nav {
-      flex: 0 0 50px;
-      background-color: var(--nav-bg);
-      border-bottom: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: auto;
+      min-height: 50px;
+      flex: none;
+      background-color: transparent;
+      border-bottom: none;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
       z-index: 100;
+      pointer-events: none;
     }
+    #top-nav > * { pointer-events: auto; }
 
     .nav-group {
       display: flex;
@@ -74,7 +82,7 @@
       position: relative;
       display: flex;
       width: 100%;
-      height: calc(100vh - 50px);
+      height: 100vh;
       overflow: hidden;
     }
 
@@ -187,6 +195,253 @@
       z-index: 10;
     }
 
+  
+  
+  
+      /* ===== transparent-topnav-v3 ===== */
+    html body #top-nav,
+    html body.theme-light #top-nav,
+    html body.theme-dark #top-nav,
+    html body.theme-paper #top-nav,
+    html body.theme-black #top-nav,
+    html body.layout-top-bottom #top-nav,
+    html body.layout-left-right #top-nav,
+    html body.layout-fullscreen #top-nav {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      border-bottom: none !important;
+      box-shadow: none !important;
+    }
+  
+  
+      /* ===== topnav-icon-visible ===== */
+    /* 顶栏图标强制深色 + 半透明白底，保证在任何主题上都可见 */
+    html body #top-nav button {
+      background: rgba(255,255,255,0.85) !important;
+      border: 1px solid rgba(0,0,0,0.15) !important;
+      color: #1E1E24 !important;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+    }
+    html body #top-nav button svg {
+      stroke: #1E1E24 !important;
+      fill: #1E1E24 !important;
+    }
+    html body #top-nav button.active {
+      background: #1E1E24 !important;
+      color: #F3EDDF !important;
+      border-color: #1E1E24 !important;
+    }
+    html body #top-nav button.active svg {
+      stroke: #F3EDDF !important;
+      fill: #F3EDDF !important;
+    }
+    /* page-current 显示框 */
+    html body #page-current-display {
+      background: rgba(255,255,255,0.85) !important;
+      border: 1px solid rgba(0,0,0,0.15) !important;
+      color: #1E1E24 !important;
+      padding: 6px 12px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+      /* ===== topnav-buttons-final ===== */
+    html body #top-nav button,
+    html body #top-nav button.active,
+    html body #top-nav .page-btn.active {
+      background: rgba(255,255,255,0.9) !important;
+      border: 1px solid rgba(0,0,0,0.12) !important;
+      color: #1E1E24 !important;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+    }
+    html body #top-nav button svg {
+      stroke: #1E1E24 !important;
+      fill: none !important;
+    }
+    html body #top-nav button.active svg {
+      stroke: #1E1E24 !important;
+      fill: none !important;
+    }
+      /* ===== topnav-size-unify ===== */
+    html body #top-nav .top-icons button {
+      padding: 6px 12px !important;
+      width: auto !important;
+      height: auto !important;
+      min-width: 0 !important;
+      border-radius: 4px !important;
+      background: rgba(255,255,255,0.9) !important;
+      border: 1px solid rgba(0,0,0,0.12) !important;
+      color: #1E1E24 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin-left: 6px !important;
+    }
+    html body #top-nav .top-icons button svg {
+      width: 16px !important;
+      height: 16px !important;
+      stroke: #1E1E24 !important;
+      fill: none !important;
+    }
+  
+  
+  
+      /* ===== layout-fig1 ===== */
+    /* 顶栏：3 组分别靠左/中/右，同一行，间距收紧 */
+    html body #top-nav {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 8px 16px !important;
+      gap: 12px !important;
+      height: auto !important;
+      min-height: 44px !important;
+    }
+    html body #top-nav #page-nav { flex: 0 0 auto; }
+    html body #top-nav #layout-nav { flex: 0 0 auto; }
+    html body #top-nav .top-icons {
+      flex: 0 0 auto;
+      display: inline-flex !important;
+      gap: 8px !important;
+      margin: 0 !important;
+    }
+    /* 顶栏按钮统一大小 */
+    html body #top-nav button,
+    html body #top-nav .page-current {
+      padding: 6px 10px !important;
+      font-size: 14px !important;
+      border-radius: 6px !important;
+      background: rgba(255,255,255,0.9) !important;
+      border: 1px solid rgba(0,0,0,0.12) !important;
+      color: #1E1E24 !important;
+      height: auto !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    /* 底部文字栏：nav-bar 内，Contents 靠左，Dark/Sit 靠右 */
+    html body #text-panel .reading3d-nav-bar {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+    html body #text-panel .reading3d-nav-bar .spacer {
+      flex: 1 1 auto !important;
+    }
+      /* ===== 左图右文模式：按设计图 1:1 ===== */
+    html body.layout-left-right #top-nav {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      background: transparent !important;
+      border: none !important;
+      z-index: 300;
+      pointer-events: none;
+    }
+    html body.layout-left-right #top-nav > * {
+      pointer-events: auto;
+    }
+    /* 文字栏整体下移 56px，让顶栏独立成一行 */
+    html body.layout-left-right #text-panel {
+      padding-top: 56px !important;
+    }
+    /* 文字栏里的 nav-bar：Contents 靠左，Dark/Sit 靠右（同一行） */
+    html body.layout-left-right #text-panel .reading3d-nav-bar {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      margin: 0 0 18px !important;
+    }
+    html body.layout-left-right #text-panel .reading3d-nav-bar .spacer {
+      flex: 1 1 auto !important;
+    }
+
+      /* ===== left-right-nav-two-rows（仅左图右文）=====
+         右栏导航重排：
+         行1（56px，与 #top-nav 同高）：Contents / ‹ / ›，左对齐，与 ♪📷👁 平行
+         行2：Dark / Sit，右对齐，整体下移
+         行3 起：红方块页码（.reading3d-head）自然下移，不再与 Dark/Sit 挤在同一高度 */
+    /* 取消旧补丁给文字面板的 56px 顶部留白，让 nav-bar 行1 直接顶到视口顶端、与顶栏重合于同一行带 */
+    html body.layout-left-right #text-panel {
+      padding-top: 0 !important;
+    }
+    /* nav-bar 允许折行；左右内边距与面板正文对齐 */
+    html body.layout-left-right #text-panel .reading3d-nav-bar {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      gap: 8px !important;
+      margin: 0 !important;
+      padding: 0 20px !important;
+    }
+    /* 行1：Contents / ‹ / › —— 按钮高 36 + 上下各 10 = 行高 56，与顶栏按钮垂直居中对齐 */
+    html body.layout-left-right #text-panel .reading3d-nav-bar .btn-contents,
+    html body.layout-left-right #text-panel .reading3d-nav-bar .btn-prev,
+    html body.layout-left-right #text-panel .reading3d-nav-bar .btn-next {
+      height: 36px !important;
+      margin-top: 10px !important;
+      margin-bottom: 10px !important;
+      flex: 0 0 auto !important;
+    }
+    /* spacer 变成零高换行器：占满整行宽度，把 Dark/Sit 强制挤到第二行 */
+    html body.layout-left-right #text-panel .reading3d-nav-bar .spacer {
+      flex: 0 0 100% !important;
+      height: 0 !important;
+      padding: 0 !important;
+    }
+    /* 行2：Dark / Sit 靠右（auto 左外边距推到行尾），并与行1拉开距离 */
+    html body.layout-left-right #text-panel .reading3d-nav-bar .btn-theme {
+      margin-left: auto !important;
+      margin-top: 2px !important;
+      margin-bottom: 0 !important;
+    }
+    html body.layout-left-right #text-panel .reading3d-nav-bar .btn-sit {
+      margin-top: 2px !important;
+      margin-bottom: 0 !important;
+    }
+    /* 行3：页码块（红方块 + 标题）下移到 Dark/Sit 行之下，明确独占第三行 */
+    html body.layout-left-right #text-panel .reading3d-head {
+      margin-top: 24px !important;
+    }
+
+      /* ===== fps-panel-to-bottom（三种模式统一）=====
+         FPS 面板从画布左上角移到画布左下角，避开顶栏左侧的 p0000 按钮；
+         用 bottom 定位（相对 #canvas-container），不贴屏幕、不用 fixed，
+         上图下文 / 左图右文 / 全屏三种模式下都不会与顶栏重叠 */
+    #fps-panel {
+      top: auto !important;
+      bottom: 10px !important;
+      left: 10px !important;
+    }
+
+      /* ===== dark-sit-move-up（仅左图右文）=====
+         Dark / Sit 上移：减小行2与行1的间距（margin-top 2px -> 0，
+         并用负 row-gap 抵消容器 8px 行距），让 Dark/Sit 行顶部与 Contents 行底部相接 */
+    html body.layout-left-right #text-panel .reading3d-nav-bar {
+      row-gap: 0 !important;
+    }
+    html body.layout-left-right #text-panel .reading3d-nav-bar .btn-theme,
+    html body.layout-left-right #text-panel .reading3d-nav-bar .btn-sit {
+      margin-top: 0 !important;
+    }
+
+    /* ===== layout-ratios-from-v1-json =====
+       左右/上下分割比例由 main.js 从 Blender V1 JSON 写入 CSS 变量，
+       未设置时回退 60/40 默认值 */
+    body.layout-left-right #canvas-container { width: var(--lr-canvas-w, 60%); }
+    body.layout-left-right #text-panel { width: var(--lr-text-w, 40%); }
+    body.layout-top-bottom #canvas-container { height: var(--tb-canvas-h, 60%); }
+    body.layout-top-bottom #text-panel { height: var(--tb-text-h, 40%); }
   </style>
 </head>
 <body class="layout-top-bottom">
@@ -202,41 +457,36 @@
           <rect x="3" y="3" width="18" height="10"/>
           <rect x="3" y="15" width="18" height="6"/>
         </svg>
-        上图下文
       </button>
       <button data-layout="left-right">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="10" height="18"/>
           <rect x="15" y="3" width="6" height="18"/>
         </svg>
-        左图右文
       </button>
       <button data-layout="fullscreen">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/>
         </svg>
-        全屏
       </button>
     </div>
     <div class="top-icons">
-      <button title="音乐"></button>
-      <button title="视图">
+      <button title="音乐">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      </button>
+          <path d="M9 18V5l12-2v13"/>
+          <circle cx="6" cy="18" r="3"/>
+          <circle cx="18" cy="16" r="3"/>
+        </svg></button>
       <button title="相机">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="2" y="6" width="20" height="14" rx="2"/>
           <circle cx="12" cy="13" r="4"/>
-        </svg>
-      </button>
-      <button title="全屏">
+        </svg></button>
+      <button title="视图">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
-        </svg>
-      </button>
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg></button>
     </div>
   </div>
 
@@ -251,6 +501,8 @@
         <div>Target: --</div>
         <div>Dist: --</div>
       </div>
+      <!-- 视频页：manifest 该页带 video 字段时由 main.js 显示并播放 -->
+      <video id="page-video" class="page-video" muted loop playsinline style="display:none"></video>
     </div>
 
     <!-- Text Panel -->
@@ -272,7 +524,7 @@
       <!-- 标题区块 -->
       <div class="reading3d-head">
           <div class="reading3d-seal" id="text-page-number">1</div>
-          <h2 class="reading3d-title" id="text-title">Josh's Dog</h2>
+          <h2 class="reading3d-title" id="text-title" data-ph="标题">Josh's Dog</h2>
       </div>
 
       <!-- 播放器区�?-->
@@ -284,18 +536,15 @@
                       <button class="btn-rew">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
-                        </svg>
-                      </button>
+                        </svg></button>
                       <button class="btn-play">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M8 5v14l11-7z"/>
-                        </svg>
-                      </button>
+                        </svg></button>
                       <button class="btn-ff">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M13 6v12l8.5-6L13 6zm-.5 6L4 6v12l8.5-6z"/>
-                        </svg>
-                      </button>
+                        </svg></button>
                       <span class="player-time">0:00 / 0:00</span>
                   </div>
               </div>
@@ -309,14 +558,14 @@
               <span class="reading3d-speak-btn" title="Play Segment">�?/span>
           </div>
           <div class="reading3d-text-container">
-              <div class="reading3d-text" id="text-body">A monk asked Joshu...</div>
+              <div class="reading3d-text" id="text-body" data-ph="正文内容">A monk asked Joshu...</div>
           </div>
       </div>
     </div>
 
   </div>
 
-  <audio id="page-audio" src="./001.mp3" preload="metadata"></audio>
+  <audio id="page-audio" src="./001.mp3" preload="none"></audio>
 
   <!-- ES Modules Import -->
   <script type="importmap">
@@ -329,6 +578,9 @@
   </script>
   
   <script type="module" src="./readerLayoutController.js"></script>
-  <script type="module" src="./main.js"></script>
+  <script type="module" src="./main.js?v=19"></script>
+  <script src="./guideLayoutListener.js?v=2"></script>
+  <script src="./voicebook_v1_renderer.js?v=4"></script>
+  <script src="./voicebook_v1_boot.js?v=5"></script>
 </body>
 </html>

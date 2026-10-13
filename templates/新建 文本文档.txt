@@ -1,0 +1,28 @@
+用来建书的"新样板"是：
+D:\GitRepos\Comic-books\templates\voice_book\
+具体"母版文件"是它里面的：
+D:\GitRepos\Comic-books\templates\voice_book\blender\voice_book_template.blend
+（111382 字节，我们上一轮从 m920.blend 提纯出来的干净版）
+
+📌 新建语音书的流程
+点「新建语音书…」→ 输入 ID → PS1 脚本执行：
+templates/voice_book/                              ← 整个模板目录
+        │ 复制（排除 _source、.bak、.blend、.blend1）
+        ↓
+books/<新ID>/                                      ← 项目目录
+        │ 单独复制
+        ↓
+books/<新ID>/blender/<新ID>.blend                 ← 从 voice_book_template.blend 改名
+所以：
+
+templates/voice_book/ = 新样板目录。
+templates/voice_book/blender/voice_book_template.blend = 新样板 .blend。
+
+### 关键说明
+
+1. **cinematic_3d 不是语音书的模板**
+语音书的专用模板是单独的 `voice_book` 文件夹，主打纯文字排版、声音块、8765 阅读器。cinematic_3d 是 3D 分镜演出向的模板，主打镜头调度、分镜节点、场景演出，和语音书不是一套体系。
+2. **cinematic_3d 也不是标准 3D 气泡漫画**
+它的结构是 `CAMERAS / PAGES / CHARACTERS / DIALOGUE` 的分镜式结构，和 3D Comic Toolkit 要求的 `Export.00` 根集合、BubbleManager 气泡体系完全不兼容。这也是之前在这个模板里加气泡、调用 TTS 会报错的根本原因。
+3. **标准 3D 气泡漫画没有现成模板文件**
+templates 目录里没有对应的模板文件夹，它是通过 3D Comic Toolkit 插件的「新建 3D 漫画」功能现场生成的，生成后自带完整的标准结构、气泡注册环境和 TTS 链路。

@@ -1,0 +1,30 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules
+
+# Compiled
+/dist
+/packed
+/coverage
+
+# Plan orchestrator state
+.plan-state
+
+# Temporary files
+.awcache
+.nyc_output
+/temp
+/webpack-progress
+/v8-compile-cache-*
+/ts-node-*
+/build
+# Environment files
+.env

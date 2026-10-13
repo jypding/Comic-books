@@ -1,4 +1,4 @@
-﻿node_modules/
+node_modules/
 dist/
 *.blend1
 *.blend2
@@ -47,3 +47,6 @@ projects/**/*.blend11
 
 # 临时排除超大 GLB 项目
 books/page2/
+
+# viewer-needle 本地 dev legacy 副本（部署脚本的冗余拷贝，不进网站）
+viewer-needle/book/

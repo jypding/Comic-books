@@ -1,0 +1,37 @@
+EXAMPLES LICENSE
+================
+
+The example scripts in this directory are sample documents shipped to demonstrate
+the .mangaplay format. They are NOT covered by the LICENSE in the parent
+extension-mangaplay-spec/ directory.
+
+Each script is a creative work owned by its author. Reading the file as a
+reference for the format is permitted. Copying, redistributing, performing,
+adapting, or otherwise exploiting the *content* of these scripts requires the
+author's separate permission.
+
+Authors and works
+-----------------
+
+dorothy.mangaplay
+    "A Boy Named Dorothy" — © Pistol Taeja. All rights reserved.
+
+our-baby-is-strange.mangaplay
+    "Our Baby Is Strange" — © Pistol Taeja. All rights reserved.
+
+salaryman.mangaplay
+    "Being Salaryman" — © Pistol Taeja. All rights reserved.
+
+What this means in practice
+---------------------------
+
+You MAY:
+  - Read the scripts to understand the .mangaplay format
+  - Use them as input fixtures for parser/renderer testing
+  - Quote short excerpts in spec documentation, articles, or reviews
+
+You MAY NOT, without written permission from the author:
+  - Republish the scripts in whole or in substantial part
+  - Produce derivative works (adaptations, translations, remixes, sequels)
+  - Distribute drawn/illustrated/animated versions
+  - Use the characters, settings, or plot in your own works

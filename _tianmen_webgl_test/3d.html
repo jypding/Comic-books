@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="utf-8">
-<title>Tianmen WebGL Test — 3D: robot.glb</title>
+<title>Tianmen WebGL Test — 3D: current_scene.glb</title>
 <style>
   html,body { margin:0; height:100%; background:#222; color:#eee; font-family:monospace; }
   #wrap { display:flex; height:100%; }
@@ -16,10 +16,17 @@
 </style>
 </head>
 <body>
+  <a href="./index.html" id="back-to-lab" style="
+    position: fixed; top: 12px; left: 12px; z-index: 9999;
+    background: #2a2a2a; color: #4fc; text-decoration: none;
+    padding: 6px 14px; border-radius: 6px;
+    font-family: monospace; font-size: 13px;
+    border: 1px solid #444;
+  ">← 返回工作台</a>
 <div id="wrap">
   <div id="left"><canvas id="c"></canvas></div>
   <div id="right">
-    <div class="title">Stage 1 — 3D robot.glb</div>
+    <div class="title">Stage 1 — 3D current_scene.glb</div>
     <div class="row">鼠标拖动 = 转视角；滚轮 = 缩放</div>
 
     <label>Tone Black <span id="v_tb"></span></label>
@@ -105,13 +112,20 @@ ground.rotation.x = -Math.PI / 2;
 ground.position.y = 0;
 scene.add(ground);
 
-// 加载 robot.glb
+// 加载 current_scene.glb
 const draco = new DRACOLoader();
 draco.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/');
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(draco);
 
-gltfLoader.load('./robot.glb', (gltf) => {
+// ===== 从 URL 参数 ?book=<id> 决定加载哪本书 =====
+const urlParams = new URLSearchParams(window.location.search);
+const bookId = urlParams.get('book');
+const glbPath = bookId ? `../books/${bookId}/scene.glb` : './current_scene.glb';
+const cameraPath = bookId ? `../books/${bookId}/camera.json` : './current_camera.json';
+console.log('[3d] bookId =', bookId, '| glb =', glbPath, '| camera =', cameraPath);
+
+gltfLoader.load(glbPath, (gltf) => {
   gltf.scene.traverse(o => {
     if (o.isMesh) {
       o.castShadow = true;
@@ -139,6 +153,56 @@ gltfLoader.load('./robot.glb', (gltf) => {
   controls.target.set(0, size.y / 2, 0);
   controls.update();
   console.log('[3d] robot loaded', size.x.toFixed(2), size.y.toFixed(2), size.z.toFixed(2));
+
+  // ===== 从 current_camera.json 应用 Blender 当前镜头 =====
+  fetch(cameraPath, { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : null)
+    .then(cam => {
+      if (!cam) {
+        console.log('[camera] 未找到 current_camera.json，使用默认相机');
+        return;
+      }
+      console.log('[camera] 应用 Blender 镜头:', cam.name, cam.type);
+
+      // 位置 / 旋转 / 缩放
+      camera.position.fromArray(cam.location);
+      camera.rotation.order = 'XYZ';
+      camera.rotation.fromArray(cam.rotation_euler);
+      if (cam.scale) camera.scale.fromArray(cam.scale);
+
+      // 投影类型
+      if (cam.type === 'ORTHO') {
+        // 正交相机：切换投影 + 设置 ortho 范围
+        if (cam.ortho_scale) {
+          const aspect = camera.aspect;
+          camera.left   = -cam.ortho_scale * aspect / 2;
+          camera.right  =  cam.ortho_scale * aspect / 2;
+          camera.top    =  cam.ortho_scale / 2;
+          camera.bottom = -cam.ortho_scale / 2;
+        }
+      } else {
+        // 透视相机
+        if (cam.lens && cam.sensor_width) {
+          const fovV = 2 * Math.atan(cam.sensor_width / (2 * cam.lens)) * 180 / Math.PI;
+          camera.fov = fovV;
+        }
+      }
+
+      // 裁剪面
+      if (cam.clip_start) camera.near = cam.clip_start;
+      if (cam.clip_end)   camera.far  = cam.clip_end;
+
+      camera.updateProjectionMatrix();
+
+      // OrbitControls 的 target 放在相机正前方
+      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+      const target = camera.position.clone().add(forward.multiplyScalar(5));
+      controls.target.copy(target);
+      controls.update();
+
+      console.log('[camera] applied:', camera.position.toArray(), 'fov:', camera.fov);
+    })
+    .catch(e => console.warn('[camera] 读取 current_camera.json 失败:', e));
 }, undefined, (err) => {
   console.error('[3d] load error', err);
 });

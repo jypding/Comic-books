@@ -1,8 +1,111 @@
 {
-  "schema": "modern-3d-comic-v1",
-  "episode": "s01e01",
-  "title": "mmdd111",
-  "page_count": 1,
-  "created": "2026-09-15 15:34:51",
-  "viewer": "modern"
+  "id": "新m921",
+  "title": "新m921",
+  "author": "",
+  "mode": "voice",
+  "accent": "#C73E3A",
+  "pages": [
+    {
+      "page_id": "p0000",
+      "pageId": "p0000",
+      "scene_name": "p.0000.w1h1",
+      "glb": "scene_p0000.glb",
+      "audio_cues": [],
+      "ui_objects": [
+        {
+          "name": "Guide_Full_UI.004",
+          "role": "mask",
+          "layout": "fullscreen",
+          "action": ""
+        },
+        {
+          "name": "Guide_Bottom.004",
+          "role": "mask",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "Guide_Right.004",
+          "role": "mask",
+          "layout": "image-text-right",
+          "action": ""
+        },
+        {
+          "name": "TXT_Title.004",
+          "role": "title",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "TXT_Body.004",
+          "role": "body",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "BTN_PREV.004",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_prev"
+        },
+        {
+          "name": "BTN_NEXT.004",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_next"
+        }
+      ]
+    },
+    {
+      "page_id": "p0001",
+      "pageId": "p0001",
+      "scene_name": "p.0001.w1h1",
+      "glb": "scene_p0001.glb",
+      "audio_cues": [],
+      "ui_objects": [
+        {
+          "name": "Guide_Full_UI.003",
+          "role": "mask",
+          "layout": "fullscreen",
+          "action": ""
+        },
+        {
+          "name": "Guide_Bottom.003",
+          "role": "mask",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "Guide_Right.003",
+          "role": "mask",
+          "layout": "image-text-right",
+          "action": ""
+        },
+        {
+          "name": "TXT_Title.003",
+          "role": "title",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "TXT_Body.003",
+          "role": "body",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "BTN_PREV.003",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_prev"
+        },
+        {
+          "name": "BTN_NEXT.003",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_next"
+        }
+      ]
+    }
+  ]
 }

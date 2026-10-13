@@ -2,11 +2,74 @@
   "book_title": "86159",
   "pages": [
     {
-      "page_id": "page0001",
+      "page_id": "page0000",
       "title": "Page 1",
+      "thumbnail": "page0000/thumb.png",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "page_id": "page0001",
+      "title": "Page 2",
       "thumbnail": "page0001/thumb.png",
-      "width": 1920,
-      "height": 1080
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "page_id": "page0002",
+      "title": "Page 3",
+      "thumbnail": "page0002/thumb.png",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "page_id": "page0003",
+      "title": "Page 1",
+      "thumbnail": "page0003/thumb.png",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "page_id": "page0004",
+      "title": "Page 5",
+      "thumbnail": "page0004/thumb.png",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "page_id": "page0005",
+      "title": "Page 6",
+      "thumbnail": "page0005/thumb.png",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "page_id": "page0006",
+      "title": "Page 7",
+      "thumbnail": "page0006/thumb.png",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "page_id": "page0007",
+      "title": "Page 8",
+      "thumbnail": "page0007/thumb.png",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "page_id": "page0008",
+      "title": "Page 9",
+      "thumbnail": "page0008/thumb.png",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "page_id": "page0009",
+      "title": "Page 10",
+      "thumbnail": "page0009/thumb.png",
+      "width": 1024,
+      "height": 1024
     }
   ]
 }

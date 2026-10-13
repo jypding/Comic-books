@@ -1,0 +1,224 @@
+﻿﻿/**
+ * VoiceBook V1 像素级排版渲染器（PASS 2 完整版）
+ * 基准画布：1920 × 1080
+ * 数据驱动：textBoxes / audioButton 像素级定位 + 背景图
+ * 兼容：constructor 参数可以传 id 字符串，也可以传 DOM 元素
+ */
+(function () {
+  'use strict';
+
+  const BASE_W = 1920;
+  const BASE_H = 1080;
+
+  class VoiceBookV1Renderer {
+    constructor(containerOrId) {
+      this.baseWidth = BASE_W;
+      this.baseHeight = BASE_H;
+      this.scale = 1;
+      this.currentData = null;
+
+      // 兼容传 DOM 或传 id
+      let el = null;
+      if (typeof containerOrId === 'string') {
+        el = document.getElementById(containerOrId);
+      } else if (containerOrId && containerOrId.nodeType === 1) {
+        el = containerOrId;
+      }
+
+      if (!el) {
+        // 自动创建 stage
+        el = document.getElementById('vb-fullstage');
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'vb-fullstage';
+          document.body.appendChild(el);
+        }
+      }
+
+      this.stage = el;
+      this._initDom();
+      this._bindResize();
+    }
+
+    _initDom() {
+      this.stage.innerHTML = '';
+      this.stage.style.position = 'fixed';
+      this.stage.style.top = '0';
+      this.stage.style.left = '0';
+      this.stage.style.width = '100vw';
+      this.stage.style.height = '100vh';
+      this.stage.style.overflow = 'hidden';
+      this.stage.style.display = 'flex';
+      this.stage.style.alignItems = 'center';
+      this.stage.style.justifyContent = 'center';
+      this.stage.style.zIndex = '50';
+      this.stage.style.pointerEvents = 'none';
+
+      // 基准画布
+      this.canvas = document.createElement('div');
+      this.canvas.id = 'vb-v1-canvas';
+      this.canvas.style.position = 'relative';
+      this.canvas.style.width = this.baseWidth + 'px';
+      this.canvas.style.height = this.baseHeight + 'px';
+      this.canvas.style.transformOrigin = 'top left';
+      this.canvas.style.flexShrink = '0';
+      this.canvas.style.pointerEvents = 'auto';
+
+      // 背景层
+      this.bgLayer = document.createElement('div');
+      this.bgLayer.className = 'vb-v1-layer bg-layer';
+      this.bgLayer.style.position = 'absolute';
+      this.bgLayer.style.top = '0';
+      this.bgLayer.style.left = '0';
+      this.bgLayer.style.width = '100%';
+      this.bgLayer.style.height = '100%';
+      this.bgLayer.style.backgroundSize = '100% 100%';
+      this.bgLayer.style.backgroundPosition = 'center';
+      this.bgLayer.style.backgroundRepeat = 'no-repeat';
+      this.bgLayer.style.pointerEvents = 'none';
+      this.bgLayer.style.zIndex = '1';
+
+      // 3D 场景层（独立 <img>，按 sceneArea 像素定位）
+      this.sceneLayer = document.createElement('img');
+      this.sceneLayer.className = 'vb-v1-layer scene-layer';
+      this.sceneLayer.style.position = 'absolute';
+      this.sceneLayer.style.left = '0';
+      this.sceneLayer.style.top = '0';
+      this.sceneLayer.style.width = '0';
+      this.sceneLayer.style.height = '0';
+      this.sceneLayer.style.objectFit = 'fill';
+      this.sceneLayer.style.pointerEvents = 'none';
+      this.sceneLayer.style.zIndex = '2';
+
+      // 文本层
+      this.textLayer = document.createElement('div');
+      this.textLayer.className = 'vb-v1-layer text-layer';
+      this.textLayer.style.position = 'absolute';
+      this.textLayer.style.top = '0';
+      this.textLayer.style.left = '0';
+      this.textLayer.style.width = '100%';
+      this.textLayer.style.height = '100%';
+      this.textLayer.style.zIndex = '2';
+
+      // 控件层
+      this.widgetLayer = document.createElement('div');
+      this.widgetLayer.className = 'vb-v1-layer widget-layer';
+      this.widgetLayer.style.position = 'absolute';
+      this.widgetLayer.style.top = '0';
+      this.widgetLayer.style.left = '0';
+      this.widgetLayer.style.width = '100%';
+      this.widgetLayer.style.height = '100%';
+      this.widgetLayer.style.zIndex = '3';
+
+      this.canvas.appendChild(this.bgLayer);
+      this.canvas.appendChild(this.sceneLayer);
+      this.canvas.appendChild(this.textLayer);
+      this.canvas.appendChild(this.widgetLayer);
+      this.stage.appendChild(this.canvas);
+
+      this._updateScale();
+    }
+
+    _updateScale() {
+      const winW = window.innerWidth;
+      const winH = window.innerHeight;
+      const sx = winW / this.baseWidth;
+      const sy = winH / this.baseHeight;
+      this.scale = Math.min(sx, sy);
+      this.canvas.style.transform = 'scale(' + this.scale + ')';
+      console.log('[VoiceBook V1 PASS2] scale =', this.scale.toFixed(3), 'viewport =', winW + 'x' + winH);
+    }
+
+    _bindResize() {
+      window.addEventListener('resize', () => this._updateScale());
+    }
+
+    renderPage(v1Data) {
+      if (!v1Data) return;
+      this.currentData = v1Data;
+
+      this.textLayer.innerHTML = '';
+      this.widgetLayer.innerHTML = '';
+
+      // 0. 3D 场景层（按 layout.sceneArea 定位）
+      this._renderSceneLayer(v1Data);
+
+      // 1. 背景
+      const bg = v1Data.background || v1Data.base_image_path;
+      if (bg) this._renderBackground(bg);
+
+      // 2. 文本框
+      if (v1Data.textBoxes) this._renderTextBoxes(v1Data.textBoxes);
+
+      // 3. 音频按钮
+      if (v1Data.audioButton) this._renderAudioButton(v1Data.audioButton);
+
+      console.log('[VoiceBook V1 PASS2]', {
+        pageId: v1Data.pageId,
+        canvas: this.baseWidth + 'x' + this.baseHeight,
+        title: v1Data.textBoxes && v1Data.textBoxes.title,
+        body: v1Data.textBoxes && v1Data.textBoxes.body,
+        audio: v1Data.audioButton
+      });
+    }
+
+    _renderBackground(url) {
+      if (!url) return;
+      this.bgLayer.style.backgroundImage = 'url("' + url + '")';
+    }
+
+    _renderTextBoxes(textBoxes) {
+      for (const key of Object.keys(textBoxes)) {
+        const box = textBoxes[key];
+        if (!box) continue;
+
+        const el = document.createElement('div');
+        el.className = 'vb-textbox vb-textbox-' + key;
+        el.style.position = 'absolute';
+        el.style.left = (box.x || 0) + 'px';
+        el.style.top = (box.y || 0) + 'px';
+        el.style.width = (box.w || box.width || 200) + 'px';
+        el.style.height = (box.h || box.height || 80) + 'px';
+        el.style.fontSize = (box.fontSize || box.size || 32) + 'px';
+        el.style.lineHeight = (box.lineHeight || 1.2) + 'px';
+        el.style.color = box.color || '#1E1E24';
+        el.style.overflow = 'hidden';
+        el.style.wordBreak = 'break-word';
+        el.style.whiteSpace = 'pre-wrap';
+        el.style.boxSizing = 'border-box';
+        el.style.pointerEvents = 'auto';
+        el.textContent = box.text || box.content || '';
+
+        this.textLayer.appendChild(el);
+      }
+    }
+
+    _renderAudioButton(btn) {
+      const el = document.createElement('button');
+      el.className = 'vb-audio-btn';
+      el.style.position = 'absolute';
+      el.style.left = (btn.x || 0) + 'px';
+      el.style.top = (btn.y || 0) + 'px';
+      el.style.width = (btn.w || btn.width || 64) + 'px';
+      el.style.height = (btn.h || btn.height || 64) + 'px';
+      el.style.border = 'none';
+      el.style.borderRadius = '50%';
+      el.style.background = '#C73E3A';
+      el.style.color = '#fff';
+      el.style.cursor = 'pointer';
+      el.style.fontSize = '24px';
+      el.style.pointerEvents = 'auto';
+      el.textContent = '♪';
+      el.addEventListener('click', () => {
+        console.log('[VoiceBook V1 PASS2] audio button clicked');
+      });
+      this.widgetLayer.appendChild(el);
+    }
+
+    destroy() {
+      if (this.stage) this.stage.innerHTML = '';
+    }
+  }
+
+  window.VoiceBookV1Renderer = VoiceBookV1Renderer;
+})();

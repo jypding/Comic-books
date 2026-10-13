@@ -1,0 +1,114 @@
+{
+  "id": "匹配104",
+  "title": "匹配104",
+  "author": "",
+  "mode": "voice",
+  "accent": "#C73E3A",
+  "pages": [
+    {
+      "page_id": "p0000",
+      "pageId": "p0000",
+      "title": "",
+      "body": "",
+      "scene_name": "p.0000.w1h1",
+      "glb": "scene_p0000.glb",
+      "audio_cues": [],
+      "ui_objects": [
+        {
+          "name": "TXT_Title.001",
+          "role": "title",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "TXT_Body.001",
+          "role": "body",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "BTN_PREV.001",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_prev"
+        },
+        {
+          "name": "BTN_NEXT.001",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_next"
+        }
+      ]
+    },
+    {
+      "page_id": "p0000_001",
+      "pageId": "p0000_001",
+      "title": "",
+      "body": "",
+      "scene_name": "p.0000.w1h1.001",
+      "glb": "scene_p0000_001.glb",
+      "audio_cues": [],
+      "ui_objects": [
+        {
+          "name": "TXT_Title.002",
+          "role": "title",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "TXT_Body.002",
+          "role": "body",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "BTN_PREV.002",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_prev"
+        },
+        {
+          "name": "BTN_NEXT.002",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_next"
+        }
+      ]
+    },
+    {
+      "page_id": "p0001",
+      "pageId": "p0001",
+      "title": "",
+      "body": "",
+      "scene_name": "p.0001.w1h1",
+      "glb": "scene_p0001.glb",
+      "audio_cues": [],
+      "ui_objects": [
+        {
+          "name": "TXT_Title.004",
+          "role": "title",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "TXT_Body.004",
+          "role": "body",
+          "layout": "image-text-bottom",
+          "action": ""
+        },
+        {
+          "name": "BTN_PREV.004",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_prev"
+        },
+        {
+          "name": "BTN_NEXT.004",
+          "role": "button",
+          "layout": "image-text-bottom",
+          "action": "page_next"
+        }
+      ]
+    }
+  ]
+}

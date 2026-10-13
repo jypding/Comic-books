@@ -1,11 +1,12 @@
 {
   "page_id": "page0001",
-  "title": "Page 1",
+  "scene": "p.0001.w100h100",
+  "title": "Page 2",
   "thumbnail": "thumb.png",
-  "width": 1920,
-  "height": 1080,
+  "width": 1024,
+  "height": 1024,
   "camera": {
-    "blender_camera_name": "KoanCamera"
+    "blender_camera_name": "Camera.0001"
   },
   "dialogue": {
     "text": "",
@@ -19,9 +20,9 @@
     ]
   },
   "model": {
-    "glb": null,
+    "glb": "scene.glb",
     "splat": null
   },
-  "next": null,
-  "prev": null
+  "next": "page0002",
+  "prev": "page0000"
 }

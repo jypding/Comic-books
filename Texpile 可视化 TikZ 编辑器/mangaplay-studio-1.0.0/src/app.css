@@ -1,0 +1,2941 @@
+/* Theme tokens load via <link id="active-theme"> in index.html (see theme.js). */
+
+/* Font CSS variables. font-loader.js overrides --mps-font-app and
+ * --mps-font-code at runtime per locale. The Latin-baseline defaults below
+ * render correctly before any shard loads, because the system fallbacks
+ * (-apple-system / Segoe UI / etc.) are guaranteed to resolve. Inter +
+ * Source Code Pro @font-face declarations live in css/fonts-base.css
+ * (loaded by font-loader.js on boot); Courier Prime lives in
+ * css/fonts-screenplay.css (static <link> in index.html).
+ * --mps-font-app-stable is the locale-immune Latin baseline; font-loader.js never rewrites it.
+ * --mps-font-mono is a static alias of --mps-font-code — never written by JS,
+ * so anything still reading the old name resolves through the alias. */
+:root {
+    --mps-font-app:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mps-font-app-stable: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mps-font-code: "Source Code Pro", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --mps-font-mono: var(--mps-font-code);
+    --mps-font-screenplay-body: "Courier Prime", "Courier New", Courier, monospace;
+}
+
+/* === Reset === */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--mps-font-app);
+    line-height: 1.2;
+    background: var(--grey-light);
+    color: #1a1a1a;
+}
+
+/* === Loading screen === */
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--grey-light);
+    color: #1a1a1a;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#loading-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Start screen — shown when activePlan is start-screen or empty */
+#start-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--grey-light);
+    color: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 900;
+    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#start-screen .start-fixed {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 32px 24px 16px;
+    width: 100%;
+    max-width: 540px;
+    /* Lift above the .start-drag-strip so the brand icon + buttons stay interactive
+       in the top 40px overlap zone. The strip handles drag everywhere else. */
+    position: relative;
+    z-index: 1;
+}
+
+#start-screen .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+#start-screen .brand h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+#start-screen .start-actions {
+    display: flex;
+    gap: 16px;
+}
+
+#start-screen .start-drag-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    z-index: 0;
+    -webkit-app-region: drag;
+}
+
+#start-screen .start-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #444;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 120ms ease;
+    z-index: 2;
+}
+
+#start-screen .brand,
+#start-screen .brand h1,
+#start-screen .start-actions,
+#start-screen button.primary,
+#start-screen button.secondary {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#start-screen .brand h1 {
+    cursor: default;
+}
+
+#start-screen .start-close:hover {
+    background: var(--btn-hover-bg);
+    color: #1a1a1a;
+}
+
+#start-screen .start-close:active {
+    background: var(--btn-active-bg);
+}
+
+#start-screen button:not(.start-close) {
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 120ms, border-color 120ms;
+}
+
+#start-screen button.primary {
+    background: #64b5f6;
+    color: #111;
+}
+
+#start-screen button.primary:hover {
+    background: #90caf9;
+}
+
+#start-screen button.secondary {
+    background: transparent;
+    color: #1a1a1a;
+    border-color: #555;
+}
+
+#start-screen button.secondary:hover {
+    border-color: #888;
+}
+
+#start-screen .recent-list {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    max-width: 540px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 24px 24px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* Lift above the .start-drag-strip alongside .start-fixed. */
+    position: relative;
+    z-index: 1;
+}
+
+#start-screen .recent-list .recent-item {
+    background: var(--panel-bg);
+    border: 1px solid var(--rule);
+    padding: 10px 14px;
+    border-radius: 4px;
+    text-align: left;
+    color: #1a1a1a;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+}
+
+#start-screen .recent-list .recent-item:hover {
+    background: var(--btn-hover-bg);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-2);
+}
+
+#start-screen .recent-list .recent-item .recent-path {
+    color: #666;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+/* Recent item: position relative so the hover-revealed ✕ and the inline
+   confirm-prompt anchor against the card. .recent-main holds the original
+   name + path block so the ✕ can sit alongside without disturbing layout. */
+#start-screen .recent-list .recent-item {
+    position: relative;
+}
+
+#start-screen .recent-list .recent-item .recent-main {
+    padding-right: 24px; /* reserve space for the ✕ */
+}
+
+/* Missing-folder state: muted text + a small "Folder not found" tag. We
+   keep the entry interactable — clicking opens the inline confirm. */
+#start-screen .recent-list .recent-item.is-missing {
+    opacity: 0.55;
+}
+#start-screen .recent-list .recent-item.is-missing:hover {
+    opacity: 0.75;
+}
+#start-screen .recent-list .recent-item .recent-not-found {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #b54a4a;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Hover-revealed remove button — pinned top-right of the card. */
+#start-screen .recent-list .recent-item .recent-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 1;
+    color: #777;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 120ms ease, background 120ms ease, color 120ms ease;
+}
+#start-screen .recent-list .recent-item:hover .recent-remove,
+#start-screen .recent-list .recent-item:focus-within .recent-remove {
+    opacity: 1;
+}
+#start-screen .recent-list .recent-item .recent-remove:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: #1a1a1a;
+}
+
+/* Inline confirm-prompt. Replaces the visible card content while pending. */
+#start-screen .recent-list .recent-item.is-confirming .recent-main,
+#start-screen .recent-list .recent-item.is-confirming .recent-remove {
+    visibility: hidden;
+}
+#start-screen .recent-list .recent-item .recent-confirm {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--panel-bg);
+    border-radius: 4px;
+}
+#start-screen .recent-list .recent-item .recent-confirm-msg {
+    flex: 1;
+    font-size: 13px;
+    color: #1a1a1a;
+}
+#start-screen .recent-list .recent-item .recent-confirm-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+#start-screen .recent-list .recent-item .recent-confirm-yes,
+#start-screen .recent-list .recent-item .recent-confirm-no {
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--rule);
+    background: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+}
+#start-screen .recent-list .recent-item .recent-confirm-yes {
+    background: #b54a4a;
+    color: #fff;
+    border-color: #a23f3f;
+}
+#start-screen .recent-list .recent-item .recent-confirm-yes:hover {
+    background: #a23f3f;
+}
+#start-screen .recent-list .recent-item .recent-confirm-no:hover {
+    background: var(--btn-hover-bg);
+}
+
+#start-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Hide both loading + start screens once we're past those states */
+html[data-app-state="ready"] #loading-screen,
+html[data-app-state="ready"] #start-screen {
+    display: none;
+}
+
+#loading-screen .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+#loading-screen .brand h1 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
+}
+
+.status-line {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 24px;
+    min-height: 20px;
+    text-align: center;
+    transition: opacity 80ms;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #333;
+    border-top-color: #6c63ff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* === Shell CSS-var defaults ===
+ * These are read by selectors below before applyMetaBeforeFirstPaint sets them
+ * from persisted meta. Match the constants in shell-restore.js so first paint
+ * + saved-state restore agree.
+ */
+:root {
+    --left-pane-width: 240px;
+    --storyboard-width: 600px;
+    /* Width of the in-flow #window-controls block. macOS-style traffic-light
+     * pips: 16px L padding + 22px + 8px gap + 22px + 8px gap + 22px + 16px R
+     * padding = 114px. Used by rules that need to dock content just-left of
+     * the window controls — see .top-bar-action-c on storyboard-collapse. */
+    --tauri-frame-controls-width: 114px;
+}
+
+/* === Workspace ===
+ * Override base.css from the imported website chain — it pushes
+ * .workspace with padding-top:94px + margin-left:118px + margin-top:30px,
+ * which was designed for the web app's floating top-bar and side-rail.
+ * On the desktop, the top-bar is a real Tauri-frame element of its own and
+ * the side rail is a sibling — so .workspace must occupy the full body
+ * minus the topbar. Reset every offset.
+ */
+.workspace {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--grey-light);
+    /* Override website base.css */
+    --mps-workspace-top-offset: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    flex: initial;
+}
+.workspace[data-view-mode="solo-mangaplay"],
+.workspace[data-view-mode="solo-storyboard"],
+.workspace[data-view-mode="solo-screenplay"] { margin-left: 0; }
+
+mps-editor-host {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    display: flex;            /* stack slots */
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.editor-slot {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.editor-slot:not([data-active]) {
+    display: none;
+}
+
+.editor-slot[data-active] {
+    display: block;
+}
+
+mps-editor-host .cm-editor {
+    /* --mps-font-editor-body is set by applyEditorFont() in font-prefs.js;
+     * defaults to --mps-font-app (Inter) — the .mangaplay editor body is
+     * a prose surface, not a code surface. Users can override via the
+     * editor-font dropdown. */
+    font-family: var(--mps-font-editor-body, var(--mps-font-app));
+    /* Reset line-height so CodeMirror's own per-line rhythm wins instead of
+     * inheriting the 1.2 set on body for system UI text. */
+    line-height: normal;
+    height: 100%;
+}
+mps-editor-host .cm-scroller {
+    overflow: auto;
+}
+/* CodeMirror injects its base theme via StyleModule which scopes rules
+ * under an auto-generated class — that lifts CM's default .cm-content
+ * padding to specificity (0,2,0), beating a bare `mps-editor-host .cm-content`
+ * (0,1,1) and zeroing out our padding at runtime. Three-class selector
+ * (0,2,1) wins reliably. */
+mps-editor-host .cm-editor .cm-content {
+    padding: 10px 14px;
+}
+
+/* Text mode (no `data-show-line-numbers` attribute on the host) gets a
+ * generous left strip where the Page chevron sits, plus symmetrical right
+ * padding and a top breathing margin. The left strip width mirrors the
+ * Source-mode line-number gutter (~53px) so toggling between Text and
+ * Source preserves the column alignment of the body text. */
+mps-editor-host:not([data-show-line-numbers]) .cm-editor .cm-content {
+    padding: 16px 53px;
+}
+
+/* Font-family + line-height applied at the (0,2,1) level so they win
+ * against CM's auto-class on .cm-scroller. Source and Text modes share
+ * this rule so both visually match — Source mode has no language
+ * extensions and would otherwise fall back to CM's default monospace. */
+mps-editor-host .cm-editor .cm-content,
+mps-editor-host .cm-editor .cm-scroller {
+    font-family: var(--mps-font-editor-body, var(--mps-font-app));
+}
+
+/* Source mode reads as a raw script — swap the body font to Courier
+ * (the screenplay convention, same family the Visual editor textareas
+ * use). Scoped to `.cm-content` only so the line-number gutter (which
+ * lives inside `.cm-scroller`) does NOT inherit Courier — gutters keep
+ * the system font. Gate by `data-show-line-numbers`, which `applyEditorMode`
+ * already toggles on mps-editor-host when mode === "source". */
+mps-editor-host[data-show-line-numbers] .cm-editor .cm-content,
+mps-editor-host[data-show-line-numbers] .cm-editor .cm-content .cm-line {
+    font-family: var(--mps-font-script);
+}
+
+/* Editor-area top bar — 44px overlay across Text / Source / Visual.
+ * Carries the page-pagination chevrons on the left and the three-state
+ * mode toggle on the right. Sits above CM content and the Insert Blank
+ * Page badge (z-index: 100).
+ *
+ * `right: 8px` exposes the 7px CodeMirror scrollbar column so the
+ * scrollbar's full track stays visible — without this the bar's opaque
+ * background overlays the scrollbar's top ~44px, clipping the indicator
+ * when the user scrolls near the top of the document. */
+mps-editor-host > .editor-area-top-bar
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 8px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    background: var(--mps-editor-bg);
+    z-index: 110;
+    box-sizing: border-box;
+}
+
+.editor-area-top-bar .editor-bar-page-prev,
+.editor-area-top-bar .editor-bar-page-next,
+.editor-area-top-bar .editor-bar-fix-issues
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--mps-text-secondary, #555);
+    cursor: pointer;
+    transition: color 120ms ease-out, background-color 120ms ease-out, opacity 120ms ease-out;
+}
+
+.editor-area-top-bar .editor-bar-page-prev:hover:not([disabled]),
+.editor-area-top-bar .editor-bar-page-next:hover:not([disabled])
+{
+    color: var(--mps-text-primary, #111);
+}
+
+.editor-area-top-bar .editor-bar-page-prev[disabled],
+.editor-area-top-bar .editor-bar-page-next[disabled]
+{
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.editor-area-top-bar .editor-bar-page-next
+{
+    margin-left: 4px;
+}
+
+.editor-area-top-bar .editor-bar-fix-issues
+{
+    margin-left: 8px;
+}
+
+/* Disabled (no fixable structural issues in current AST) — neutral grey. */
+.editor-area-top-bar .editor-bar-fix-issues[disabled]
+{
+    color: #9a9a9a;
+    background: transparent;
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* Enabled — light-green tinted background + darker-green icon, signalling
+ * an action is available. */
+.editor-area-top-bar .editor-bar-fix-issues:not([disabled])
+{
+    color: #1f5e1f;
+    background: #d6f0d6;
+}
+.editor-area-top-bar .editor-bar-fix-issues:not([disabled]):hover,
+.editor-area-top-bar .editor-bar-fix-issues:not([disabled]):focus-visible
+{
+    background: #b6e3b6;
+    outline: none;
+}
+
+.editor-area-top-bar mps-editor-mode-toggle
+{
+    margin-left: auto;
+    margin-right: 4px;
+}
+/* When the More Options button is present, IT owns the right-edge margin
+ * (18px). When absent, the mode toggle is the last item — drop back to 18. */
+.editor-area-top-bar:not(:has(.editor-bar-more-options)) mps-editor-mode-toggle
+{
+    margin-right: 18px;
+}
+
+mps-editor-host .cm-editor .cm-scroller
+{
+    padding-top: 44px;
+}
+
+.mps-editor-mode-toggle-btn
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    opacity: 1;
+    color: var(--mps-text-secondary, #555);
+    cursor: pointer;
+    transition: color 120ms ease-out;
+}
+
+.mps-editor-mode-toggle-btn:hover,
+.mps-editor-mode-toggle-btn:focus-visible
+{
+    color: var(--mps-text-primary, #111);
+    outline: none;
+}
+
+.mps-editor-mode-toggle-btn:disabled,
+.mps-editor-mode-toggle-btn[aria-disabled="true"]
+{
+    cursor: default;
+    opacity: 0.55;
+}
+
+.mps-editor-mode-toggle-btn:disabled:hover,
+.mps-editor-mode-toggle-btn[aria-disabled="true"]:hover
+{
+    color: var(--mps-text-secondary, #555);
+}
+
+/* SuperScript alpha warning pill in the editor top bar. Shown only when the
+ * active slot's format is "superscript" / "superscript-bin" — toggled via
+ * `data-format` on .editor-area-top-bar. */
+.editor-area-top-bar .editor-bar-superscript-warning
+{
+    display: none;
+    margin-left: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--mps-warning-bg, #fff5d6);
+    color: var(--mps-warning-fg, #8a5a00);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.editor-area-top-bar[data-format="superscript"] .editor-bar-superscript-warning,
+.editor-area-top-bar[data-format="superscript-bin"] .editor-bar-superscript-warning
+{
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Website's <mps-screenplay> custom element drives the surface directly — no
+ * CodeMirror chrome inside. Make sure the host has a clean background and no
+ * stray border the website's screenplay.css might apply for paper margins. */
+mps-screenplay
+{
+    background: var(--panel-bg);
+    overflow: auto;
+    border: none;
+    padding: 0;
+}
+
+/* Paginated mode: the screenplay panel acts as a "desk" (light grey) behind the
+ * white page cards, mirroring the storyboard canvas-desk treatment. The page
+ * surfaces themselves stay white via their own .screenplay-page rules. */
+mps-screenplay[data-screenplay-mode="paginated"]
+{
+    background: var(--grey-dark);
+}
+
+/* Match the storyboard canvas-page chrome on the screenplay paper — same
+ * border colour, same radius, same shadow. Source rules in canvas.css and
+ * screenplay.css are already aligned, but the inner .screenplay-content
+ * carries its own border-radius that paints a second rounded edge inside
+ * the paper border. Strip it so the paper has a single clean curve. */
+mps-screenplay .screenplay-content
+{
+    border-radius: 0;
+}
+
+/* Strip the thin grey paper border the website paints on .screenplay-page
+ * (screenplay.css:98). In the desktop right-pane the editor/separator
+ * already frames the surface; the extra outline reads as a stray line. */
+mps-screenplay .screenplay-page
+{
+    border: none;
+}
+
+/* Scroll moves to the host element so the scrollbar paints flush against the
+ * right edge of the screenplay panel, not centred inside the 794px paper.
+ * The inner .screenplay-content stops being a scroll container — its content
+ * flows naturally and the host scrolls. */
+mps-screenplay
+{
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-items: flex-start;
+}
+mps-screenplay .screenplay-page
+{
+    height: auto;
+    min-height: 100%;
+}
+mps-screenplay .screenplay-content
+{
+    overflow: visible;
+    height: auto;
+}
+
+/* Halve left/right inner padding (industry default 96/96/96/144 → 24/48/96/72)
+ * so wider text fits the desktop right-pane width without horizontal cramping.
+ * Top padding shrunk from 96px → 24px so the first scene heading isn't shoved
+ * a full inch below the page edge in the on-screen view. The PDF exporter
+ * still applies its own 1in top margin, so print output is unaffected. */
+mps-screenplay .screenplay-content
+{
+    padding: 24px 48px 96px 72px;
+}
+
+/* Tighten line-height to a Courier-screenplay baseline of 1.0 and lean on
+ * each element's bottom-margin for paragraph rhythm — this matches the look
+ * of an exported industry-standard screenplay (see the reference PDFs).
+ * The website's source line-height var defaults to 1.5; this desktop pass
+ * overrides it locally without touching the shared CSS. */
+mps-screenplay .screenplay-content
+{
+    --mps-screenplay-line-height: 1.0;
+    line-height: 1.0;
+}
+mps-screenplay .screenplay-action,
+mps-screenplay .screenplay-parenthetical,
+mps-screenplay .screenplay-dialogue
+{
+    line-height: 1.0;
+}
+mps-screenplay .screenplay-action
+{
+    margin-top: 1em;
+}
+mps-screenplay .screenplay-character
+{
+    margin-top: 1em;
+}
+mps-screenplay .screenplay-dialogue
+{
+    margin-bottom: 0;
+}
+
+mps-canvas, mps-screenplay {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    /* mps-screenplay (CodeMirror wrapper) sets its own display: block via its
+     * shadow chrome. mps-canvas needs the website's display:flex (canvas.css:5)
+     * so .canvas-wrapper actually flexes to fill height; setting display:block
+     * here was collapsing the canvas to 50px. */
+}
+
+/* Canvas-only — keep clip. The screenplay host is the scroll container
+ * (overflow-y:auto comes from the earlier mps-screenplay rule), so keeping
+ * `overflow:hidden` in the combined rule here was silently winning the
+ * cascade and killing the scrollbar. Split the rule so the screenplay
+ * actually scrolls. */
+mps-canvas { overflow: hidden; }
+mps-screenplay { display: block; }
+
+/* === Error overlay === */
+#error-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+}
+
+.error-card {
+    background: var(--panel-bg);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: var(--shadow-3);
+    border: 1px solid var(--rule);
+}
+
+.error-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #ef5350;
+}
+
+.error-body {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 24px;
+}
+
+.error-retry {
+    padding: 8px 24px;
+    border: none;
+    border-radius: 6px;
+    background: #6c63ff;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.error-retry:hover {
+    background: #5a52d5;
+}
+
+/* === App Chrome === */
+#app-chrome {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#app-chrome.fade-in {
+    opacity: 0;
+}
+
+/* === Hand-rolled window controls — macOS-style traffic lights ===
+ * Replaces tauri-plugin-frame's eval-injected buttons so CSP can drop
+ * 'unsafe-eval'. Three coloured dots in the right-side slot of #top-bar;
+ * window-controls.js unhides #window-controls when hasWindowChrome() is true.
+ *
+ * Position is Windows-convention (top right). Colours follow macOS:
+ *   yellow = minimize, green = maximize, red = close.
+ *
+ * Buttons keep their 46×32 click target so the OS hit area stays generous;
+ * the visible glyph is a 12px circle centred inside.
+ */
+.window-controls
+{
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: var(--top-bar-height, 40px);
+    padding: 0 16px;
+    flex-shrink: 0;
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+}
+
+.win-ctrl
+{
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: default;
+    border-radius: 50%;
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+}
+
+.win-ctrl-dot
+{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.2);
+    transition: filter 100ms ease, transform 100ms ease;
+    /* Let the parent .win-ctrl <button> own the hit-test so
+     * elementFromPoint(cx, cy) on the button centre returns the
+     * button itself, not this inner span. The SVG glyph already
+     * sets pointer-events: none below for the same reason. */
+    pointer-events: none;
+}
+
+.win-ctrl-dot-min   { background: #febc2e; }
+.win-ctrl-dot-max   { background: #28c840; }
+.win-ctrl-dot-close { background: #ff5f57; }
+
+/* White bold glyph centred inside each dot. SVG viewBox is 10×10, rendered
+ * at 10×10 inside the 14×14 dot so the stroke reads as bold relative to
+ * the pip without overflowing. */
+.win-ctrl-glyph
+{
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+}
+
+/* Maximize uses a filled square glyph (rect fill, not stroke). */
+.win-ctrl-dot-max .win-ctrl-glyph
+{
+    fill: #fff;
+    stroke: none;
+}
+
+.win-ctrl:hover .win-ctrl-dot
+{
+    filter: brightness(0.92);
+}
+
+.win-ctrl:active .win-ctrl-dot
+{
+    filter: brightness(0.82);
+    transform: scale(0.92);
+}
+
+/* When the window is unfocused, macOS fades the dots to neutral grey.
+ * Tauri emits "tauri://focus"/"tauri://blur" but we don't subscribe yet;
+ * for now the dots stay coloured all the time. Easy follow-up if wanted. */
+
+/* === Windows-convention `_ ☐ X` glyph buttons ===
+ * Applied when window-controls.js sets data-platform="windows" on the host.
+ * Rectangular 46×32 hit-targets, no border-radius, no coloured dots. Glyph
+ * strokes in muted text grey; close hover = red bg + white glyph; min/max
+ * hover = subtle grey bg. The default `.window-controls` block above stays
+ * the macOS-style pip treatment used by Linux (and any unset platform).
+ */
+.window-controls[data-platform="windows"]
+{
+    gap: 0;
+    padding: 0;
+    height: var(--top-bar-height, 40px);
+}
+
+.window-controls[data-platform="windows"] .win-ctrl
+{
+    width: 46px;
+    height: 100%;
+    border-radius: 0;
+}
+
+.window-controls[data-platform="windows"] .win-ctrl-dot
+{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.window-controls[data-platform="windows"] .win-ctrl-glyph
+{
+    width: 16px;
+    height: 16px;
+    stroke: var(--win-ctrl-glyph, #5a5a5a);
+    stroke-width: 0.9;
+    fill: none;
+}
+
+/* Maximize: outline square, not filled, for Windows convention. */
+.window-controls[data-platform="windows"] .win-ctrl-dot-max .win-ctrl-glyph
+{
+    fill: none;
+    stroke: var(--win-ctrl-glyph, #5a5a5a);
+}
+
+.window-controls[data-platform="windows"] .win-ctrl:hover .win-ctrl-dot
+{
+    background: rgba(0, 0, 0, 0.06);
+    filter: none;
+    transform: none;
+}
+
+.window-controls[data-platform="windows"] .win-ctrl-close:hover .win-ctrl-dot
+{
+    background: #e81123;
+}
+
+.window-controls[data-platform="windows"] .win-ctrl-close:hover .win-ctrl-glyph
+{
+    stroke: #fff;
+}
+
+.window-controls[data-platform="windows"] .win-ctrl:active .win-ctrl-dot
+{
+    filter: brightness(0.92);
+    transform: none;
+}
+
+html[data-theme="dark"] .window-controls[data-platform="windows"] .win-ctrl-glyph
+{
+    stroke: #cccccc;
+}
+
+html[data-theme="dark"] .window-controls[data-platform="windows"] .win-ctrl:hover .win-ctrl-dot
+{
+    background: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .window-controls[data-platform="windows"] .win-ctrl-close:hover .win-ctrl-glyph
+{
+    stroke: #fff;
+}
+
+/* === View Slot Flip transitions === */
+.workspace {
+    flex: 1;
+    display: flex;
+    transition: none;
+}
+
+[data-view-mode="dual"] mps-editor-host {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Solo modes — only one view visible */
+[data-view-mode="solo-mangaplay"] mps-canvas,
+[data-view-mode="solo-mangaplay"] mps-screenplay {
+    display: none !important;
+}
+
+[data-view-mode="solo-storyboard"] mps-editor-host {
+    display: none !important;
+}
+
+[data-view-mode="solo-storyboard"] mps-screenplay {
+    display: none !important;
+}
+
+[data-view-mode="solo-screenplay"] mps-editor-host {
+    display: none !important;
+}
+
+[data-view-mode="solo-screenplay"] mps-canvas {
+    display: none !important;
+}
+
+/* Animation class — animate workspace opacity + children visibility */
+.view-flipping .workspace {
+    transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.view-flipping .workspace > * {
+    transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Project hot-swap fade — mirrors .view-flipping cadence but covers the
+ * left pane too (folder explorer rebinds to the new project). */
+#app-chrome.project-swapping .workspace,
+#app-chrome.project-swapping #left-pane
+{
+    opacity: 0;
+    transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* === Canvas drawing surface ===
+ * The desktop mounts the website's <mps-canvas> custom element, which manages
+ * its own internal layout (canvas-wrapper > canvas-container > canvas-page-wrapper
+ * > canvas-page-align > canvas-page). Old stub-era rules that styled the bare
+ * child <canvas> or forced display:flex on the host fought that hierarchy —
+ * removed. Keep only the chrome around the host: background + a tiny pad so the
+ * page card has breathing room from the seam.
+ */
+mps-canvas {
+    /* Let the website's display:flex stand — its .canvas-wrapper expects
+     * flex:1 against a flex parent. Forcing block here used to leave the
+     * inner wrapper at 0 height, which made fitToContainer short-circuit
+     * and the page card collapse. */
+    background: var(--grey-dark);
+    overflow: hidden;
+}
+
+
+#left-pane
+{
+    position: relative;
+    flex: 0 0 var(--left-pane-width);
+    /* min-width stays 0 (not var(--left-pane-min)) so the expand animation
+     * doesn't jump straight to the min and judder. JS clamps drag to
+     * LEFT_PANE_MIN at the handle; flex-basis carries the resting width. */
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    /* No border-right here — the resize handle's pseudo-element paints both
+     * the resting 1px rule AND the hover affordance, so the rule shows the
+     * coloured highlight cleanly without a stray border to its right. */
+    background: var(--grey-dark);
+    overflow: hidden;
+    /* Scope reflow + paint to the pane so the collapse animation doesn't
+     * invalidate the whole workspace each frame. */
+    contain: layout paint;
+    transition: flex-basis 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* When NOT collapsed, enforce the left-pane min so a narrow window can't
+ * crush the explorer panel into a sliver. The collapsed path keeps
+ * flex-basis:0 with min-width:0 so the close animation still completes. */
+#app-chrome:not([data-left-pane-collapsed]) #left-pane
+{
+    min-width: var(--left-pane-min, 200px);
+}
+
+#app-chrome[data-left-pane-collapsed] #left-pane
+{
+    flex-basis: 0;
+}
+
+#app-chrome[data-left-pane-collapsed] #left-subview-group
+{
+    transform: translateX(-72px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.left-pane-content
+{
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.left-pane-footer
+{
+    flex: 0 0 auto;
+    padding: 8px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.project-switcher-btn
+{
+    flex: 1;
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    padding: 4px 8px;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+}
+.project-switcher-btn:hover:not(:disabled),
+.project-switcher-btn[aria-expanded="true"] { background: var(--btn-hover-bg); }
+.project-switcher-btn:disabled { cursor: default; opacity: 0.7; }
+.project-switcher-btn .project-switcher-chevron
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+}
+.project-switcher-btn .project-switcher-chevron svg { width: 16px; height: 16px; }
+.project-switcher-btn .project-switcher-label
+{
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Project-switcher popup — matches the file-row .ctx-menu chrome (same
+   background, border, shadow, row colours) so theming stays consistent. */
+.project-switcher-menu
+{
+    position: fixed;
+    z-index: 9000;
+    min-width: 200px;
+    max-width: 360px;
+    background: var(--panel-bg, #1d1d22);
+    border: 1px solid var(--rule, #2a2a30);
+    border-radius: 8px;
+    padding: 4px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    user-select: none;
+}
+.psw-menu-row
+{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--row-text, #e8e8ea);
+    font-family: inherit;
+    font-size: inherit;
+    text-align: left;
+    white-space: nowrap;
+}
+.psw-menu-row:not([disabled]):hover
+{
+    background: var(--btn-hover-bg);
+    border-color: var(--rule);
+}
+.psw-menu-row[disabled] { cursor: default; opacity: 0.4; }
+.psw-menu-row[disabled]:hover { background: transparent; border-color: transparent; }
+.psw-menu-row .psw-menu-label
+{
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.psw-menu-row .psw-menu-icon,
+.psw-menu-row .psw-menu-trailing
+{
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.psw-menu-row .psw-menu-icon svg,
+.psw-menu-row .psw-menu-trailing svg { width: 14px; height: 14px; }
+.psw-menu-divider
+{
+    height: 1px;
+    background: var(--rule);
+    margin: 4px 6px;
+}
+
+.footer-icon
+{
+    width: 28px;
+    height: 28px;
+    border: 0;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.footer-icon:hover { background: var(--btn-hover-bg); }
+.footer-icon svg { width: 16px; height: 16px; }
+
+/* #left-pane has overflow:hidden so anything painted outside its right edge
+ * is clipped. Keep the handle FULLY INSIDE the pane, flush against its right
+ * edge — the 1px border-right and any hover bar both render inside the clip. */
+.left-pane-resize-handle
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 7px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 5;
+}
+
+/* Resting state: a 1 px grey rule painted by ::after to substitute for the
+ * border-right we removed from #left-pane. Sits at the pane's right edge,
+ * inside the overflow-hidden clip. */
+.left-pane-resize-handle::after
+{
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 1px;
+    height: 100%;
+    background: var(--rule);
+    pointer-events: none;
+    transition: background 120ms ease, width 120ms ease;
+}
+
+/* Hover/active: widen to 3 px and recolour. The bar grows leftward (right
+ * stays anchored at 0) so the pane's content shifts slightly behind the
+ * 3 px bar but the right edge — and thus the workspace next to it — does
+ * not move. This matches the right-pane seam visually. */
+.left-pane-resize-handle:hover::after,
+#app-chrome[data-resizing-left] .left-pane-resize-handle::after
+{
+    width: 3px;
+    background: var(--mps-primary);
+}
+
+.subview
+{
+    flex: 1;
+    overflow: hidden;
+    transition: opacity 150ms ease;
+}
+
+/* Initial / non-animating visibility — only applied when the JS has NOT
+   set an inline display style (so the animation can override). Every
+   subview that isn't the active one starts hidden so the first switch
+   doesn't paint two panels stacked together. */
+#left-pane[data-subview="folder"]     > .left-pane-content > #subview-bookmarks:not([style*="display"]),
+#left-pane[data-subview="folder"]     > .left-pane-content > #subview-outline:not([style*="display"]),
+#left-pane[data-subview="folder"]     > .left-pane-content > #subview-statistics:not([style*="display"]),
+#left-pane[data-subview="bookmarks"]  > .left-pane-content > #subview-folder:not([style*="display"]),
+#left-pane[data-subview="bookmarks"]  > .left-pane-content > #subview-outline:not([style*="display"]),
+#left-pane[data-subview="bookmarks"]  > .left-pane-content > #subview-statistics:not([style*="display"]),
+#left-pane[data-subview="outline"]    > .left-pane-content > #subview-folder:not([style*="display"]),
+#left-pane[data-subview="outline"]    > .left-pane-content > #subview-bookmarks:not([style*="display"]),
+#left-pane[data-subview="outline"]    > .left-pane-content > #subview-statistics:not([style*="display"]),
+#left-pane[data-subview="statistics"] > .left-pane-content > #subview-folder:not([style*="display"]),
+#left-pane[data-subview="statistics"] > .left-pane-content > #subview-bookmarks:not([style*="display"]),
+#left-pane[data-subview="statistics"] > .left-pane-content > #subview-outline:not([style*="display"])
+{
+    display: none;
+}
+
+.subview-empty
+{
+    color: #888;
+    text-align: center;
+    margin-top: 32px;
+    font-size: 13px;
+}
+
+.folder-list
+{
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 8px;
+}
+
+.folder-list[data-drop-target]
+{
+    box-shadow: inset 0 0 0 1px var(--mps-primary, #007aff);
+}
+
+.folder-list-row
+{
+    position: relative;
+    margin: 2px 8px;
+    height: 28px;
+    padding: 0 8px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--row-text);
+    background: var(--row-bg);
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+}
+
+.folder-list-row[data-drop-target]
+{
+    box-shadow: inset 0 0 0 1px var(--mps-primary, #007aff);
+    background: color-mix(in srgb, var(--mps-primary, #007aff) 12%, var(--row-bg));
+}
+
+.folder-list-disclosure
+{
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--row-badge);
+    transition: transform 0.12s ease-out;
+    transform-origin: 50% 50%;
+    line-height: 1;
+}
+
+.folder-list-disclosure > svg
+{
+    display: block;
+}
+
+.folder-list-row[data-expanded] .folder-list-disclosure
+{
+    transform: rotate(90deg);
+}
+
+.folder-list-disclosure-spacer
+{
+    visibility: hidden;
+}
+
+.folder-list-row:hover                       { background: var(--btn-hover-bg); }
+.folder-list-row[aria-current="true"]        { background: var(--btn-hover-bg); }
+
+.folder-list-name
+{
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--row-text);
+}
+
+.folder-list-badge
+{
+    font-family: var(--mps-font-app-stable);
+    flex: 0 0 auto;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--row-badge);
+    background: transparent;
+    padding: 0 4px;
+    margin-left: 6px;
+    white-space: nowrap;
+}
+
+/* Inline rename — row gains .is-renaming, name span swapped for input. */
+.folder-list-row.is-renaming
+{
+    background: color-mix(in srgb, var(--mps-primary, #007aff) 12%, var(--row-bg));
+    border: 1px solid var(--mps-primary, #007aff);
+}
+
+.folder-list-row.is-renaming .folder-list-rename-input
+{
+    flex: 1 1 0;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--row-text);
+    font: inherit;
+    padding: 0;
+}
+
+.folder-list-row.is-renaming.is-error .folder-list-rename-input
+{
+    color: var(--danger-fg);
+}
+
+.folder-list-row .folder-list-rename-hint
+{
+    font-size: 11px;
+    color: var(--danger-fg);
+    margin-left: 6px;
+    white-space: nowrap;
+}
+
+.workspace
+{
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    overflow: hidden;
+    background: var(--panel-bg);
+}
+
+mps-editor-host,
+mps-canvas,
+mps-screenplay
+{
+    background: var(--panel-bg);
+    min-width: 0;
+}
+
+.workspace[data-view-mode="dual"] > mps-editor-host
+{
+    flex: 1;
+    min-width: var(--editor-min);
+}
+
+/* The seam stays a fixed 1px line. Hover/active affordance is painted by an
+ * absolutely-positioned ::before overlay that overlaps the seam without taking
+ * flex space — so the editor and storyboard never shift when the user hovers
+ * or grabs the seam. ::after is a wider transparent hit-target for grabbing.
+ *
+ * Explicit z-index lifts the seam above its right-hand sibling, .right-pane-slider,
+ * which has `position: relative` (its own stacking context) and otherwise
+ * paints over the part of our ::after hit-target that extends past the seam's
+ * own 1px width into the slider's column. Without this lift, clicks on the
+ * visible seam land on the slider and the resize handler never fires. */
+.workspace-seam
+{
+    flex: 0 0 1px;
+    background: var(--rule);
+    cursor: col-resize;
+    position: relative;
+    z-index: 10;
+}
+
+/* Wider invisible drag hit-target on both sides of the seam. */
+.workspace-seam::after
+{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -3px;
+    width: 7px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 5;
+}
+
+/* Hover/active affordance — a 3px coloured bar painted OVER the seam without
+ * affecting the flex layout. Floats centred so it visually replaces the 1px
+ * rule with a 3px primary-coloured line, no scrollbar shift. */
+.workspace-seam::before
+{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -1px;
+    width: 3px;
+    height: 100%;
+    background: transparent;
+    pointer-events: none;
+    transition: background 120ms ease;
+    z-index: 4;
+}
+.workspace-seam:hover::before,
+#app-chrome[data-resizing] .workspace-seam::before
+{
+    background: var(--mps-primary);
+}
+
+/* === Right-pane stack — column flex holding the horizontal
+       quick-toggle strip above the slider. Owns the workspace flex slot;
+       the inner .right-pane-slider fills the remaining height. === */
+.right-pane-stack
+{
+    position: relative;
+    flex: 0 0 var(--storyboard-width);
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    contain: layout paint;
+    transition: flex-basis 220ms cubic-bezier(0.4, 0, 0.2, 1),
+                opacity    220ms ease,
+                padding    220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === Right-pane slider — wraps mps-canvas + mps-screenplay so the [D]
+       button can slide between them. Container stays in place; the two
+       children animate translateX. The active child sits at 0; the other
+       parks at +100% (off-screen-right, clipped by overflow:hidden). === */
+.right-pane-slider
+{
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Dual view: enforce the storyboard pane's minimum so a narrow window
+ * doesn't squash the canvas page below its readable width. The solo modes
+ * own the full workspace width and don't need this floor. */
+.workspace[data-view-mode="dual"] > .right-pane-stack
+{
+    min-width: var(--storyboard-min, 200px);
+}
+
+.right-pane-slider > mps-canvas,
+.right-pane-slider > mps-screenplay
+{
+    position: absolute;
+    inset: 0;
+    transform: translateX(100%);
+    transition: transform 0ms linear;
+    will-change: transform;
+}
+
+.right-pane-slider[data-view-sliding] > mps-canvas,
+.right-pane-slider[data-view-sliding] > mps-screenplay
+{
+    transition: transform 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Storyboard active: storyboard on-screen, screenplay parked right. */
+.right-pane-slider[data-active="storyboard"] > mps-canvas       { transform: translateX(0); }
+.right-pane-slider[data-active="storyboard"] > mps-screenplay   { transform: translateX(100%); }
+
+/* Screenplay active: screenplay on-screen, storyboard parked right. */
+.right-pane-slider[data-active="screenplay"] > mps-canvas       { transform: translateX(100%); }
+.right-pane-slider[data-active="screenplay"] > mps-screenplay   { transform: translateX(0); }
+
+/* While the user is actively dragging the seam, suppress width-related
+   transitions so the column and anchored buttons track the cursor instantly. */
+#app-chrome[data-resizing] .workspace > .right-pane-stack,
+#app-chrome[data-resizing] .top-bar-action-anchored,
+#app-chrome[data-resizing] .editor-tabs
+{
+    transition: none;
+}
+
+/* Same trick for the left pane — without this it lazily eases-into-place.
+ * .top-bar-action-anchored-left (the collapse/expand button) is included
+ * so it tracks the cursor instantly during resize instead of trailing
+ * behind the 220ms `left` transition declared in its base rule (which
+ * is correct for the collapse/expand toggle, but lags during a live
+ * drag of the resize handle). Mirrors the right-pane resize rule above. */
+#app-chrome[data-resizing-left] #left-pane,
+#app-chrome[data-resizing-left] .top-bar-action-anchored-left,
+#app-chrome[data-resizing-left] .editor-tabs
+{
+    transition: none;
+}
+
+#app-chrome[data-storyboard-collapsed] .workspace > .right-pane-stack
+{
+    flex-basis: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Drop the dual-view min-width gate so the pane can actually shrink to 0
+ * during collapse — otherwise it floors at --storyboard-min (200px). */
+#app-chrome[data-storyboard-collapsed] .workspace[data-view-mode="dual"] > .right-pane-stack
+{
+    min-width: 0;
+}
+
+/* When the workspace is in solo-mangaplay mode, hide the stack
+   entirely. The descendant rule below also hides each child, but this also
+   collapses the container width so the editor stretches full-width. */
+.workspace[data-view-mode="solo-mangaplay"] .right-pane-stack
+{
+    display: none;
+}
+
+#app-chrome[data-storyboard-collapsed] #btn-storyboard-action
+{
+    transform: translate(var(--storyboard-width), -50%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* [C] dock-on-collapse: slide right to sit just to the LEFT of the window
+   controls so the user can still un-collapse from a sensible location.
+
+   Window-controls inset is --tauri-frame-controls-width (set on :root = 138px,
+   matches the in-flow .window-controls block: 3 × 46px buttons).
+
+   Expanded right offset (.top-bar-action-c):     var(--storyboard-width) 
+   Docked right offset (target):                  inset + 4px
+   Translation delta (positive X = move right):   (storyboard-width + 18) - (inset + 4)
+                                                = storyboard-width + 14 - inset
+*/
+#app-chrome[data-storyboard-collapsed] #btn-storyboard-collapse
+{
+    transform: translate(
+        calc(var(--storyboard-width) - 8px - var(--tauri-frame-controls-width, 138px)),
+        -50%
+    );
+    transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#btn-storyboard-collapse[data-state="expanded"] svg
+{
+    transform: rotateY(180deg);
+}
+
+/* === Light-mode CodeMirror surfaces === */
+.cm-editor
+{
+    background: var(--panel-bg);
+}
+.cm-editor .cm-scroller
+{
+    background: var(--panel-bg);
+}
+.cm-editor .cm-content
+{
+    background: var(--panel-bg);
+    color: #1a1a1a;
+}
+.cm-editor .cm-gutters
+{
+    background: var(--panel-bg);
+    /* Light grey line numbers — soft enough to read as gutter chrome, not
+     * compete with the source text. */
+    color: #bbb;
+    /* Visible breathing room on both sides of the line-number column —
+     * 16px clears the rightmost digit from the gutter's border-right
+     * (the `|`), and 16px on the left keeps the first digit off the
+     * editor's outer edge. */
+    padding-left: 16px;
+    padding-right: 16px;
+    border-right: 1px solid var(--rule);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* === Selection highlight ===
+ *
+ * drawSelection() is omitted across all editor modes (see mps-editor.js →
+ * extensionsForMode). The CM6 selection layer renders unreliably under
+ * WebView2 — z-index, specificity, and opacity overrides all proved
+ * ineffective. Falling back to browser-native ::selection paints
+ * consistently in Text, Source, and Visual modes. */
+mps-editor-host .cm-editor .cm-content ::selection,
+mps-editor-host .cm-editor .cm-content::selection
+{
+    background: rgba(0, 122, 255, 0.35);
+    color: inherit;
+}
+.cm-editor .cm-lineNumbers .cm-gutterElement
+{
+    /* 10% smaller than the editor body so the gutter reads as chrome,
+     * not part of the source rhythm. */
+    font-size: 0.9em;
+    /* CM6 right-aligns gutter numbers by default — left-align so multi-digit
+     * line numbers (10, 100, …) start at the same x as single-digit ones. */
+    text-align: left;
+}
+.cm-editor .cm-gutter
+{
+    background: var(--panel-bg);
+}
+
+/* Line-number gutter is OFF by default. Opt in by setting
+   `data-show-line-numbers` on the <mps-editor-host> element. */
+mps-editor-host:not([data-show-line-numbers]) .cm-editor .cm-gutters
+{
+    display: none;
+}
+.cm-editor .cm-activeLineGutter,
+.cm-editor .cm-activeLine
+{
+    background: var(--row-highlight, #f0f3f8);
+}
+
+/* === Shared button interaction system === */
+:where(.top-bar-icon, .rail-icon, .top-bar-action)
+{
+    /* z-index 101 keeps these above #top-bar's own drag region (the topbar
+       itself is -webkit-app-region: drag) so mouse events always reach the
+       button instead of triggering window-move. The app-region: no-drag
+       opt-out (in the #top-bar > button rule above) handles the OS side. */
+    position: relative;
+    z-index: 101;
+    transition: background 120ms ease, box-shadow 120ms ease, transform 80ms ease;
+}
+
+:where(.top-bar-icon, .rail-icon, .top-bar-action):hover,
+.rail-icon[aria-pressed="true"]
+{
+    background: var(--btn-hover-bg);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), var(--shadow-1);
+    color: #1a1a1a;
+}
+
+:where(.top-bar-icon, .rail-icon, .top-bar-action):active
+{
+    background: var(--btn-active-bg);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18), var(--shadow-inset);
+}
+
+:where(.top-bar-icon, .rail-icon, .top-bar-action):focus-visible
+{
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* === Paint widget — desktop scope ===
+ * - Hide row 2 (solo switcher, replaced by the [D] topbar button).
+ * - Hide the leading logo/drag-handle button (.pw-logo-btn) — desktop has a
+ *   real Tauri-frame title bar that owns drag, no need for an in-widget handle.
+ * - Reposition the widget to centre over the RIGHT pane (storyboard slider)
+ *   instead of the whole window. Website CSS at canvas.css:792 anchors the
+ *   widget at `left:50%; transform:translateX(-50%)` so it floats over the
+ *   editor pane on the desktop. Re-anchor to the storyboard slider's column.
+ * - Hide entirely when right-pane shows Screenplay.
+ */
+/* Hide row 2 in full on desktop. The solo-view switcher is replaced by the
+ * [D] topbar button, and pagination has been relocated to the top-bar
+ * (#topbar-storyboard-pagination). The in-widget drag handle is unneeded — Tauri frame
+ * owns drag. */
+mps-paint-widget .pw-row-2,
+mps-paint-widget .pw-logo-btn,
+mps-paint-widget .pw-reset-pan-btn
+{
+    display: none !important;
+}
+
+/* Hide redundant overlays the website canvas renders inside its wrapper. */
+mps-canvas mps-save-indicator { display: none !important; }
+
+/* === Right-pane redesign — sidebar is relocated above the canvas as a
+ * horizontal strip (#quick-toggle-strip). The canvas-page-align inside
+ * mps-canvas collapses back to a simple block layout, the tool-preview
+ * floats as an absolute overlay anchored to the canvas area, and the
+ * canvas-page-wrapper centres itself with a max-width so the canvas +
+ * painter cluster stays visually grouped when the pane is wider than 520px.
+ */
+
+/* Zero the right-side reserve so fitToContainer measures the full page width. */
+mps-canvas .canvas-wrapper
+{
+    --tool-preview-overlay-width: 0px;
+    --tool-preview-overlay-gap: 0px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+/* Tighten L/R margins on the inner container as well — fill mode should see
+ * the canvas reach close to both pane edges. */
+mps-canvas .canvas-container
+{
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+mps-canvas .canvas-page-align
+{
+    /* Drop the website's flex/grid layout — sidebar lives in the strip now. */
+    display: block;
+    position: relative;
+    grid-template-columns: none;
+    grid-template-rows: none;
+    column-gap: 0;
+}
+
+/* If the sidebar happens to still be a child of canvas-page-align before
+ * relocation finishes, keep it visually neutral so it does not flash. */
+mps-canvas .canvas-page-align > mps-quick-toggle-sidebar:not([data-relocated])
+{
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    z-index: 6;
+}
+
+/* Tool-preview floats above the first storyboard page, horizontally centred
+ * over the storyboard pane. Vertical anchor sits just below the floating
+ * paint widget so the two clusters stack neatly without overlapping the
+ * canvas content. position:fixed keeps it overlaid without affecting layout. */
+mps-canvas .tool-preview-overlay
+{
+    position: fixed;
+    top: calc(var(--top-bar-height, 40px) + 8px + 78px + 8px);
+    right: auto;
+    bottom: auto;
+    left: calc(100vw - (var(--storyboard-width, 600px) / 2) - 25px);
+    grid-column: auto;
+    grid-row: auto;
+    margin-top: 0;
+    justify-self: auto;
+    width: 50px;
+    min-width: 50px;
+    z-index: 51;
+    pointer-events: none;
+    background: var(--panel-bg);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 4px;
+}
+
+/* Centre the canvas-page-wrapper inside the slider so canvas + painter +
+ * preview read as one cluster when the pane > 520px. Below 520px the
+ * max-width has no effect and the wrapper fills the slider. */
+mps-canvas .canvas-page-wrapper
+{
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* === Quick-toggle strip — horizontal bar above the canvas/screenplay.
+ * Hosts the relocated <mps-quick-toggle-sidebar>. The strip itself is a
+ * row-flex; the sidebar inside it is overridden to render row-wise too.
+ * Sits below the floating paint widget (which lives at viewport top ~48px,
+ * height ~38px) — push it down so the two clusters don't visually collide. */
+.quick-toggle-strip
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 8px;
+    margin-top: 48px;
+    flex: 0 0 auto;
+    z-index: 5;
+    max-width: 100%;
+    overflow: hidden;
+    transition: transform 420ms cubic-bezier(0.4, 0, 0.2, 1),
+                opacity   220ms ease;
+}
+
+/* Slide strip away when storyboard is hidden (screenplay active,
+ * solo-screenplay, or storyboard collapsed) — mirrors paint widget. */
+.right-pane-stack:has(.right-pane-slider[data-active="screenplay"]) #quick-toggle-strip,
+.workspace[data-view-mode="solo-screenplay"] #quick-toggle-strip,
+#app-chrome[data-storyboard-collapsed] #quick-toggle-strip
+{
+    transform: translateY(-150%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Reclaim the 108 px of vertical slot the hidden strip otherwise reserves
+ * in the column-flex .right-pane-stack — but ONLY when the screenplay is
+ * active. The storyboard-collapsed case keeps its reserved slot so the
+ * canvas position doesn't jump when the user re-expands the storyboard. */
+.right-pane-stack:has(.right-pane-slider[data-active="screenplay"]) #quick-toggle-strip,
+.workspace[data-view-mode="solo-screenplay"] #quick-toggle-strip
+{
+    margin-top: 0;
+    height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+}
+
+/* Empty strip (before the element is relocated into it) collapses so the
+ * canvas area isn't pushed down by 40px of padding. */
+.quick-toggle-strip:empty
+{
+    padding: 0;
+}
+
+.quick-toggle-strip mps-quick-toggle-sidebar[data-relocated="true"]
+{
+    position: static;
+    width: auto;
+    flex: 0 0 auto;
+    flex-direction: row;
+    padding: 4px 6px;
+    /* keep the website's background/border/blur — they look right here too */
+}
+
+/* Disabled-toggle strikethrough — desktop tightens the website default.
+ * The website draws a 45px / 2px diagonal with a 1px black box-shadow halo.
+ * When 3+ buttons in the column are disabled, the halos stack into a vertical
+ * "ribbon" down the centre of the sidebar (each line's vertical projection
+ * ≈ 32px vs row pitch ≈ 42px, so the halo bridges the gap).
+ * Fixes: shorten to the button's own diagonal (~38px so the line stays inside
+ * the 28×28 button box) and drop the dark halo so adjacent strikes can't
+ * visually fuse. */
+mps-canvas .quick-toggle-btn[data-active="0"]::after,
+.quick-toggle-strip .quick-toggle-btn[data-active="0"]::after
+{
+    width: 36px;
+    box-shadow: none;
+}
+
+/* Centre the widget over the right-pane slider. The slider sits flush-right
+ * with width var(--storyboard-width), so its centre is
+ *   right-edge − storyboard-width / 2.
+ * We pin via `right` (not `left:50%`) so the calculation stays correct as the
+ * seam moves. Top bumped to 8px since we no longer need to clear a 50px-tall
+ * web app top bar — the Tauri title bar is ~40px and the widget sits inside
+ * the storyboard pane below it.
+ */
+mps-paint-widget
+{
+    top: 48px;
+    left: auto;
+    right: calc(var(--storyboard-width, 600px) / 2);
+    transform: translateX(50%);
+    transition: transform 420ms cubic-bezier(0.4, 0, 0.2, 1),
+                opacity   420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+mps-paint-widget[data-dragged]
+{
+    left: var(--pw-x);
+    right: auto;
+    top: var(--pw-y);
+    transform: none;
+}
+
+/* Slide the widget out (up + fade) when the screenplay is showing or the
+ * storyboard pane is collapsed. The widget now lives inside `.widget-clip`,
+ * so the previous `.right-pane-slider ~ mps-paint-widget` sibling combinator
+ * no longer matches — reach into the clip wrapper instead. */
+.right-pane-stack:has(.right-pane-slider[data-active="screenplay"]) ~ .widget-clip mps-paint-widget,
+.workspace[data-view-mode="solo-screenplay"] mps-paint-widget,
+#app-chrome[data-storyboard-collapsed] mps-paint-widget
+{
+    transform: translateX(50%) translateY(-200%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Storyboard pane: the floating paint widget sits at viewport top ~48px and
+ * the relocated quick-toggle strip above the slider reserves the rest of
+ * the painter's vertical band (its margin-top:88px pushes the strip below
+ * the painter). Canvas wrapper just needs a small breathing gap below the
+ * strip — no need for a 96px reserve any more.
+ *
+ * Screenplay surface gets NO offset — the paint widget slides out when
+ * screenplay is active, so there's nothing above it to clear.
+ */
+.right-pane-slider mps-canvas .canvas-wrapper { margin-top: 8px; }
+
+/* Hide the rotated vertical STORYBOARD pin inside the canvas.
+   The [D] topbar button covers that affordance on desktop. */
+mps-canvas .panel-pin[data-panel="storyboard"] { display: none !important; }
+
+/* Clipping container so the paint widget fades UNDER the topbar.
+   The widget itself stays position:fixed; the clip is a positioned overlay
+   that stops at the topbar's bottom edge (40px tall = --top-bar-height).
+   pointer-events:none on the clip so it doesn't capture; widget children
+   reclaim pointer-events:auto. */
+.widget-clip
+{
+    position: fixed;
+    top: var(--top-bar-height, 40px);
+    /* Constrain to the right-pane horizontally so the floating painter
+     * widget clips at the editor seam instead of extending leftward over
+     * the editor when the pane is dragged narrow. */
+    left: calc(100% - var(--storyboard-width, 600px));
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 50;  /* under #app-chrome (~100), over .workspace content */
+}
+.widget-clip > mps-paint-widget
+{
+    pointer-events: auto;
+    /* Override the website's position:fixed so the widget positions relative
+       to the clip (which itself is fixed). The clip starts at --top-bar-height,
+       so subtract that from the original top:48px → 8px. */
+    position: absolute;
+    top: 8px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   <mps-lang-select> — language picker with flag icons.
+   Consumed by the picker shell (large) and the Settings General row
+   (smaller, via --mps-lang-select-width).
+   ────────────────────────────────────────────────────────────────────── */
+
+mps-lang-select
+{
+    --mps-lang-select-width: 220px;
+    position: relative;
+    display: inline-block;
+    width: var(--mps-lang-select-width);
+    font-size: 13px;
+    color: inherit;
+}
+
+mps-lang-select .mls-button
+{
+    width: 100%;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid var(--rule, #2a2a30);
+    background: var(--panel-bg, #1d1d22);
+    color: inherit;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    transition: border-color 120ms ease, background 120ms ease;
+}
+
+mps-lang-select .mls-button:hover
+{
+    border-color: var(--mps-toggle-active-border, #3a86ff);
+    background: var(--btn-hover-bg, #25252b);
+}
+
+mps-lang-select .mls-flag
+{
+    width: 18px;
+    height: 12px;
+    flex: 0 0 auto;
+    border-radius: 2px;
+    object-fit: cover;
+    user-select: none;
+}
+
+mps-lang-select .mls-label
+{
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+mps-lang-select .mls-chev
+{
+    flex: 0 0 auto;
+    opacity: 0.5;
+    font-size: 10px;
+}
+
+mps-lang-select .mls-popover
+{
+    position: absolute;
+    bottom: calc(100% + 4px);   /* anchors above the button by default */
+    left: 0;
+    width: 100%;
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 200;
+    background: var(--panel-bg, #1d1d22);
+    border: 1px solid var(--rule, #2a2a30);
+    border-radius: 8px;
+    padding: 4px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+mps-lang-select[data-popover-side="below"] .mls-popover
+{
+    bottom: auto;
+    top: calc(100% + 4px);
+}
+
+mps-lang-select .mls-item
+{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+}
+
+mps-lang-select .mls-item.is-focused
+{
+    background: var(--btn-hover-bg, #2a2a32);
+}
+
+mps-lang-select .mls-item[aria-selected="true"]
+{
+    color: var(--mps-toggle-active-border, #6ea8ff);
+}
+
+mps-lang-select .mls-check
+{
+    margin-left: auto;
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+
+/* ──────────────────────────────────────────────────────────────────────
+   Picker-only overrides for <mps-lang-select>. The base styles use
+   theme-token defaults that read fine against the Settings dialog (light
+   background). The picker shell paints on a dark surface; override
+   surface colours here without touching the base rules so Settings stays
+   untouched.
+   ────────────────────────────────────────────────────────────────────── */
+
+mps-picker-shell mps-lang-select .mls-button
+{
+    background: #1d1d23;
+    border-color: #313139;
+    color: #e8e8ea;
+}
+
+mps-picker-shell mps-lang-select .mls-button:hover
+{
+    background: #25252b;
+    border-color: #4a4a55;
+}
+
+mps-picker-shell mps-lang-select .mls-label,
+mps-picker-shell mps-lang-select .mls-chev
+{
+    color: #e8e8ea;
+}
+
+mps-picker-shell mps-lang-select .mls-popover
+{
+    background: #1f1f26;
+    border-color: #313139;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+mps-picker-shell mps-lang-select .mls-item
+{
+    color: #e8e8ea;
+}
+
+mps-picker-shell mps-lang-select .mls-item.is-focused
+{
+    background: #2a2a33;
+}
+
+mps-picker-shell mps-lang-select .mls-item[aria-selected="true"]
+{
+    color: #a08bff;
+}
+
+/* Settings-dialog-only: open the popover BELOW the button (not above),
+   matching the recent-projects-screen style. The dialog already centres
+   in the window with empty space underneath, so the popover never clips. */
+.settings-dialog mps-lang-select .mls-popover
+{
+    max-height: 220px;
+    bottom: auto;
+    top: calc(100% + 4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* UP/DOWN caret + hover drop-shadow on the closed button, scoped to the
+   Settings dialog so it doesn't perturb the picker shell. */
+.settings-dialog mps-lang-select .mls-button
+{
+    transition:
+        border-color 120ms ease,
+        background 120ms ease,
+        box-shadow 160ms ease;
+}
+
+.settings-dialog mps-lang-select .mls-button:hover
+{
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: var(--mps-toggle-active-border, #3a86ff);
+}
+
+.settings-dialog mps-lang-select .mls-chev
+{
+    /* Single ▾ swapped for an up/down dual caret so the affordance reads
+       "this opens a list with values on either side of the current one". */
+    font-size: 9px;
+    opacity: 0.7;
+    line-height: 1;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 1px;
+    transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.settings-dialog mps-lang-select .mls-chev::before
+{
+    content: "▴";
+    display: block;
+    line-height: 0.8;
+}
+
+.settings-dialog mps-lang-select .mls-chev::after
+{
+    content: "▾";
+    display: block;
+    line-height: 0.8;
+}
+
+/* Hide the inline ▾ text inside the button so only the ::before / ::after
+   carets render. */
+.settings-dialog mps-lang-select .mls-button .mls-chev
+{
+    font-size: 0;
+}
+.settings-dialog mps-lang-select .mls-button .mls-chev::before,
+.settings-dialog mps-lang-select .mls-button .mls-chev::after
+{
+    font-size: 9px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   Slim, no-caret scrollbars.
+
+   Two parallel rule sets, identical chrome/colour, different widths:
+
+   Set A — `.mps-scrollbar` (Outline, Statistics, settings dialog, lang
+   select popover, picker shell): width 7px.
+
+   Set B — `.cm-scroller, mps-screenplay` (Source/Text Editor + Screenplay
+   editor surfaces): width 8px (~15% wider, gives the thumb a fatter hit
+   target on long scripts).
+
+   The two are split so widening the editing surfaces doesn't drag the
+   small auxiliary panels along. File Explorer carries neither class and
+   uses the browser default — left alone on purpose.
+   ────────────────────────────────────────────────────────────────────── */
+
+/* ---- Set A: .mps-scrollbar (Outline / Statistics / overlays) — 7px ---- */
+
+.mps-scrollbar
+{
+    /* Firefox + emerging Standard */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+
+.mps-scrollbar::-webkit-scrollbar
+{
+    width: 7px;
+    height: 7px;
+    background: transparent;
+}
+
+.mps-scrollbar::-webkit-scrollbar-thumb
+{
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: 3px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+}
+
+.mps-scrollbar::-webkit-scrollbar-thumb:hover
+{
+    background: rgba(0, 0, 0, 0.32);
+    background-clip: padding-box;
+}
+
+.mps-scrollbar::-webkit-scrollbar-track
+{
+    background: transparent;
+}
+
+/* Kill the up/down caret arrows on Windows WebView2. */
+.mps-scrollbar::-webkit-scrollbar-button
+{
+    display: none;
+    height: 0;
+    width: 0;
+}
+
+/* ---- Set B: .cm-scroller, mps-screenplay (Source / Screenplay) — 8px ---- */
+
+.cm-scroller,
+mps-screenplay
+{
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+
+.cm-scroller::-webkit-scrollbar,
+mps-screenplay::-webkit-scrollbar
+{
+    width: 8px;   /* 7 × 1.15 → 8.05, rounded to 8 */
+    height: 8px;
+    background: transparent;
+}
+
+.cm-scroller::-webkit-scrollbar-thumb,
+mps-screenplay::-webkit-scrollbar-thumb
+{
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: 3px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+}
+
+.cm-scroller::-webkit-scrollbar-thumb:hover,
+mps-screenplay::-webkit-scrollbar-thumb:hover
+{
+    background: rgba(0, 0, 0, 0.32);
+    background-clip: padding-box;
+}
+
+.cm-scroller::-webkit-scrollbar-track,
+mps-screenplay::-webkit-scrollbar-track
+{
+    background: transparent;
+}
+
+.cm-scroller::-webkit-scrollbar-button,
+mps-screenplay::-webkit-scrollbar-button
+{
+    display: none;
+    height: 0;
+    width: 0;
+}
+
+/* CM6's @codemirror/lint extension paints a faint SVG underline behind
+ * every diagnostic via .cm-lintRange-{severity}. Its baseTheme uses #999
+ * for the info-severity underline — near-white grey, barely visible on a
+ * white editor background. Override in app.css (loaded AFTER CM6's
+ * dynamically-injected StyleModule) so the rule wins regardless of which
+ * editor mode is active: source mode strips the mangaplayHighlighting()
+ * theme, so an EditorView.theme() override there wouldn't apply in source.
+ * 4×3 SVG wave matches the CM6 baseTheme path. */
+.cm-editor .cm-lintRange-info
+{
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='3'%3E%3Cpath d='m0 2.5 l2 -1.5 l1 0 l2 1.5 l1 0' stroke='%238BC34A' fill='none' stroke-width='.9'/%3E%3C/svg%3E");
+}
+
+html[data-theme="dark"] .cm-editor .cm-lintRange-info
+{
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='3'%3E%3Cpath d='m0 2.5 l2 -1.5 l1 0 l2 1.5 l1 0' stroke='%23AED581' fill='none' stroke-width='.9'/%3E%3C/svg%3E");
+}
+
+/* Picker shell scrollbars sit on a dark surface — use a lighter thumb so
+   it's visible against the near-black background. */
+mps-picker-shell .pkr-left
+{
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+mps-picker-shell .pkr-left::-webkit-scrollbar-thumb
+{
+    background: rgba(255, 255, 255, 0.18);
+    background-clip: padding-box;
+}
+mps-picker-shell .pkr-left::-webkit-scrollbar-thumb:hover
+{
+    background: rgba(255, 255, 255, 0.32);
+    background-clip: padding-box;
+}
+
+/* Picker shell popover (dark) — light thumb so it shows against the dark
+   popover background. Recent-projects screen language drop-down. */
+mps-picker-shell mps-lang-select .mls-popover
+{
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+mps-picker-shell mps-lang-select .mls-popover::-webkit-scrollbar-thumb
+{
+    background: rgba(255, 255, 255, 0.22);
+    background-clip: padding-box;
+}
+mps-picker-shell mps-lang-select .mls-popover::-webkit-scrollbar-thumb:hover
+{
+    background: rgba(255, 255, 255, 0.38);
+    background-clip: padding-box;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   Language drop-down scrollbar — even slimmer (2 px) per the request.
+   Differentiated tones: picker (dark surface, light thumb), settings
+   (light surface, dark thumb).
+   ────────────────────────────────────────────────────────────────────── */
+
+mps-lang-select .mls-popover::-webkit-scrollbar
+{
+    width: 5px;   /* ~2 px slimmer than the .cm-scroller etc. base 7 px */
+    height: 5px;
+}
+
+/* The Settings popover gets an even lighter thumb to match the light
+   dialog surface and stay visually distinct from the picker shell. */
+.settings-dialog mps-lang-select .mls-popover
+{
+    scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+}
+.settings-dialog mps-lang-select .mls-popover::-webkit-scrollbar-thumb
+{
+    background: rgba(0, 0, 0, 0.12);
+    background-clip: padding-box;
+}
+.settings-dialog mps-lang-select .mls-popover::-webkit-scrollbar-thumb:hover
+{
+    background: rgba(0, 0, 0, 0.22);
+    background-clip: padding-box;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   Picker shell titlebar — minimise + close buttons in the top-left.
+   Floats over the picker layout (top-left edge of the dark surface) so
+   the user can minimise or close from the recent-projects screen.
+   The main #window-controls block is hidden while the picker covers the
+   shell, so we render our own minimise/close inside the picker surface.
+   ────────────────────────────────────────────────────────────────────── */
+
+mps-picker-shell .pkr-titlebar
+{
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 20;
+    display: flex;
+    gap: 4px;
+    -webkit-app-region: no-drag;
+}
+
+mps-picker-shell .pkr-tb-btn
+{
+    width: 28px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    color: #c4c4c8;
+    cursor: pointer;
+    padding: 0;
+    transition: background 120ms ease, color 120ms ease;
+}
+
+mps-picker-shell .pkr-tb-btn:hover
+{
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+mps-picker-shell .pkr-tb-btn:active
+{
+    background: rgba(255, 255, 255, 0.14);
+}
+
+mps-picker-shell .pkr-tb-btn.pkr-tb-close:hover
+{
+    background: rgba(196, 43, 28, 1);
+    color: #fff;
+}
+
+/* ============================================================
+ * Dark-theme overrides — surfaces / text / icons that hardcode
+ * light-mode colors and need explicit reskinning for dark.
+ * Cascade order: this block sits at the END of app.css so it
+ * wins against the earlier hardcoded rules at equal specificity.
+ * ============================================================ */
+
+/* Icons in the top-bar, rail, and topbar actions — bright grey
+ * so they actually read against the #363636 chrome. */
+html[data-theme="dark"] .top-bar-icon,
+html[data-theme="dark"] .top-bar-action,
+html[data-theme="dark"] .rail-icon,
+html[data-theme="dark"] .topbar-page-label
+{
+    color: #cfcfcf;
+}
+
+html[data-theme="dark"] .topbar-page-label[data-disabled]
+{
+    color: #666;
+}
+
+html[data-theme="dark"] :where(.top-bar-icon, .rail-icon, .top-bar-action):hover,
+html[data-theme="dark"] .rail-icon[aria-pressed="true"]
+{
+    color: #ffffff;
+}
+
+/* CodeMirror text colour — the editor body hardcodes #1a1a1a. */
+html[data-theme="dark"] .cm-editor .cm-content
+{
+    color: #e8e8e8;
+}
+
+/* Active line + active line gutter highlight — the light value
+ * (--row-highlight #2a2a2a) actually works in dark too, so
+ * nothing to do here. Line numbers inherit the gutter rule's
+ * #bbb which is fine in dark. Leave both untouched. */
+
+/* Editor tab strip. Unselected tabs sit on top of the top-bar
+ * (#363636) — transparent background already inherits that.
+ * Active tab matches the editor surface (#1e1e1e). Tab text colour
+ * is driven by --tab-text (set in dark-theme.css). */
+html[data-theme="dark"] .editor-tab[data-active]
+{
+    background: #1e1e1e;
+}
+
+html[data-theme="dark"] .editor-tab-new
+{
+    color: var(--tab-text);
+}
+
+html[data-theme="dark"] .editor-tab-new:hover
+{
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .editor-tab-close:hover
+{
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Empty-tab CTA overlay hardcodes white background — match
+ * the editor surface so the placeholder reads as part of the
+ * surrounding source area. */
+html[data-theme="dark"] .empty-tab-cta
+{
+    background: #1e1e1e;
+}
+
+html[data-theme="dark"] .right-pane-empty-overlay
+{
+    background: #1e1e1e;
+    color: #7a7a7a;
+}
+
+/* Storyboard desk (background AROUND the white canvas page) — slightly
+ * lighter than the panel-bg (#1e1e1e) so the canvas page reads as a card
+ * floating on a desk rather than sitting flush with the surrounding chrome.
+ * User-requested #262626 (matches --grey-dark in dark-theme.css). The
+ * canvas page (`mps-canvas .canvas-page`) stays white — that's the artist's
+ * drawing surface, untouched.
+ *
+ * Overrides the earlier `mps-canvas, mps-screenplay { background: var(--panel-bg) }`
+ * at app.css:1528 — `--panel-bg` is #1e1e1e in dark theme, which would
+ * otherwise paint the desk and chrome the same colour.
+ *
+ * Also tint `.right-pane-stack` itself so the strip ABOVE mps-canvas
+ * (where #quick-toggle-strip sits — transparent background) doesn't show
+ * the darker #1e1e1e workspace through. Without this tint, the band
+ * between the paint widget cluster and the storyboard canvas page paints
+ * #1e1e1e via the workspace fall-through. */
+html[data-theme="dark"] mps-canvas,
+html[data-theme="dark"] .right-pane-stack
+{
+    background: var(--grey-dark);
+}
+
+/* topbar-divider is hardcoded rgba(0,0,0,0.25) — invisible on
+ * #363636. Switch to a light translucent rule. */
+html[data-theme="dark"] .topbar-divider
+{
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* Editor mode toggle (Source / Text / Visual switcher in the top-right
+ * corner of the editor pane). Default rule reads --mps-button-bg with a
+ * #ffffff fallback — the var isn't defined for dark mode so the white
+ * fallback wins. Match the editor surface and lighten the icon, then
+ * use the same hover treatment as the top-bar/rail icons. */
+html[data-theme="dark"] .mps-editor-mode-toggle-btn
+{
+    color: #cfcfcf;
+}
+
+html[data-theme="dark"] .mps-editor-mode-toggle-btn:hover,
+html[data-theme="dark"] .mps-editor-mode-toggle-btn:focus-visible
+{
+    color: #ffffff;
+}
+
+/* Pane seam rules — left-pane resize handle and editor↔storyboard
+ * workspace seam both paint var(--rule). Dark theme sets --rule to
+ * #1e1e1e so the lines disappear against the editor surface. Repaint
+ * with a visible light grey just for the resting state — hover still
+ * upgrades to --mps-primary via the existing rules. */
+html[data-theme="dark"] .left-pane-resize-handle::after,
+html[data-theme="dark"] .workspace-seam
+{
+    background: #3a3a3a;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+ * UX-mode responsive layout — [data-ux-mode] drives mobile / tablet
+ * variants. Standalone (default) is selector-less; the rules below are
+ * mode-specific overrides only.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* Mobile / tablet: pane visibility gated by data-active-pane. Hidden panes
+ * stay in the DOM so editor + canvas state survive tab swaps; reveal calls
+ * remeasureWorkspace() so CM6 gutters and Konva canvas re-fit the new
+ * inner size. */
+
+:root[data-ux-mode="mobile"] body,
+:root[data-ux-mode="tablet"] body {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+}
+
+mps-mobile-tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--surface-bg, #1c1c1e);
+    color: var(--text-primary, #f0f0f0);
+    border-top: 1px solid var(--border-color, #333);
+    display: none;
+    z-index: 1000;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-around;
+}
+
+:root[data-ux-mode="mobile"] mps-mobile-tabbar,
+:root[data-ux-mode="tablet"] mps-mobile-tabbar {
+    display: flex;
+}
+
+.mps-tabbar-btn {
+    flex: 1 1 0;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 4px;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.mps-tabbar-btn[aria-pressed="true"] {
+    opacity: 1;
+    color: var(--accent-color, #4a9eff);
+}
+
+.mps-tabbar-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.mps-tabbar-label {
+    font-size: 11px;
+    line-height: 1;
+}
+
+/* Mobile: single-pane-at-a-time. Splitters disabled on touch. */
+:root[data-ux-mode="mobile"] .left-pane-resize-handle,
+:root[data-ux-mode="mobile"] .workspace-seam {
+    display: none !important;
+}
+
+:root[data-ux-mode="mobile"][data-active-pane="files"] #left-pane {
+    display: block;
+    flex: 1 1 100%;
+    max-width: 100vw;
+}
+:root[data-ux-mode="mobile"][data-active-pane="files"] .workspace { display: none; }
+
+:root[data-ux-mode="mobile"][data-active-pane="editor"] #left-pane { display: none; }
+:root[data-ux-mode="mobile"][data-active-pane="editor"] .workspace { display: flex; }
+:root[data-ux-mode="mobile"][data-active-pane="editor"] .workspace mps-canvas,
+:root[data-ux-mode="mobile"][data-active-pane="editor"] .workspace .right-pane-stack { display: none; }
+
+:root[data-ux-mode="mobile"][data-active-pane="storyboard"] #left-pane { display: none; }
+:root[data-ux-mode="mobile"][data-active-pane="storyboard"] .workspace { display: flex; }
+:root[data-ux-mode="mobile"][data-active-pane="storyboard"] .workspace mps-editor-host { display: none; }
+
+/* Hide picker window-chrome buttons in mobile (defence in depth). */
+:root[data-ux-mode="mobile"] .pkr-tb-btn,
+:root[data-ux-mode="tablet"] .pkr-tb-btn {
+    display: none !important;
+}
+
+/* Error-router mode-aware positioning. Mobile shifts toasts above the
+ * bottom tabbar and renders modals full-bleed. */
+:root[data-ux-mode="mobile"] .mps-toast-container,
+:root[data-ux-mode="tablet"] .mps-toast-container {
+    top: auto !important;
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+:root[data-ux-mode="mobile"] .confirm-modal-dialog {
+    margin: 24px;
+    max-width: none;
+    width: calc(100vw - 48px);
+}
+
+/* === App Footer (200×30 bottom-right of #app-chrome) ===================
+ * Anchored bottom-right of #app-chrome, over .app-body. Three children:
+ *   .footer-mode-btn   — opens a 3-row mode sub-menu (Source/Text/Visual)
+ *   .footer-counts     — "{N} words · {N} chars" for the active editor
+ *   .footer-gear       — Google Docs sync gear (state-coloured)
+ * Hidden in mobile / tablet UX modes (those modes own their own tabbar).
+ * The sync-gear colour states ported from the old .editor-footer block.
+ */
+#app-footer
+{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    width: 200px;
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    background: var(--panel-bg, #ffffff);
+    border-top: 1px solid var(--rule, #e0e0e0);
+    border-left: 1px solid var(--rule, #e0e0e0);
+    border-top-left-radius: 8px;
+    user-select: none;
+    box-sizing: border-box;
+    color: var(--row-text, #5a5a5a);
+}
+
+#app-footer[hidden] { display: none; }
+
+:root[data-ux-mode="mobile"] #app-footer,
+:root[data-ux-mode="tablet"] #app-footer { display: none; }
+
+#app-footer .footer-mode-btn,
+#app-footer .footer-gear
+{
+    width: 32px;
+    height: 22px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    border-radius: 3px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.85;
+    transition: opacity 120ms, background 120ms, color 120ms;
+    line-height: 0;
+}
+
+#app-footer .footer-mode-btn:hover,
+#app-footer .footer-gear:hover
+{
+    opacity: 1;
+    background: var(--btn-hover-bg, #e8eaee);
+}
+
+#app-footer .footer-mode-btn:disabled,
+#app-footer .footer-gear:disabled
+{
+    cursor: default;
+    opacity: 0.35;
+}
+
+#app-footer .footer-counts
+{
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+    font-size: 11px;
+    color: var(--row-text, #5a5a5a);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Sync gear state colour (moved from .editor-footer block in app-modals.css). */
+#app-footer .footer-gear[data-state="unsynced"]     { color: var(--row-badge, #9a9a9a); }
+#app-footer .footer-gear[data-state="idle"]         { color: var(--mps-primary, #007aff); }
+#app-footer .footer-gear[data-state="checking"]     { color: var(--mps-primary, #007aff); opacity: 0.6; }
+#app-footer .footer-gear[data-state="local-ahead"]  { color: #34c759; }
+#app-footer .footer-gear[data-state="remote-ahead"] { color: var(--danger-fg, #c62828); }
+#app-footer .footer-gear[data-state="error"]        { color: var(--row-badge, #9a9a9a); }
+
+/* ── Mode Menu (3-row sub-menu above the Mode Button) ─────────────── */
+.footer-mode-menu
+{
+    position: fixed;
+    z-index: 10000;
+    width: 200px;
+    background: var(--panel-bg, #ffffff);
+    color: var(--row-text, #5a5a5a);
+    border: 1px solid var(--rule, #e0e0e0);
+    border-radius: 8px;
+    box-shadow: var(--shadow-3, 0 4px 16px rgba(0, 0, 0, 0.12));
+    padding: 4px;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.footer-mode-menu[hidden] { display: none; }
+
+.footer-mode-menu-row
+{
+    display: grid;
+    grid-template-columns: 24px 1fr 20px;
+    align-items: center;
+    height: 36px;
+    padding: 0 8px;
+    border: 0;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    color: inherit;
+    font-size: 13px;
+    text-align: left;
+}
+
+.footer-mode-menu-row:hover
+{
+    background: var(--btn-hover-bg, #e8eaee);
+}
+
+.footer-mode-menu-icon
+{
+    line-height: 0;
+    color: var(--row-text, #5a5a5a);
+}
+
+.footer-mode-menu-row[data-active] .footer-mode-menu-icon
+{
+    color: var(--mps-primary, #007aff);
+}
+
+.footer-mode-menu-label
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.footer-mode-menu-tick
+{
+    line-height: 0;
+    visibility: hidden;
+    color: var(--mps-primary, #007aff);
+}
+
+.footer-mode-menu-row[data-active] .footer-mode-menu-tick
+{
+    visibility: visible;
+}
+
+

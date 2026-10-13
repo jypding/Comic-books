@@ -1,0 +1,76 @@
+﻿// guideLayoutListener.js
+// A 方案：左图右文由 Guide 控制；上图下文固定 40/60
+(function () {
+    "use strict";
+    const TOP_BOTTOM_TEXT_RATIO = 0.4;
+
+    function getCurrentPageId() {
+        const params = new URLSearchParams(location.search);
+        return params.get("page") || "p.0000";
+    }
+
+    function getLayoutMode() {
+        const c = document.body.classList;
+        if (c.contains("layout-left-right")) return "left-right";
+        if (c.contains("layout-fullscreen")) return "fullscreen";
+        return "top-bottom";
+    }
+
+    function applyRect(page) {
+        const panel = document.getElementById("text-panel");
+        if (!panel) return;
+        panel.style.position = "";
+        panel.style.left = "";
+        panel.style.top = "";
+        panel.style.width = "";
+        panel.style.height = "";
+        panel.style.zIndex = "";
+
+        const fullW = (page.fullUI && page.fullUI.width) || 1920;
+        const leftW = (page.leftText && page.leftText.width) || 0;
+        const textRatioW = Math.max(0.1, Math.min(0.9, leftW / fullW));
+
+        const body = document.body;
+        body.style.setProperty("--lr-text-w",   Math.round(textRatioW * 100) + "%");
+        body.style.setProperty("--lr-canvas-w", Math.round((1 - textRatioW) * 100) + "%");
+        body.style.setProperty("--tb-text-h",   Math.round(TOP_BOTTOM_TEXT_RATIO * 100) + "%");
+        body.style.setProperty("--tb-canvas-h", Math.round((1 - TOP_BOTTOM_TEXT_RATIO) * 100) + "%");
+
+        window.dispatchEvent(new Event("resize"));
+        console.log("[GuideLayout] " + getCurrentPageId() +
+            " | 左图右文: 文 " + Math.round(textRatioW * 100) + "% / 图 " + Math.round((1 - textRatioW) * 100) + "%" +
+            " | 上图下文: 文 " + Math.round(TOP_BOTTOM_TEXT_RATIO * 100) + "% / 图 " + Math.round((1 - TOP_BOTTOM_TEXT_RATIO) * 100) + "%" +
+            " | 模式: " + getLayoutMode());
+    }
+
+    async function loadGuideRects() {
+        try {
+            const res = await fetch("./guide_rect.json?t=" + Date.now(), { cache: "no-store" });
+            if (!res.ok) return;
+            const data = await res.json();
+            const pageId = getCurrentPageId();
+            const page = data[pageId] || data[pageId.replace(/\./g, "")];
+            if (!page || !page.leftText) {
+                console.warn("[GuideLayout] 找不到页 " + pageId);
+                return;
+            }
+            applyRect(page);
+        } catch (e) {
+            console.warn("[GuideLayout] fetch 失败:", e.message);
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadGuideRects);
+    } else {
+        loadGuideRects();
+    }
+
+    document.addEventListener("click", (e) => {
+        if (e.target.closest("#layout-nav button")) {
+            setTimeout(loadGuideRects, 100);
+        }
+    });
+
+    window.__reloadGuideLayout = loadGuideRects;
+})();

@@ -54,15 +54,15 @@ IMAGE_SILHOUETTE_MONK = os.path.join(IMAGES_DIR, "monk_silhouette.png")
 IMAGE_SILHOUETTE_DOG = os.path.join(IMAGES_DIR, "joshu_dog.png")
 IMAGE_PAPER = os.path.join(IMAGES_DIR, "paper_texture.webp")
 
-# 所需对象名 (保留既有命名体系，供前端/导出引用)
-OBJ_ELDER = "Joshu_Elder"
-OBJ_DOG = "JoshuDog"
-OBJ_MONK = "Questioning_Monk"
-OBJ_PATH = "ZenPath"
-OBJ_PAPER = "Background_Paper"
-OBJ_UI = "UI_Panel_Guide"
-CAM_MAIN = "Camera_Main"
-CAM_BOOK = "BookCamera"
+# 所需对象名 (半中文命名：英文主干 + 中文描述，保留英文主干供插件按名查找)
+OBJ_ELDER = "Joshu_Elder.老僧"
+OBJ_DOG = "JoshuDog.狗子"
+OBJ_MONK = "Questioning_Monk.提问僧"
+OBJ_PATH = "ZenPath.禅径"
+OBJ_PAPER = "Background_Paper.背景纸"
+OBJ_UI = "UI_Panel_Guide.排版参考"
+CAM_MAIN = "Camera_Main.主相机"
+CAM_BOOK = "BookCamera.书页相机"
 
 REQUIRED_NAMES = [OBJ_ELDER, OBJ_DOG, OBJ_MONK, OBJ_PATH, OBJ_PAPER, OBJ_UI,
                   CAM_MAIN, CAM_BOOK]
@@ -226,44 +226,44 @@ def build_scene():
     purge_all_datablocks()
 
     # 在需要的地方按名字拿/建集合
-    coll_characters = find_collection(scene, "Characters")
-    coll_environment = find_collection(scene, "Environment")
-    coll_interactive = find_collection(scene, "Interactive_Objects")
-    coll_production = find_collection(scene, "Production")
+    coll_characters = find_collection(scene, "角色 主体模型组")
+    coll_environment = find_collection(scene, "地面 / 背景底板")
+    coll_interactive = find_collection(scene, "交互触发动作元素")
+    coll_production = find_collection(scene, "导出配置项")
     coll_camera = find_collection(scene, "Camera")
     coll_scene = scene.collection
 
     # 4.6 UI 面板参考 (UI_Panel_Guide) -> Production
-    mat_ui = bpy.data.materials.new("Mat_UI_Guide")
+    mat_ui = bpy.data.materials.new("Mat_UI_Guide.排版参考")
     mat_ui.use_nodes = True
     bsdf_ui = _find_bsdf(mat_ui)
     if bsdf_ui is None:
-        raise RuntimeError("材质 Mat_UI_Guide 缺少 Principled BSDF")
+        raise RuntimeError("材质 Mat_UI_Guide.排版参考 缺少 Principled BSDF")
     bsdf_ui.inputs["Base Color"].default_value = (0.1, 0.1, 0.1, 1.0)
     mat_ui.surface_render_method = 'DITHERED'
 
     # 4.1 水墨背景纸面 (不透明, DITHERED)
-    mat_paper = ink_material("Mat_Background_Paper", IMAGE_PAPER, alpha=False)
+    mat_paper = ink_material("Mat_Background_Paper.背景纸", IMAGE_PAPER, alpha=False)
     paper = new_plane(OBJ_PAPER, 20, (0, 0, -0.1), coll=coll_environment)
     paper.data.materials.append(mat_paper)
 
     # 4.2 禅意地面 ZenPath (不透明, DITHERED)
-    mat_path = ink_material("Mat_ZenPath", IMAGE_PAPER, alpha=False)
+    mat_path = ink_material("Mat_ZenPath.禅径", IMAGE_PAPER, alpha=False)
     path = new_plane(OBJ_PATH, 40, (0, 0, 0.0), scale=(1.0, 5.0, 1.0), coll=coll_environment)
     path.data.materials.append(mat_path)
 
     # 4.3 赵州法师 (Joshu_Elder, 透明水墨)
-    mat_elder = ink_material("Mat_Joshu_Elder", IMAGE_SILHOUETTE_ELDER, alpha=True)
+    mat_elder = ink_material("Mat_Joshu_Elder.老僧", IMAGE_SILHOUETTE_ELDER, alpha=True)
     elder = new_plane(OBJ_ELDER, 2.4, (-2.0, 2.0, 0.85), rotation=(radians(90), 0, 0), coll=coll_characters)
     elder.data.materials.append(mat_elder)
 
     # 4.4 提问僧 (Questioning_Monk, 透明水墨)
-    mat_monk = ink_material("Mat_Questioning_Monk", IMAGE_SILHOUETTE_MONK, alpha=True)
+    mat_monk = ink_material("Mat_Questioning_Monk.提问僧", IMAGE_SILHOUETTE_MONK, alpha=True)
     monk = new_plane(OBJ_MONK, 2.0, (1.0, 2.0, 0.8), rotation=(radians(90), 0, 0), coll=coll_characters)
     monk.data.materials.append(mat_monk)
 
     # 4.5 狗子 (JoshuDog, 透明水墨)
-    mat_dog = ink_material("Mat_Dog_Sample", IMAGE_SILHOUETTE_DOG, alpha=True)
+    mat_dog = ink_material("Mat_Dog_Sample.狗子", IMAGE_SILHOUETTE_DOG, alpha=True)
     dog = new_plane(OBJ_DOG, 1.6, (2.0, 0.0, 0.5), rotation=(radians(90), 0, 0), coll=coll_interactive)
     dog.data.materials.append(mat_dog)
 
@@ -281,24 +281,24 @@ def build_scene():
     cam_main.location = (0, -15, 10)
     cam_main.rotation_euler = (1.1, 0, 0)
     scene.camera = cam_main
-    print("[mmdd111] 主相机 Camera_Main 已创建")
+    print("[mmdd111] 主相机 Camera_Main.主相机 已创建")
 
     cam_data_book = bpy.data.cameras.new(CAM_BOOK)
     cam_book = bpy.data.objects.new(CAM_BOOK, cam_data_book)
     coll_camera.objects.link(cam_book)
     cam_book.location = (8, -8, 4)
     cam_book.rotation_euler = (1.2, 0, 0.78)
-    print("[mmdd111] 书页相机 BookCamera 已创建")
+    print("[mmdd111] 书页相机 BookCamera.书页相机 已创建")
 
 
     # 6. 时间标记
     scene.timeline_markers.clear()
-    scene.timeline_markers.new('Case_Start', frame=1)
-    scene.timeline_markers.new('Mu_Moment', frame=50)
-    scene.timeline_markers.new('Comment_Start', frame=100)
+    scene.timeline_markers.new('Case_Start.案发', frame=1)
+    scene.timeline_markers.new('Mu_Moment.无字', frame=50)
+    scene.timeline_markers.new('Comment_Start.评注', frame=100)
     scene.frame_start = 1
     scene.frame_end = 150
-    print("[mmdd111] 时间标记: Case_Start/Mu_Moment/Comment_Start")
+    print("[mmdd111] 时间标记: Case_Start.案发 / Mu_Moment.无字 / Comment_Start.评注")
 
 
 def save_and_export():

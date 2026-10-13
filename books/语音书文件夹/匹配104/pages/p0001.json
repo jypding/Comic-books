@@ -1,0 +1,42 @@
+{
+  "page_id": "p0001",
+  "pageId": "p0001",
+  "mode": "voice",
+  "title": "p.0001.w1h1",
+  "body": "",
+  "layout": "standard",
+  "longText": "",
+  "model": {
+    "glb": "scene_p0001.glb",
+    "splat": null
+  },
+  "audio_cues": [],
+  "ui_objects": [
+    {
+      "name": "TXT_Title.004",
+      "role": "title",
+      "layout": "image-text-bottom",
+      "action": ""
+    },
+    {
+      "name": "TXT_Body.004",
+      "role": "body",
+      "layout": "image-text-bottom",
+      "action": ""
+    },
+    {
+      "name": "BTN_PREV.004",
+      "role": "button",
+      "layout": "image-text-bottom",
+      "action": "page_prev"
+    },
+    {
+      "name": "BTN_NEXT.004",
+      "role": "button",
+      "layout": "image-text-bottom",
+      "action": "page_next"
+    }
+  ],
+  "next": null,
+  "prev": null
+}

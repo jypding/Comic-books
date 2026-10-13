@@ -59,6 +59,9 @@
                 
                 this.width = fullPageData.width || this.width;
                 this.height = fullPageData.height || this.height;
+                // 气泡条带需要按 Blender 场景名过滤；this.pageData 只是 index.json
+                // 摘要，没有 scene，所以在这里单独留一份。
+                this.blenderScene = fullPageData.scene || null;
 
                 if (fullPageData.model && fullPageData.model.glb) {
                     const glbUrl = `pages/${this.pageId}/${fullPageData.model.glb}?t=${Date.now()}`;
@@ -497,6 +500,15 @@
         frame.initControls(renderer.domElement);
         frame.load();
         pageIndicator.textContent = `Page ${idx + 1} / ${pages.length}`;
+        // 换页后按新 Scene 重绘气泡条带
+        if (typeof refreshBubblesForCurrentPage === "function") {
+            refreshBubblesForCurrentPage();
+        }
+    }
+
+    function refreshBubblesForCurrentPage() {
+        try { if (typeof renderBubbleStrip === "function") renderBubbleStrip(); }
+        catch (e) { }
     }
 
     function initScrollingMode() {
@@ -696,5 +708,120 @@
         loadingOverlay.style.display = 'none';
     }
 
+    /* ================= 气泡条带（新增，不影响既有逻辑） ================= */
+    let bubbleDataCache = null;
+
+    function bubbleSceneParam() {
+        try {
+            const m = new URLSearchParams(window.location.search).get("scene");
+            return m ? m : null;
+        } catch (e) { return null; }
+    }
+
+    function bubbleSceneForCurrentFrame() {
+        // 1) URL 上的 ?scene=...  2) 当前页 page.json 的 scene 字段
+        const param = bubbleSceneParam();
+        if (param) return param;
+        try {
+            const f = frameViews[currentIdx];
+            // this.pageData 只是 index.json 摘要，没有 scene；真正的 page.json
+            // 在 loadPage() 里存到了 this.blenderScene。
+            if (f) {
+                if (f.blenderScene) return f.blenderScene;
+                if (f.pageData && f.pageData.scene) return f.pageData.scene;
+            }
+        } catch (e) { }
+        return null;
+    }
+
+    function fmtSec(v) {
+        const n = Number(v) || 0;
+        return n.toFixed(2) + "s";
+    }
+
+    function renderBubbleStrip() {
+        const strip = document.getElementById("bubble-strip");
+        if (!strip) return;
+        strip.innerHTML = "";
+
+        const all = (bubbleDataCache && bubbleDataCache.bubbles) || [];
+        if (!all.length) return;
+
+        const scene = bubbleSceneForCurrentFrame();
+        const list = scene ? all.filter(b => b.scene === scene) : [];
+
+        if (!list.length) {
+            const note = document.createElement("div");
+            note.className = "bubble-strip-title";
+            note.textContent = scene ? ("本 Scene 无气泡：" + scene) : "本 Scene 无气泡";
+            strip.appendChild(note);
+            console.log("[BUBBLES] scene=" + scene + " matched 0 bubbles");
+            return;
+        }
+
+        const title = document.createElement("div");
+        title.className = "bubble-strip-title";
+        title.textContent = "气泡 " + list.length + " 个" + (scene ? "（" + scene + "）" : "");
+        strip.appendChild(title);
+
+        for (const b of list) {
+            const card = document.createElement("div");
+            card.className = "bubble-card";
+            card.setAttribute("data-bubble-id", b.id || "");
+
+            const text = document.createElement("div");
+            text.className = "bc-text";
+            text.textContent = b.text || "（无文字）";
+            card.appendChild(text);
+
+            const meta = document.createElement("div");
+            meta.className = "bc-meta";
+            const mk = (label, value) => {
+                const sp = document.createElement("span");
+                sp.appendChild(document.createTextNode(label + " "));
+                const bb = document.createElement("b");
+                bb.textContent = value;
+                sp.appendChild(bb);
+                return sp;
+            };
+            meta.appendChild(mk("说话人", b.speaker || "（未指定）"));
+            meta.appendChild(mk("音色", b.voice || "（默认）"));
+            meta.appendChild(mk("时长", fmtSec(b.duration_sec)));
+            card.appendChild(meta);
+
+            if (b.audio) {
+                const au = document.createElement("audio");
+                au.controls = true;
+                au.preload = "none";
+                au.src = b.audio;
+                card.appendChild(au);
+            } else {
+                const na = document.createElement("div");
+                na.className = "bc-noaudio";
+                na.textContent = "（无配音文件）";
+                card.appendChild(na);
+            }
+
+            strip.appendChild(card);
+        }
+        console.log("[BUBBLES] scene=" + scene + " rendered " + list.length + " cards");
+    }
+
+    async function loadBubbleData() {
+        try {
+            const res = await fetch("bubble_data.json?t=" + Date.now());
+            if (!res.ok) {
+                console.log("[BUBBLES] bubble_data.json not found");
+                return;
+            }
+            bubbleDataCache = await res.json();
+            renderBubbleStrip();
+        } catch (err) {
+            console.log("[BUBBLES] fetch failed:", err);
+        }
+    }
+    /* ==================================================================== */
+    loadBubbleData();
     init();
 })();
+

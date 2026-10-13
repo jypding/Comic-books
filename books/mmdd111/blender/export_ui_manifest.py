@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # 配置
     BOOK_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     UI_COLLECTION = "GUIDES"
-    CAMERA_NAME = "Camera_Main"
+    CAMERA_NAME = "Camera_Main.主相机"
     ui_result = extract_ui_data(UI_COLLECTION, CAMERA_NAME)
     if ui_result:
         write_manifest(BOOK_FOLDER, ui_result)

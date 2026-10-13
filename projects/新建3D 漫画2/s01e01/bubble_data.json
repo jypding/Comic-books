@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "bubbles": [
+    {
+      "id": "bubble_550500",
+      "type": "caption",
+      "text": "逆向分析二进制文件",
+      "speaker": "",
+      "voice": "",
+      "audio": "audio/bubble_550500.wav",
+      "duration_sec": 2.96,
+      "start_sec": 0.0,
+      "end_sec": 2.96,
+      "scene": "p.0000.w100h100"
+    },
+    {
+      "id": "bubble_388200",
+      "type": "wordballoon",
+      "text": "逆向分析一切",
+      "speaker": "",
+      "voice": "",
+      "audio": "audio/bubble_388200.wav",
+      "duration_sec": 2.64,
+      "start_sec": 0.0,
+      "end_sec": 2.64,
+      "scene": "p.0001.w100h100"
+    },
+    {
+      "id": "bubble_325500",
+      "type": "sfx",
+      "text": "可以重建",
+      "speaker": "",
+      "voice": "",
+      "audio": "",
+      "duration_sec": 0.0,
+      "start_sec": 0.0,
+      "end_sec": 0.0,
+      "scene": "p.0000.w100h100"
+    }
+  ]
+}

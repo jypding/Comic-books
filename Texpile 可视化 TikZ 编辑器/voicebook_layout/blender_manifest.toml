@@ -1,0 +1,20 @@
+schema_version = "1.0.0"
+blender_version_min = "4.2.0"
+version = "0.1.0"
+id = "voicebook_layout"
+name = "VoiceBook Layout [语音书排版]"
+tagline = "VoiceBook visual layout editor for image editor"
+license = ["SPDX:GPL-3.0-or-later"]
+maintainer = "VoiceBook"
+type = "add-on"
+tags = ["Paint", "Compositing"]
+
+[permissions]
+files = "Read/Write layout JSON and base images"
+
+[build]
+paths_exclude_pattern = [
+    "__pycache__/",
+    ".git/",
+    "*.zip",
+]

@@ -1,0 +1,95 @@
+/* VoiceBook V1 Boot
+ * 主动 fetch ./voicebook/<pageId>.json；有就接管显示，没有就完全退出
+ * pageId 从 URL ?page=xxx 读取（主），其他来源作为 fallback
+ */
+(function () {
+    "use strict";
+    const V1_DIR = "./voicebook/";
+    let renderer = null;
+    let activePageId = "";
+
+    function getMainContent() {
+        return document.getElementById("main-content");
+    }
+
+    function getCurrentPageId() {
+        // 主：从 URL 拿
+        const p = new URLSearchParams(location.search);
+        const fromUrl = p.get("page");
+        if (fromUrl) return fromUrl;
+
+        // fallback
+        if (typeof window.getCurrentPageId === "function") return window.getCurrentPageId();
+        if (window.currentPageId) return window.currentPageId;
+        const el = document.querySelector("[data-page-id]");
+        return el ? el.dataset.pageId : "";
+    }
+
+    function ensureFullstage() {
+        let stage = document.getElementById("vb-fullstage");
+        if (!stage) {
+            stage = document.createElement("div");
+            stage.id = "vb-fullstage";
+            // 挂到 body 而非 #main-content，避免 flex 布局干扰 position:fixed
+            document.body.appendChild(stage);
+        }
+        return stage;
+    }
+
+    function setV1Mode(enabled) {
+        document.body.classList.toggle("vb-v1-mode", enabled);
+    }
+
+    async function loadV1(pageId) {
+        if (!pageId) return null;
+        const url = V1_DIR + encodeURIComponent(pageId) + ".json?t=" + Date.now();
+        try {
+            const res = await fetch(url, { cache: "no-store" });
+            if (!res.ok) return null;
+            const v1 = await res.json();
+            if (!v1 || !v1.canvas || !v1.layout || !v1.textBoxes) {
+                console.warn("[VoiceBook PASS1] V1 结构无效:", pageId);
+                return null;
+            }
+            return v1;
+        } catch (e) {
+            console.debug("[VoiceBook PASS1] 无 V1 文件:", pageId);
+            return null;
+        }
+    }
+
+    function activate(pageId, v1) {
+        const stage = ensureFullstage();
+        if (!stage) return;
+        if (!renderer) renderer = new window.VoiceBookV1Renderer(stage);
+        renderer.setData(v1);
+        activePageId = pageId;
+        setV1Mode(true);
+        console.log("[VoiceBook PASS1] V1 已启用:", pageId);
+    }
+
+    async function checkCurrentPage() {
+        const pageId = getCurrentPageId();
+        if (!pageId || pageId === activePageId) return;
+        const v1 = await loadV1(pageId);
+        if (!v1) {
+            if (activePageId) {
+                setV1Mode(false);
+                activePageId = "";
+            }
+            return;
+        }
+        activate(pageId, v1);
+    }
+
+    function start() {
+        checkCurrentPage();
+        setInterval(checkCurrentPage, 500);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start);
+    } else {
+        start();
+    }
+})();

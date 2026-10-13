@@ -1,0 +1,354 @@
+﻿/**
+ * VoiceBook V1 像素级渲染器 - PASS2 修复3D交互版
+ * 基准：1920 × 1080 逻辑画布，左上角原点，单位：像素
+ * 修复：3D容器与缩放层分离，保留原生鼠标交互
+ */
+(function () {
+  'use strict';
+
+  const CANVAS_BASE_W = 1920;
+  const CANVAS_BASE_H = 1080;
+  const STAGE_ID = 'vb-fullstage';
+  const CANVAS_ID = 'vb-v1-canvas';
+  const MODE_CLASS = 'vb-v1-mode';
+
+  let _canvasOriginalParent = null;
+  let _canvasOriginalNextSibling = null;
+  let _currentSceneArea = null;
+
+  function injectStyles() {
+    if (document.getElementById('vb-v1-style')) return;
+
+    const css = `
+      #${STAGE_ID} {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 50;
+        pointer-events: none;
+        display: none;
+      }
+
+      body.${MODE_CLASS} #text-panel {
+        display: none !important;
+      }
+
+      body.${MODE_CLASS} #canvas-container {
+        position: absolute !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        flex: none !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        z-index: 1;
+      }
+
+      body.${MODE_CLASS} #${STAGE_ID} {
+        display: block;
+      }
+
+      #${CANVAS_ID} {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: ${CANVAS_BASE_W}px;
+        height: ${CANVAS_BASE_H}px;
+        transform-origin: top left;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .vb-v1-text-block {
+        position: absolute;
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+        word-wrap: break-word;
+        overflow: hidden;
+        user-select: none;
+        pointer-events: auto;
+      }
+
+      .vb-v1-audio-btn {
+        position: absolute;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        pointer-events: auto;
+      }
+
+      .vb-v1-debug-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.5;
+        pointer-events: none;
+        object-fit: cover;
+      }
+    `;
+
+    const styleEl = document.createElement('style');
+    styleEl.id = 'vb-v1-style';
+    styleEl.textContent = css;
+    document.head.appendChild(styleEl);
+  }
+
+  class VoiceBookV1Renderer {
+    constructor() {
+      this.currentPage = null;
+      this.scale = 1;
+      this.stage = null;
+      this.canvas = null;
+
+      injectStyles();
+      this._mountStage();
+      this._bindResize();
+    }
+
+    _mountStage() {
+      if (document.getElementById(STAGE_ID)) {
+        this.stage = document.getElementById(STAGE_ID);
+        this.canvas = document.getElementById(CANVAS_ID);
+        return;
+      }
+
+      this.stage = document.createElement('div');
+      this.stage.id = STAGE_ID;
+
+      this.canvas = document.createElement('div');
+      this.canvas.id = CANVAS_ID;
+
+      this.stage.appendChild(this.canvas);
+      document.body.appendChild(this.stage);
+    }
+
+    _updateScale() {
+      if (!this.stage) return;
+
+      const stageW = window.innerWidth;
+      const stageH = window.innerHeight;
+
+      const scaleX = stageW / CANVAS_BASE_W;
+      const scaleY = stageH / CANVAS_BASE_H;
+      this.scale = Math.min(scaleX, scaleY);
+
+      this.canvas.style.transform = `scale(${this.scale})`;
+
+      console.log('[VoiceBook V1] scale =', this.scale.toFixed(3), 'viewport =', stageW + 'x' + stageH);
+
+      if (_currentSceneArea) {
+        this._updateSceneContainerPosition();
+      }
+
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
+    }
+
+    _bindResize() {
+      window.addEventListener('resize', () => this._updateScale());
+    }
+
+    enable() {
+      document.body.classList.add(MODE_CLASS);
+
+      const canvasContainer = document.getElementById('canvas-container');
+      if (canvasContainer && !_canvasOriginalParent) {
+        _canvasOriginalParent = canvasContainer.parentNode;
+        _canvasOriginalNextSibling = canvasContainer.nextSibling;
+        this.stage.insertBefore(canvasContainer, this.canvas);
+      }
+
+      setTimeout(() => this._updateScale(), 0);
+    }
+
+    disable() {
+      document.body.classList.remove(MODE_CLASS);
+
+      const canvasContainer = document.getElementById('canvas-container');
+      if (canvasContainer && _canvasOriginalParent) {
+        _canvasOriginalParent.insertBefore(canvasContainer, _canvasOriginalNextSibling);
+        _canvasOriginalParent = null;
+        _canvasOriginalNextSibling = null;
+        _currentSceneArea = null;
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
+      }
+
+      this.clear();
+    }
+
+    renderPage(pageData) {
+      if (!pageData) return;
+      this.enable();
+      this.currentPage = pageData;
+      this.clear();
+
+      if (pageData.layout && pageData.layout.sceneArea) {
+        _currentSceneArea = pageData.layout.sceneArea;
+        this._updateSceneContainerPosition();
+      }
+
+      if (pageData.textBoxes) {
+        this._renderTextBoxes(pageData.textBoxes);
+      }
+
+      if (pageData.audioButton) {
+        this._renderAudioButton(pageData.audioButton);
+      }
+    }
+
+
+    // 同步 Blender 相机参数到 Three.js
+    _syncCamera(cameraConfig) {
+      const camera = window.threeCamera;
+      if (!camera || !cameraConfig) return;
+
+      const p = cameraConfig.position || {};
+      const t = cameraConfig.target || {};
+
+      // Blender 世界 (X右, Y前, Z上) → Three.js 世界 (X右, Y上, Z后)
+      // three.x = bx, three.y = bz, three.z = -by
+      camera.position.set(
+        p.x || 0,
+        p.z || 0,
+        -(p.y || 0)
+      );
+
+      // 用 lookAt 避开欧拉角顺序问题
+      const lookAt = new (window.THREE && window.THREE.Vector3 ? window.THREE.Vector3 : Object)(
+        t.x || 0,
+        t.z || 0,
+        -(t.y || 0)
+      );
+      // 如果 THREE.Vector3 不可用，用普通对象走 camera.lookAt(x,y,z)
+      if (window.THREE && window.THREE.Vector3) {
+        camera.lookAt(lookAt);
+      } else {
+        camera.lookAt(t.x || 0, t.z || 0, -(t.y || 0));
+      }
+
+      if (cameraConfig.fov) {
+        camera.fov = cameraConfig.fov;
+      }
+      if (cameraConfig.near) camera.near = cameraConfig.near;
+      if (cameraConfig.far)  camera.far  = cameraConfig.far;
+
+      // aspect 与 sceneArea 匹配
+      if (_currentSceneArea && _currentSceneArea.h) {
+        camera.aspect = _currentSceneArea.w / _currentSceneArea.h;
+      }
+      camera.updateProjectionMatrix();
+
+      console.log('[VoiceBook V1] camera synced:', {
+        pos: [p.x, p.z, -p.y],
+        tgt: [t.x, t.z, -t.y],
+        fov: cameraConfig.fov
+      });
+    }
+
+    // 计算3D容器的实际屏幕像素位置
+        _updateSceneContainerPosition() {
+      const canvasContainer = document.getElementById('canvas-container');
+      if (!canvasContainer || !_currentSceneArea) return;
+
+      const screenX = _currentSceneArea.x * this.scale;
+      const screenY = _currentSceneArea.y * this.scale;
+      const screenW = _currentSceneArea.w * this.scale;
+      const screenH = _currentSceneArea.h * this.scale;
+
+      canvasContainer.style.left = screenX + 'px';
+      canvasContainer.style.top = screenY + 'px';
+      canvasContainer.style.width = screenW + 'px';
+      canvasContainer.style.height = screenH + 'px';
+
+      // 让 Three.js 内部 canvas 尺寸与容器同步
+      const renderer = window.threeRenderer;
+      if (renderer && renderer.setSize) {
+        try {
+          renderer.setSize(Math.max(1, Math.floor(screenW)), Math.max(1, Math.floor(screenH)), false);
+        } catch (e) {
+          console.warn('[VoiceBook V1] renderer.setSize 失败:', e);
+        }
+      }
+      const camera = window.threeCamera;
+      if (camera && _currentSceneArea.h) {
+        camera.aspect = _currentSceneArea.w / _currentSceneArea.h;
+        camera.updateProjectionMatrix();
+      }
+    }
+
+    _renderTextBoxes(textBoxes) {
+      Object.values(textBoxes).forEach(block => {
+        if (!block) return;
+
+        const el = document.createElement('div');
+        el.className = 'vb-v1-text-block';
+        if (block.id) el.dataset.blockId = block.id;
+
+        el.style.left = block.x + 'px';
+        el.style.top = block.y + 'px';
+        el.style.width = block.w + 'px';
+        el.style.height = block.h + 'px';
+
+        if (block.fontSize) el.style.fontSize = block.fontSize + 'px';
+        if (block.lineHeight) el.style.lineHeight = block.lineHeight + 'px';
+        if (block.fontFamily) el.style.fontFamily = block.fontFamily;
+        if (block.color) el.style.color = block.color;
+        if (block.textAlign) el.style.textAlign = block.textAlign;
+
+        el.textContent = block.text || '';
+        this.canvas.appendChild(el);
+      });
+    }
+
+    _renderAudioButton(btnConfig) {
+      const btn = document.createElement('div');
+      btn.className = 'vb-v1-audio-btn';
+
+      btn.style.left = btnConfig.x + 'px';
+      btn.style.top = btnConfig.y + 'px';
+      btn.style.width = btnConfig.w + 'px';
+      btn.style.height = btnConfig.h + 'px';
+
+      btn.textContent = '🔊';
+      btn.title = '播放音频';
+
+      this.canvas.appendChild(btn);
+    }
+
+    setDebugBackground(imgUrl) {
+      this.clearDebug();
+      if (!imgUrl) return;
+
+      const img = document.createElement('img');
+      img.className = 'vb-v1-debug-bg';
+      img.src = imgUrl;
+      this.canvas.insertBefore(img, this.canvas.firstChild);
+    }
+
+    clearDebug() {
+      const old = this.canvas.querySelector('.vb-v1-debug-bg');
+      if (old) old.remove();
+    }
+
+    clear() {
+      this.canvas.innerHTML = '';
+    }
+
+    destroy() {
+      this.disable();
+      if (this.stage && this.stage.parentNode) {
+        this.stage.parentNode.removeChild(this.stage);
+      }
+      window.removeEventListener('resize', () => this._updateScale());
+    }
+  }
+
+  window.VoiceBookV1Renderer = VoiceBookV1Renderer;
+})();

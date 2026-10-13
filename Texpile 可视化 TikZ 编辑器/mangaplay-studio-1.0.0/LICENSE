@@ -1,0 +1,60 @@
+Mangaplay Studio — Licensing
+
+This repository bundles two distinct categories of material:
+
+  1. Application code (everything except the fonts/ directory) — MIT.
+  2. Bundled font files (fonts/*) — SIL Open Font License, Version 1.1.
+
+Each is covered below. Full per-font licence text ships alongside each font
+family at fonts/<family>/LICENCE.txt.
+
+
+────────────────────────────────────────────────────────────────────────────
+Bundled fonts
+────────────────────────────────────────────────────────────────────────────
+
+The following font families are redistributed under the SIL Open Font
+License, Version 1.1 (https://openfontlicense.org). Each family's full
+licence text and original copyright notices are preserved in its directory.
+
+  Family              Path                       Copyright
+  ──────────────────  ─────────────────────────  ────────────────────────────
+  Courier Prime       fonts/courier-prime/       Quote-Unquote Apps
+  Courier Prime Sans  fonts/courier-prime-sans/  Quote-Unquote Apps
+  Noto Sans           fonts/noto-sans/           The Noto Project Authors
+  Noto Sans Mono      fonts/noto-sans-mono/      The Noto Project Authors
+  Noto Sans JP        fonts/noto-sans-jp/        The Noto Project Authors
+  Noto Sans KR        fonts/noto-sans-kr/        The Noto Project Authors
+  Noto Sans SC        fonts/noto-sans-sc/        The Noto Project Authors
+  Noto Sans TC        fonts/noto-sans-tc/        The Noto Project Authors
+  Noto Sans Thai      fonts/noto-sans-thai/      The Noto Project Authors
+
+The SIL OFL permits use, study, modification, and redistribution of the
+fonts (including embedding in software) provided that the licence and
+copyright notice are preserved. See each fonts/<family>/LICENCE.txt for
+the authoritative terms.
+
+
+────────────────────────────────────────────────────────────────────────────
+Application code — MIT License
+────────────────────────────────────────────────────────────────────────────
+
+Copyright (c) 2026 Mangaplay Studio
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

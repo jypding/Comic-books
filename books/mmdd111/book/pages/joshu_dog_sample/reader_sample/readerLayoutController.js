@@ -1,4 +1,4 @@
-export class ReaderLayoutController {
+﻿export class ReaderLayoutController {
   constructor() {
     this.body = document.body;
     this.canvasContainer = document.getElementById('canvas-container');
@@ -23,7 +23,7 @@ export class ReaderLayoutController {
   initEvents() {
     this.layoutNavButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const layout = e.target.getAttribute('data-layout');
+        const layout = e.currentTarget.getAttribute('data-layout');
         this.setLayout(layout);
       });
     });

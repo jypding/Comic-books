@@ -1,0 +1,28 @@
+{
+  "page_id": "page0000",
+  "scene": "p.0000.w100h100",
+  "title": "Page 1",
+  "thumbnail": "thumb.png",
+  "width": 1024,
+  "height": 1024,
+  "camera": {
+    "blender_camera_name": "Camera.0000"
+  },
+  "dialogue": {
+    "text": "逆向分析二进制文件",
+    "speaker": "",
+    "audio": "bubble_550500.wav"
+  },
+  "media": [],
+  "animations": {
+    "active_actions": [
+      "2图像动作"
+    ]
+  },
+  "model": {
+    "glb": "scene.glb",
+    "splat": null
+  },
+  "next": null,
+  "prev": null
+}

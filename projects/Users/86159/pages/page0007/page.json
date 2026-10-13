@@ -1,0 +1,28 @@
+{
+  "page_id": "page0007",
+  "scene": "p.0007.w100h100",
+  "title": "Page 8",
+  "thumbnail": "thumb.png",
+  "width": 1024,
+  "height": 1024,
+  "camera": {
+    "blender_camera_name": "Camera.0007"
+  },
+  "dialogue": {
+    "text": "",
+    "speaker": "",
+    "audio": null
+  },
+  "media": [],
+  "animations": {
+    "active_actions": [
+      "2图像动作"
+    ]
+  },
+  "model": {
+    "glb": "scene.glb",
+    "splat": null
+  },
+  "next": "page0008",
+  "prev": "page0006"
+}

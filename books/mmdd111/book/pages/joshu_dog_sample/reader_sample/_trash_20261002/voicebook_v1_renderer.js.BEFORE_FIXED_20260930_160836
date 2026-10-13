@@ -1,0 +1,166 @@
+﻿/* VoiceBook V1 Renderer
+ * 固定逻辑画布 1920 × 1080
+ * 不依赖 #text-panel 尺寸；自己建 #vb-fullstage 覆盖 #main-content
+ */
+(function (global) {
+    "use strict";
+    const CANVAS_W = 1920;
+    const CANVAS_H = 1080;
+
+    class VoiceBookV1Renderer {
+        constructor(container) {
+            if (!container) throw new Error("[VoiceBookV1] container 不存在");
+            this.container = container;
+            this.canvas = null;
+            this.v1 = null;
+            this.resizeObserver = null;
+            this._ensureStyle();
+            this._ensureCanvas();
+            this._bindResize();
+        }
+
+        _ensureStyle() {
+            if (document.getElementById("voicebook-v1-renderer-style")) return;
+            const style = document.createElement("style");
+            style.id = "voicebook-v1-renderer-style";
+            style.textContent = `
+                #vb-fullstage {
+                    position: absolute;
+                    inset: 0;
+                    z-index: 50;
+                    overflow: hidden;
+                    pointer-events: none;
+                    visibility: hidden;
+                }
+                body.vb-v1-mode #vb-fullstage { visibility: visible; }
+                body.vb-v1-mode #canvas-container,
+                body.vb-v1-mode #text-panel {
+                    visibility: hidden;
+                    pointer-events: none;
+                }
+                #vb-v1-canvas {
+                    position: absolute;
+                    left: 0; top: 0;
+                    width: ${CANVAS_W}px;
+                    height: ${CANVAS_H}px;
+                    transform-origin: 0 0;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                    pointer-events: none;
+                }
+                #vb-v1-canvas > * { pointer-events: auto; }
+                .vb-v1-text-block {
+                    position: absolute;
+                    box-sizing: border-box;
+                    overflow: hidden;
+                    white-space: pre-wrap;
+                    word-break: break-word;
+                }
+                .vb-v1-audio-btn {
+                    position: absolute;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(200, 60, 60, 0.9);
+                    color: #fff;
+                    border: none;
+                    border-radius: 50%;
+                    font-size: 20px;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        _ensureCanvas() {
+            let canvas = this.container.querySelector("#vb-v1-canvas");
+            if (!canvas) {
+                canvas = document.createElement("div");
+                canvas.id = "vb-v1-canvas";
+                this.container.appendChild(canvas);
+            }
+            this.canvas = canvas;
+        }
+
+        _bindResize() {
+            const update = () => this._updateScale();
+            if (typeof ResizeObserver !== "undefined") {
+                this.resizeObserver = new ResizeObserver(update);
+                this.resizeObserver.observe(this.container);
+            } else {
+                window.addEventListener("resize", update);
+            }
+            requestAnimationFrame(update);
+        }
+
+        _updateScale() {
+            if (!this.container || !this.canvas) return;
+            const w = this.container.clientWidth;
+            const h = this.container.clientHeight;
+            if (!w || !h) return;
+            const scale = Math.min(w / CANVAS_W, h / CANVAS_H);
+            const scaledW = CANVAS_W * scale;
+            const scaledH = CANVAS_H * scale;
+            const offsetX = (w - scaledW) / 2;
+            const offsetY = (h - scaledH) / 2;
+            this.canvas.style.transform =
+                `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+            console.log("[VoiceBook V1] scale =", scale.toFixed(3));
+        }
+
+        setData(v1) {
+            this.v1 = v1;
+            this.render();
+        }
+
+        render() {
+            if (!this.canvas || !this.v1) return;
+            this.canvas.innerHTML = "";
+            const boxes = this.v1.textBoxes || {};
+            if (boxes.title) this._renderTextBox(boxes.title);
+            if (boxes.body)  this._renderTextBox(boxes.body);
+            if (this.v1.audioButton) this._renderAudioButton(this.v1.audioButton);
+            requestAnimationFrame(() => this._updateScale());
+        }
+
+        _renderTextBox(box) {
+            const el = document.createElement("div");
+            el.className = "vb-v1-text-block";
+            el.style.left = (Number(box.x) || 0) + "px";
+            el.style.top = (Number(box.y) || 0) + "px";
+            el.style.width = (Number(box.w) || 0) + "px";
+            el.style.height = (Number(box.h) || 0) + "px";
+            if (box.fontSize) el.style.fontSize = Number(box.fontSize) + "px";
+            if (box.lineHeight) el.style.lineHeight = Number(box.lineHeight) + "px";
+            el.textContent = box.text || "";
+            this.canvas.appendChild(el);
+        }
+
+        _renderAudioButton(ab) {
+            const btn = document.createElement("button");
+            btn.className = "vb-v1-audio-btn";
+            btn.textContent = "♪";
+            btn.style.left = (Number(ab.x) || 0) + "px";
+            btn.style.top = (Number(ab.y) || 0) + "px";
+            btn.style.width = (Number(ab.w) || 48) + "px";
+            btn.style.height = (Number(ab.h) || 48) + "px";
+            btn.addEventListener("click", () => {
+                const blocks = (this.v1 && this.v1.blocks) || [];
+                const audioPath = (blocks.find((b) => b.audio) || {}).audio;
+                if (audioPath) new Audio(audioPath).play();
+            });
+            this.canvas.appendChild(btn);
+        }
+
+        destroy() {
+            if (this.resizeObserver) {
+                this.resizeObserver.disconnect();
+                this.resizeObserver = null;
+            }
+            this.canvas = null;
+            this.v1 = null;
+        }
+    }
+
+    global.VoiceBookV1Renderer = VoiceBookV1Renderer;
+})(window);

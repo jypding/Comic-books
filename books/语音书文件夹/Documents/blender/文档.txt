@@ -1,0 +1,5 @@
+文件	时间	说明
+voice_book_template.blend	10-08 10:12	✅ 中文版（当前在用）
+voice_book_template.blend.bak_20261008	09-25 16:08	✅ 英文原版备份（兜底）
+voice_book_template_zh.blend	10-08 10:23	✅ 中文版独立副本（再保险）
+p.0000.w1h1_scene_part.png（10-08 10:09） 是刚才测试导出产生的截图。

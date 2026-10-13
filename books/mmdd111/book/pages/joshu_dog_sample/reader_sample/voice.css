@@ -1,4 +1,4 @@
-/* �?reading3d.css �?voice-book.css 合并 */:root {  --paper: #F3EDDF;  --ink: #1E1E24;  --gray: #55555E;  --accent: #C73E3A;  --ink-rgb: 30,30,36;  --seal-ink: var(--paper);  --serif: Georgia, 'Times New Roman', serif;    --voice-player-bg: rgba(var(--ink-rgb), 0.03);  --voice-player-border: 1px solid rgba(var(--ink-rgb), 0.08);  --voice-player-accent: var(--accent);}body {  background: var(--paper) !important;  color: var(--ink) !important;}#top-nav {  background: var(--paper) !important;  border-bottom: 1px solid rgba(0,0,0,0.08) !important;}#canvas-container {  background: var(--paper) !important;}#text-panel {  background: var(--paper) !important;}.page-btn,.layout-btn,#layout-nav button,#page-nav button {  background: transparent;  border: 1px solid rgba(0,0,0,0.15);  color: var(--ink);  padding: 6px 12px;  border-radius: 4px;  display: inline-flex;  align-items: center;  gap: 6px;  font-size: 14px;  cursor: pointer;}.page-btn.active,#layout-nav button.active {  background: var(--ink);  color: var(--paper);  border-color: var(--ink);}.top-icons button {  background: rgba(255,255,255,0.6);  border: 1px solid rgba(0,0,0,0.1);  border-radius: 6px;  padding: 6px 8px;  cursor: pointer;  color: var(--ink);  margin-left: 6px;}.btn-play {  background: var(--accent);  color: #fff;  border-radius: 50%;  width: 44px;  height: 44px;  border: none;  cursor: pointer;  display: flex;  align-items: center;  justify-content: center;}.btn-rew, .btn-ff {  background: transparent;  border: 1px solid rgba(0,0,0,0.15);  border-radius: 50%;  width: 36px;  height: 36px;  cursor: pointer;  color: var(--ink);  display: flex;  align-items: center;  justify-content: center;}.reading3d-panel {  color: var(--ink);}/* 导航�?*/.reading3d-nav-bar {  display: flex;  align-items: center;  gap: 10px;  margin: -8px 0 18px;}.reading3d-btn {  font-family: var(--serif);  background: none;  border: 1px solid rgba(var(--ink-rgb), 0.3);  color: var(--ink);  padding: 6px 14px;  border-radius: 3px;  cursor: pointer;  font-size: 15px;  display: flex;  align-items: center;  justify-content: center;  transition: border-color 0.2s, background 0.2s;}.reading3d-btn:hover:not(:disabled) {  background: rgba(var(--ink-rgb), 0.05);  border-color: rgba(var(--ink-rgb), 0.55);}.reading3d-btn:disabled {  opacity: 0.3;  cursor: default;}.reading3d-nav-bar .spacer {  flex: 1;}/* 标题区块 */.reading3d-head {  display: flex;  align-items: baseline;  gap: 12px;  margin-top: 20px;}.reading3d-seal {  display: inline-grid;  place-items: center;  width: 34px;  height: 34px;  flex: none;  background: var(--accent);  color: var(--seal-ink);  border-radius: 3px;  font-size: 17px;  font-weight: normal;}.reading3d-title {  font-weight: normal;  font-size: 30px;  letter-spacing: 0.04em;  margin: 0;  flex: 1;}/* Read aloud 按钮 */.reading3d-read-aloud {  margin-top: 10px;}/* 章节标签 */.reading3d-section {  margin-top: 24px;}.reading3d-section-label {  font-variant: small-caps;  letter-spacing: 0.08em;  color: var(--gray);  font-size: 14px;  display: flex;  align-items: center;  gap: 8px;}.reading3d-speak-btn {  background: none;  border: none;  color: var(--accent);  cursor: pointer;  font-size: 15px;  padding: 0 2px;  transition: opacity 0.2s;}.reading3d-speak-btn:hover {  opacity: 0.7;}.reading3d-text {  margin-top: 8px;  line-height: 1.72;  white-space: pre-wrap;  font-size: 16.5px;}/* Voice Player */.voice-player-container {  margin-top: 30px;  padding: 20px;  background: var(--voice-player-bg);  border: var(--voice-player-border);  border-radius: 8px;  margin-bottom: 40px;}.voice-player-widget {  display: flex;  flex-direction: column;  gap: 15px;}.voice-progress-container {  width: 100%;  height: 6px;  background: rgba(var(--ink-rgb), 0.1);  cursor: pointer;  position: relative;  border-radius: 3px;}.voice-progress-bar {  height: 100%;  background: var(--voice-player-accent);  width: 0%;  border-radius: 3px;  transition: width 0.1s linear;}.voice-player-controls {  display: flex;  align-items: center;  gap: 20px;  justify-content: center;}.voice-btn {  background: transparent;  border: 1px solid rgba(var(--ink-rgb), 0.2);  color: var(--ink);  padding: 8px 16px;  border-radius: 4px;  cursor: pointer;  font-size: 18px;  transition: all 0.2s;  display: flex;  align-items: center;  justify-content: center;}.voice-btn:hover {  background: rgba(var(--ink-rgb), 0.05);  border-color: var(--accent);}.btn-voice-play-pause {  width: 44px;  height: 44px;  font-size: 20px;  background: var(--accent);  color: white;  border: none;  border-radius: 50%;}.btn-voice-play-pause:hover {  background: var(--accent);  filter: brightness(1.1);  color: white;  transform: scale(1.05);}.voice-time-display {  font-family: monospace;  font-size: 14px;  color: var(--gray);  min-width: 100px;  text-align: right;}/* === ��ɫƤ����ī������ === */:root {  --paper-dark: #2C7A66;  --ink-dark: #F3EDDF;  --paper-warm: #F4ECD8;  --ink-warm: #2B2B2B;}body.theme-dark {  background: var(--paper-dark) !important;  color: var(--ink-dark) !important;}body.theme-dark #top-nav,body.theme-dark #canvas-container,body.theme-dark #text-panel {  background: var(--paper-dark) !important;  color: var(--ink-dark) !important;}body.theme-dark button,body.theme-dark .page-btn {  background: rgba(255,255,255,0.15) !important;  color: var(--ink-dark) !important;  border: 1px solid rgba(255,255,255,0.3) !important;}body.theme-dark button.active {  background: var(--ink-dark) !important;  color: var(--paper-dark) !important;}body.theme-dark .label-text,body.theme-dark .reading3d-title,body.theme-dark #text-body {  color: var(--ink-dark) !important;}/* === ůֽƤ�� === */body.theme-paper {  background: var(--paper-warm) !important;  color: var(--ink-warm) !important;}/* === ī������ === */:root {  --paper-dark: #2C7A66;  --ink-dark: #F3EDDF;}body.theme-dark {  background: var(--paper-dark) !important;  color: var(--ink-dark) !important;}body.theme-dark #top-nav,body.theme-dark #canvas-container,body.theme-dark #text-panel {  background: var(--paper-dark) !important;  color: var(--ink-dark) !important;}body.theme-dark button,body.theme-dark .page-btn {  background: rgba(255,255,255,0.15) !important;  color: var(--ink-dark) !important;  border: 1px solid rgba(255,255,255,0.3) !important;}body.theme-dark button.active {  background: var(--ink-dark) !important;  color: var(--paper-dark) !important;}body.theme-dark .label-text,body.theme-dark .reading3d-title,body.theme-dark #text-body,body.theme-dark h2 {  color: var(--ink-dark) !important;}/* === 黑色主题 === */:root {  --paper-black: #1A1A1A;  --ink-black: #E8E3D5;}body.theme-black {  background: #1A1A1A !important;  color: #E8E3D5 !important;}body.theme-black #top-nav,body.theme-black #canvas-container,body.theme-black #text-panel,body.theme-black #main-content {  background: #1A1A1A !important;  color: #E8E3D5 !important;}body.theme-black button,body.theme-black .page-btn,body.theme-black .reading3d-btn {  background: rgba(255,255,255,0.1) !important;  color: #E8E3D5 !important;  border: 1px solid rgba(255,255,255,0.2) !important;}body.theme-black button.active,body.theme-black .page-btn.active {  background: #E8E3D5 !important;  color: #1A1A1A !important;}body.theme-black h2,body.theme-black .reading3d-title,body.theme-black .label-text,body.theme-black #text-body,body.theme-black p {  color: #E8E3D5 !important;}/* ===== 全屏模式：底部变成窄 HUD �?===== */
+/* �?reading3d.css �?voice-book.css 合并 */:root {  --paper: #F3EDDF;  --ink: #1E1E24;  --gray: #55555E;  --accent: #C73E3A;  --ink-rgb: 30,30,36;  --seal-ink: var(--paper);  --serif: Georgia, 'Times New Roman', serif;    --voice-player-bg: rgba(var(--ink-rgb), 0.03);  --voice-player-border: 1px solid rgba(var(--ink-rgb), 0.08);  --voice-player-accent: var(--accent);}body {  background: var(--paper) !important;  color: var(--ink) !important;}#top-nav {  background: var(--paper) !important;  border-bottom: 1px solid rgba(0,0,0,0.08) !important;}#canvas-container {  background: var(--paper) !important;}#text-panel {  background: var(--paper) !important;}.page-btn,.layout-btn,#layout-nav button,#page-nav button {  background: transparent;  border: 1px solid rgba(0,0,0,0.15);  color: var(--ink);  padding: 6px 12px;  border-radius: 4px;  display: inline-flex;  align-items: center;  gap: 6px;  font-size: 14px;  cursor: pointer;}.page-btn.active,#layout-nav button.active {  background: var(--ink);  color: var(--paper);  border-color: var(--ink);}.top-icons button {  background: rgba(255,255,255,0.6);  border: 1px solid rgba(0,0,0,0.1);  border-radius: 6px;  padding: 6px 8px;  cursor: pointer;  color: var(--ink);  margin-left: 6px;}.btn-play {  background: var(--accent);  color: #fff;  border-radius: 50%;  width: 44px;  height: 44px;  border: none;  cursor: pointer;  display: flex;  align-items: center;  justify-content: center;}.btn-rew, .btn-ff {  background: transparent;  border: 1px solid rgba(0,0,0,0.15);  border-radius: 50%;  width: 36px;  height: 36px;  cursor: pointer;  color: var(--ink);  display: flex;  align-items: center;  justify-content: center;}.reading3d-panel {  color: var(--ink);}/* 导航�?*/.reading3d-nav-bar {  display: flex;  align-items: center;  gap: 10px;  margin: -8px 0 18px;}.reading3d-btn {  font-family: var(--serif);  background: none;  border: 1px solid rgba(var(--ink-rgb), 0.3);  color: var(--ink);  padding: 6px 14px;  border-radius: 3px;  cursor: pointer;  font-size: 15px;  display: flex;  align-items: center;  justify-content: center;  transition: border-color 0.2s, background 0.2s;}.reading3d-btn:hover:not(:disabled) {  background: rgba(var(--ink-rgb), 0.05);  border-color: rgba(var(--ink-rgb), 0.55);}.reading3d-btn:disabled {  opacity: 0.3;  cursor: default;}.reading3d-nav-bar .spacer {  flex: 1;}/* 标题区块 */.reading3d-head {  display: flex;  align-items: baseline;  gap: 12px;  margin-top: 20px;}.reading3d-seal {  display: inline-grid;  place-items: center;  width: 34px;  height: 34px;  flex: none;  background: var(--accent);  color: var(--seal-ink);  border-radius: 3px;  font-size: 17px;  font-weight: normal;}.reading3d-title {  font-weight: normal;  font-size: 30px;  letter-spacing: 0.04em;  margin: 0;  flex: 1;}/* Read aloud 按钮 */.reading3d-read-aloud {  margin-top: 10px;}/* 章节标签 */.reading3d-section {  margin-top: 24px;}.reading3d-section-label {  font-variant: small-caps;  letter-spacing: 0.08em;  color: var(--gray);  font-size: 14px;  display: flex;  align-items: center;  gap: 8px;}.reading3d-speak-btn {  background: none;  border: none;  color: var(--accent);  cursor: pointer;  font-size: 15px;  padding: 0 2px;  transition: opacity 0.2s;}.reading3d-speak-btn:hover {  opacity: 0.7;}.reading3d-text {  margin-top: 8px;  line-height: 1.72;  white-space: pre-wrap;  font-size: 16.5px;}/* Voice Player */.voice-player-container {  margin-top: 30px;  padding: 20px;  background: var(--voice-player-bg);  border: var(--voice-player-border);  border-radius: 8px;  margin-bottom: 40px;}.voice-player-widget {  display: flex;  flex-direction: column;  gap: 15px;}.voice-progress-container {  width: 100%;  height: 6px;  background: rgba(var(--ink-rgb), 0.1);  cursor: pointer;  position: relative;  border-radius: 3px;}.voice-progress-bar {  height: 100%;  background: var(--voice-player-accent);  width: 0%;  border-radius: 3px;  transition: width 0.1s linear;}.voice-player-controls {  display: flex;  align-items: center;  gap: 20px;  justify-content: center;}.voice-btn {  background: transparent;  border: 1px solid rgba(var(--ink-rgb), 0.2);  color: var(--ink);  padding: 8px 16px;  border-radius: 4px;  cursor: pointer;  font-size: 18px;  transition: all 0.2s;  display: flex;  align-items: center;  justify-content: center;}.voice-btn:hover {  background: rgba(var(--ink-rgb), 0.05);  border-color: var(--accent);}.btn-voice-play-pause {  width: 44px;  height: 44px;  font-size: 20px;  background: var(--accent);  color: white;  border: none;  border-radius: 50%;}.btn-voice-play-pause:hover {  background: var(--accent);  filter: brightness(1.1);  color: white;  transform: scale(1.05);}.voice-time-display {  font-family: monospace;  font-size: 14px;  color: var(--gray);  min-width: 100px;  text-align: right;}/* === ��ɫƤ����ī������ === */:root {  --paper-dark: #2C7A66;  --ink-dark: #F3EDDF;  --paper-warm: #F4ECD8;  --ink-warm: #2B2B2B;}body.theme-dark {  background: var(--paper-dark) !important;  color: var(--ink-dark) !important;}body.theme-dark #top-nav,body.theme-dark #canvas-container,body.theme-dark #text-panel {  background: var(--paper-dark) !important;  color: var(--ink-dark) !important;}body.theme-dark button,body.theme-dark .page-btn {  background: rgba(255,255,255,0.15) !important;  color: var(--ink-dark) !important;  border: 1px solid rgba(255,255,255,0.3) !important;}body.theme-dark button.active {  background: var(--ink-dark) !important;  color: var(--paper-dark) !important;}body.theme-dark .label-text,body.theme-dark .reading3d-title,body.theme-dark #text-body {  color: var(--ink-dark) !important;}/* === ůֽƤ�� === */body.theme-paper {  background: var(--paper-warm) !important;  color: var(--ink-warm) !important;}/* === ī������ === */:root {  --paper-dark: #2C7A66;  --ink-dark: #F3EDDF;}body.theme-dark {  background: var(--paper-dark) !important;  color: var(--ink-dark) !important;}body.theme-dark #top-nav,body.theme-dark #canvas-container,body.theme-dark #text-panel {  background: var(--paper-dark) !important;  color: var(--ink-dark) !important;}body.theme-dark button,body.theme-dark .page-btn {  background: rgba(255,255,255,0.15) !important;  color: var(--ink-dark) !important;  border: 1px solid rgba(255,255,255,0.3) !important;}body.theme-dark button.active {  background: var(--ink-dark) !important;  color: var(--paper-dark) !important;}body.theme-dark .label-text,body.theme-dark .reading3d-title,body.theme-dark #text-body,body.theme-dark h2 {  color: var(--ink-dark) !important;}/* === 黑色主题 === */:root {  --paper-black: #1A1A1A;  --ink-black: #E8E3D5;}body.theme-black {  background: #1A1A1A !important;  color: #E8E3D5 !important;}body.theme-black #top-nav,body.theme-black #canvas-container,body.theme-black #text-panel,body.theme-black #main-content {  background: #1A1A1A !important;  color: #E8E3D5 !important;}body.theme-black button,body.theme-black .page-btn,body.theme-black .reading3d-btn {  background: rgba(255,255,255,0.1) !important;  color: #E8E3D5 !important;  border: 1px solid rgba(255,255,255,0.2) !important;}body.theme-black button.active,body.theme-black .page-btn.active {  background: #E8E3D5 !important;  color: #1A1A1A !important;}body.theme-black h2,body.theme-black .reading3d-title,body.theme-black .label-text,body.theme-black #text-body,body.theme-black p {  color: #E8E3D5 !important;}/* ===== 全屏模式：底部变成窄 HUD �?===== */
 /* ===== 全屏模式：3D 全屏 + 底部窄 HUD ===== */
 .layout-fullscreen #canvas-container {
   width: 100% !important;
@@ -65,3 +65,172 @@
   top: 0 !important;
   left: 0 !important;
 }
+
+/* ============================================================
+   VoiceBook V1 画布：盒模型 / 层级 / 实色填充（PASS）
+   类名一律以渲染器实际绑定的 className 为准，只保留一套
+   ============================================================ */
+
+/* 全局盒模型统一，按钮点击零偏移 */
+* {
+    box-sizing: border-box;
+}
+
+/* 1. 基准画布纯白实底，消除透明 */
+#vb-v1-canvas {
+    background-color: #FFFFFF;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 2. 层级顺序（从底到顶）：bg < scene < paint < text < widget */
+.bg-layer     { z-index: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.scene-layer  { z-index: 1; position: absolute; top: 0; left: 0; }
+.paint-layer  { z-index: 2; position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; touch-action: none; }
+.text-layer   { z-index: 3; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.widget-layer { z-index: 4; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* 3. 文字框实色填充 - Sit 默认皮肤（渲染器类名 vb-textbox） */
+.vb-textbox {
+    background-color: #F3EDDF;
+    border: 1px solid #E5DFD0;
+}
+
+/* 4. 文字框实色填充 - Dark 皮肤 */
+body.theme-dark .vb-textbox {
+    background-color: #2C7A66;
+    border: 1px solid #246453;
+}
+
+/* 5. 右侧浮动面板实色承载 - Sit 默认 */
+.vb-float-panel {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    position: fixed;
+    top: 80px;
+    right: 16px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 100;
+}
+
+/* 右侧浮动面板实色承载 - Dark 皮肤 */
+body.theme-dark .vb-float-panel {
+    background-color: #1F1F22;
+    border: 1px solid #333333;
+}
+
+/* 6. 按钮统一实色，热区与视觉完全一致 */
+.vb-btn {
+    background-color: #F5F5F5;
+    border: 1px solid #CCCCCC;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+body.theme-dark .vb-btn {
+    background-color: #2A2A2A;
+    border: 1px solid #444444;
+    color: #F3EDDF;
+}
+
+/* 工具条 */
+.vb-paint-toolbar {
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 6px;
+    border-top: 1px solid #E0E0E0;
+}
+body.theme-dark .vb-paint-toolbar {
+    border-top-color: #333333;
+}
+.vb-paint-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #1E1E24;
+}
+body.theme-dark .vb-paint-row {
+    color: #F3EDDF;
+}
+.vb-paint-color {
+    width: 36px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid #CCCCCC;
+    background: none;
+    cursor: pointer;
+}
+.vb-paint-width {
+    flex: 1;
+}
+.vb-paint-width-val {
+    min-width: 24px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 工具按钮选中高亮（与皮肤同步） */
+.vb-btn.paint-tool.active,
+.vb-btn.paint-toggle {
+    background-color: #2C7A66;
+    border-color: #246453;
+    color: #F3EDDF;
+}
+body.theme-dark .vb-btn.paint-tool.active,
+body.theme-dark .vb-btn.paint-toggle {
+    background-color: #F3EDDF;
+    border-color: #F3EDDF;
+    color: #1F1F22;
+}
+
+/* ===== 2026-10-02 顶栏彻底透明 + 不占空间（所有主题/所有 layout 都覆盖） ===== */
+html body #top-nav,
+html body.theme-light #top-nav,
+html body.theme-dark #top-nav,
+html body.theme-paper #top-nav,
+html body.theme-black #top-nav,
+html body.layout-top-bottom #top-nav,
+html body.layout-left-right #top-nav,
+html body.layout-fullscreen #top-nav {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+.vb-paint-toolbar { display: none !important; }
+
+.vb-top-bar, .reader-header, .viewer-header, .page-toolbar, .reader-toolbar, .top-navigation, .viewer-topbar, .page-header {
+    display: none !important;
+}
+body, html {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* ===== 空文字占位符：Blender 数据为空时，文字面板仍明确可见 ===== */
+.reading3d-title:empty::before,
+.reading3d-text:empty::before {
+    content: attr(data-ph);
+    color: #c7c0b2;
+    font-style: italic;
+    font-weight: 400;
+}
+
+/* ===== 视频页：manifest video 字段 → 场景区叠加 mp4（HTML5 播放） ===== */
+#canvas-container .page-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: transparent;
+    z-index: 1;
+    pointer-events: none;
+}
+

@@ -3,7 +3,7 @@ import bpy
 def run():
     try:
         # 1. 找到 Camera_Main
-        camera_main = bpy.data.objects.get("Camera_Main")
+        camera_main = bpy.data.objects.get("Camera_Main.主相机")
         
         # 2. 找到或创建 GUIDES Collection
         guides_col = bpy.data.collections.get("GUIDES")
@@ -74,7 +74,7 @@ def run():
         
         # 10. 自检
         print("\n=== CAMERA ===")
-        print(f"Camera_Main 是否存在: {'Yes' if camera_main else 'No'}")
+        print(f"Camera_Main.主相机 是否存在: {'Yes' if camera_main else 'No'}")
         
         print("\n=== EXISTING GUIDES ===")
         for eg in existing_guides:

@@ -1,0 +1,62 @@
+{
+  "pageId": "p.0003.w1h1",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "layout": {
+    "type": "left-right",
+    "textArea": {
+      "x": 14,
+      "y": 14,
+      "w": 591,
+      "h": 1052
+    },
+    "sceneArea": {
+      "x": 619,
+      "y": 14,
+      "w": 1287,
+      "h": 1052
+    },
+    "dividerPosition": 619
+  },
+  "textBoxes": {
+    "title": {
+      "x": 0,
+      "y": 40,
+      "w": 710,
+      "h": 80,
+      "text": "",
+      "fontSize": 56,
+      "lineHeight": 80
+    },
+    "body": {
+      "x": 0,
+      "y": 140,
+      "w": 710,
+      "h": 800,
+      "text": "",
+      "fontSize": 36,
+      "lineHeight": 48
+    }
+  },
+  "audioButton": {
+    "x": 541,
+    "y": 1002,
+    "w": 48,
+    "h": 48,
+    "align": "text-bottom-right"
+  },
+  "blocks": [
+    {
+      "id": "B01",
+      "type": "narration",
+      "speaker": "",
+      "voiceModel": "",
+      "text": "",
+      "audio": "",
+      "start": 0.0,
+      "end": 0.0
+    }
+  ]
+}

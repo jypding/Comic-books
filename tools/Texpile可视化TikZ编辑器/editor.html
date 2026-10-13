@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Texpile 布局编辑器</title>
+<style>
+  /* ============ 全局骨架 ============ */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    color: #1f2937;
+    background: #f3f4f6;
+  }
+  button {
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #1f2937;
+    white-space: nowrap;
+  }
+  button:hover { background: #f9fafb; border-color: #9ca3af; }
+  button.active { background: #1f2937; color: #fff; border-color: #1f2937; }
+  input[type="number"] {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  input[type="number"]:focus { outline: none; border-color: #2563eb; }
+
+  .app { display: flex; width: 100vw; height: 100vh; }
+
+  /* ============ 左栏 Pages ============ */
+  #pages-panel {
+    width: 200px;
+    flex: 0 0 200px;
+    border-right: 1px solid #d1d5db;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-header {
+    padding: 10px 12px;
+    font-weight: 600;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+  }
+  #pages-list { flex: 1; overflow-y: auto; }
+  .page-item {
+    padding: 9px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    font-family: Consolas, monospace;
+  }
+  .page-item.active { background: #e8eefc; color: #2563eb; }
+
+  /* ============ 中央编辑区 ============ */
+  #center-panel {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  #toolbar {
+    flex: 0 0 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    background: #fff;
+    border-bottom: 1px solid #d1d5db;
+  }
+  #zoom-label {
+    margin-left: auto;
+    font-family: Consolas, monospace;
+    color: #6b7280;
+  }
+  #viewport {
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+    background: #f3f4f6;
+  }
+  #canvas-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    transform-origin: 0 0;   /* 缩放/平移都以逻辑画布左上角为锚，配合 state.viewport 渲染矩阵 */
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  }
+  #editor-svg { display: block; width: 100%; height: 100%; user-select: none; }
+
+  /* ============ 右栏 Inspector ============ */
+  #inspector-panel {
+    width: 260px;
+    flex: 0 0 260px;
+    border-left: 1px solid #d1d5db;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+  }
+  #inspector-body { flex: 1; overflow-y: auto; padding: 12px; }
+  #inspector-empty { color: #9ca3af; text-align: center; margin-top: 40px; }
+  #inspector-form[hidden] { display: none; }
+  .field { margin-bottom: 10px; }
+  .field label {
+    display: block;
+    margin-bottom: 4px;
+    color: #4b5563;
+    font-size: 12px;
+  }
+  #inspector-region-id {
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    color: #2563eb;
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 左栏：Pages（P0 仅占位单页） -->
+  <aside id="pages-panel">
+    <div class="panel-header">Pages</div>
+    <div id="pages-list">
+      <div class="page-item active" data-page-id="p.0000.w1h1">p.0000.w1h1</div>
+    </div>
+  </aside>
+
+  <!-- 中央：工具栏 + 视口 -->
+  <main id="center-panel">
+    <div id="toolbar">
+      <button id="btn-fit" type="button">适配窗口</button>
+      <button id="btn-1to1" type="button">1:1</button>
+      <button id="btn-grid" class="active" type="button">网格开关</button>
+      <button id="btn-export" type="button">导出 JSON</button>
+      <span id="zoom-label">100%</span>
+    </div>
+    <div id="viewport">
+      <div id="canvas-stage">
+        <svg id="editor-svg" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+          <defs>
+            <pattern id="grid-pattern" width="100" height="100" patternUnits="userSpaceOnUse">
+              <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <!-- 层1：网格背景 -->
+          <rect id="grid-rect" x="0" y="0" width="1920" height="1080" fill="url(#grid-pattern)"/>
+          <!-- 画布外边框 -->
+          <rect x="0.5" y="0.5" width="1919" height="1079" fill="none" stroke="#d1d5db" stroke-width="1"
+                vector-effect="non-scaling-stroke"/>
+          <!-- 层2：区域矩形（render 填充） -->
+          <g id="regions-layer"></g>
+          <!-- 层3：控制点（render 填充） -->
+          <g id="handles-layer"></g>
+        </svg>
+      </div>
+    </div>
+  </main>
+
+  <!-- 右栏：Inspector -->
+  <aside id="inspector-panel">
+    <div class="panel-header">Inspector</div>
+    <div id="inspector-body">
+      <div id="inspector-empty">请选择画布元素</div>
+      <form id="inspector-form" hidden>
+        <div id="inspector-region-id"></div>
+        <div class="field"><label>X（像素）</label><input id="in-x" type="number" step="1"></div>
+        <div class="field"><label>Y（像素）</label><input id="in-y" type="number" step="1"></div>
+        <div class="field"><label>Width（像素）</label><input id="in-width" type="number" step="1"></div>
+        <div class="field"><label>Height（像素）</label><input id="in-height" type="number" step="1"></div>
+      </form>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ================================================================
+   * 数据层：state 是唯一真值源
+   * 数据流永远单向：state 变更 -> render() -> SVG/DOM
+   * ================================================================ */
+  var CANVAS_BASE = { width: 1920, height: 1080 };
+  var MIN_SIZE = 20;          // region 宽高下限
+  var ZOOM_MIN = 0.25;        // 25%
+  var ZOOM_MAX = 2;           // 200%
+  var ZOOM_STEP = 1.1;        // 滚轮单档
+  var FIT_MARGIN = 40;        // 适配窗口四周留白（CSS 像素）
+  var COLOR_STROKE = '#2563eb';
+  var COLOR_FILL = 'rgba(37,99,235,0.06)';
+
+  function initialState() {
+    return {
+      pageId: 'p.0000.w1h1',
+      canvas: { width: CANVAS_BASE.width, height: CANVAS_BASE.height },
+      regions: {
+        leftText:   { x: 73,  y: 14, width: 710,  height: 1052 },
+        rightScene: { x: 810, y: 14, width: 1037, height: 1052 }
+      },
+      selection: null,         // 'leftText' | 'rightScene' | null
+      showGrid: true,          // 运行时字段，导出时剔除
+      viewport: { zoom: 1, offsetX: 0, offsetY: 0 }
+    };
+  }
+
+  var state = initialState();
+
+  /* ================================================================
+   * DOM 引用（只做静态引用，绝不反读元素坐标写回 state）
+   * ================================================================ */
+  var svg          = document.getElementById('editor-svg');
+  var stage        = document.getElementById('canvas-stage');
+  var viewportEl   = document.getElementById('viewport');
+  var regionsLayer = document.getElementById('regions-layer');
+  var handlesLayer = document.getElementById('handles-layer');
+  var gridRect     = document.getElementById('grid-rect');
+  var zoomLabel    = document.getElementById('zoom-label');
+  var inspEmpty    = document.getElementById('inspector-empty');
+  var inspForm     = document.getElementById('inspector-form');
+  var inspId       = document.getElementById('inspector-region-id');
+  var inputs = {
+    x:      document.getElementById('in-x'),
+    y:      document.getElementById('in-y'),
+    width:  document.getElementById('in-width'),
+    height: document.getElementById('in-height')
+  };
+
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  // 8 个控制点：key -> 光标
+  var HANDLES = [
+    { key: 'nw', cursor: 'nwse-resize' }, { key: 'n', cursor: 'ns-resize' },
+    { key: 'ne', cursor: 'nesw-resize' }, { key: 'e', cursor: 'ew-resize' },
+    { key: 'se', cursor: 'nwse-resize' }, { key: 's', cursor: 'ns-resize' },
+    { key: 'sw', cursor: 'nesw-resize' }, { key: 'w', cursor: 'ew-resize' }
+  ];
+
+  /* ================================================================
+   * 坐标换算（事件专用）
+   * 客户端鼠标坐标 -> SVG 逻辑坐标。使用 SVG CTM 逆变换，
+   * viewBox / CSS scale 全链路精确闭合；rect/CTM 仅用于事件换算，
+   * 任何 state 坐标只来源于 state + 位移增量，不反读 DOM 几何。
+   * ================================================================ */
+  function clientToLogical(clientX, clientY) {
+    var pt = svg.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    var m = svg.getScreenCTM();
+    var p = pt.matrixTransform(m.inverse());
+    return { x: p.x, y: p.y };
+  }
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+  function isInt(v) { return typeof v === 'number' && isFinite(v) && Math.floor(v) === v; }
+
+  /* ================================================================
+   * 渲染层：render(partial)
+   * 输入 state，全量重绘 SVG 内容与视口变换矩阵，保证视图 == state
+   * ================================================================ */
+  function render() {
+    var vp = state.viewport;
+    var z = vp.zoom;
+
+    // 视口渲染矩阵（只改 CSS transform，绝不动 state 坐标）
+    stage.style.transform =
+      'translate(' + vp.offsetX + 'px,' + vp.offsetY + 'px) scale(' + z + ')';
+    zoomLabel.textContent = Math.round(z * 100) + '%';
+
+    // 网格开关
+    gridRect.style.display = state.showGrid ? '' : 'none';
+
+    // 层2：区域矩形（全量重建）
+    regionsLayer.innerHTML = '';
+    Object.keys(state.regions).forEach(function (id) {
+      var r = state.regions[id];
+      var rect = document.createElementNS(SVG_NS, 'rect');
+      rect.setAttribute('x', r.x);
+      rect.setAttribute('y', r.y);
+      rect.setAttribute('width', r.width);
+      rect.setAttribute('height', r.height);
+      rect.setAttribute('data-region', id);
+      rect.setAttribute('fill', COLOR_FILL);
+      rect.setAttribute('stroke', COLOR_STROKE);
+      rect.setAttribute('stroke-width', 2 / z);   // 视觉描边恒定 2px
+      rect.setAttribute('vector-effect', 'non-scaling-stroke');
+      rect.style.cursor = 'move';
+      regionsLayer.appendChild(rect);
+
+      // 区域名标签（视觉字号恒定 20px）
+      var label = document.createElementNS(SVG_NS, 'text');
+      label.setAttribute('x', r.x + 12 / z);
+      label.setAttribute('y', r.y + 30 / z);
+      label.setAttribute('font-size', 20 / z);
+      label.setAttribute('font-family', 'Consolas, monospace');
+      label.setAttribute('fill', COLOR_STROKE);
+      label.setAttribute('pointer-events', 'none');
+      label.textContent = id;
+      regionsLayer.appendChild(label);
+    });
+
+    // 层3：选中元素的 8 个控制点（全量重建）
+    handlesLayer.innerHTML = '';
+    if (state.selection && state.regions[state.selection]) {
+      var r = state.regions[state.selection];
+      var pts = {
+        nw: [r.x, r.y],
+        n:  [r.x + r.width / 2, r.y],
+        ne: [r.x + r.width, r.y],
+        e:  [r.x + r.width, r.y + r.height / 2],
+        se: [r.x + r.width, r.y + r.height],
+        s:  [r.x + r.width / 2, r.y + r.height],
+        sw: [r.x, r.y + r.height],
+        w:  [r.x, r.y + r.height / 2]
+      };
+      HANDLES.forEach(function (h) {
+        var c = document.createElementNS(SVG_NS, 'circle');
+        c.setAttribute('cx', pts[h.key][0]);
+        c.setAttribute('cy', pts[h.key][1]);
+        c.setAttribute('r', 7 / z);               // 视觉半径恒定 7px
+        c.setAttribute('fill', '#ffffff');
+        c.setAttribute('stroke', COLOR_STROKE);
+        c.setAttribute('stroke-width', 2 / z);
+        c.setAttribute('vector-effect', 'non-scaling-stroke');
+        c.setAttribute('data-handle', h.key);
+        c.setAttribute('data-region', state.selection);
+        c.style.cursor = h.cursor;
+        handlesLayer.appendChild(c);
+      });
+    }
+
+    renderInspector();
+  }
+
+  /* Inspector：state -> 输入框（单向同步） */
+  function renderInspector() {
+    if (!state.selection || !state.regions[state.selection]) {
+      inspEmpty.hidden = false;
+      inspForm.hidden = true;
+      return;
+    }
+    inspEmpty.hidden = true;
+    inspForm.hidden = false;
+    var r = state.regions[state.selection];
+    inspId.textContent = state.selection;
+    inputs.x.value = r.x;
+    inputs.y.value = r.y;
+    inputs.width.value = r.width;
+    inputs.height.value = r.height;
+  }
+
+  /* ================================================================
+   * 交互：选中 + 移动拖拽
+   * ================================================================ */
+  var drag = null; // { mode:'move'|'resize', id, handle, start, origin, shift }
+
+  svg.addEventListener('mousedown', function (e) {
+    var handleEl = e.target.getAttribute && e.target.getAttribute('data-handle');
+    var regionId = e.target.getAttribute && e.target.getAttribute('data-region');
+
+    if (handleEl && regionId) {
+      // 控制点缩放（不冒泡触发移动）
+      state.selection = regionId;
+      drag = {
+        mode: 'resize', id: regionId, handle: handleEl,
+        start: clientToLogical(e.clientX, e.clientY),
+        origin: JSON.parse(JSON.stringify(state.regions[regionId]))
+      };
+      render();
+      e.preventDefault();
+      return;
+    }
+    if (regionId) {
+      // 选中 + 准备移动
+      state.selection = regionId;
+      drag = {
+        mode: 'move', id: regionId,
+        start: clientToLogical(e.clientX, e.clientY),
+        origin: JSON.parse(JSON.stringify(state.regions[regionId]))
+      };
+      render();
+      e.preventDefault();
+      return;
+    }
+    // 点空白：取消选中
+    state.selection = null;
+    render();
+  });
+
+  window.addEventListener('mousemove', function (e) {
+    if (!drag) return;
+    var cur = clientToLogical(e.clientX, e.clientY);
+    var dx = cur.x - drag.start.x;
+    var dy = cur.y - drag.start.y;
+
+    if (drag.mode === 'move') {
+      var o = drag.origin;
+      // CTM 浮点换算后四舍五入：state 中坐标恒为整数像素
+      state.regions[drag.id].x = Math.round(clamp(o.x + dx, 0, CANVAS_BASE.width - o.width));
+      state.regions[drag.id].y = Math.round(clamp(o.y + dy, 0, CANVAS_BASE.height - o.height));
+    } else {
+      applyResize(drag.handle, drag.origin, dx, dy, e.shiftKey);
+    }
+    render();
+  });
+
+  window.addEventListener('mouseup', function () { drag = null; });
+
+  /* ================================================================
+   * 交互：控制点缩放（含 Shift 等比）
+   * 锚点规则（默认决策）：
+   *  - 对角手柄：以对顶角为锚；Shift 时取两轴中约束更严的缩放比 k
+   *  - 边中点：对侧边为锚；Shift 时以中心为锚联动另一边
+   * 全程 clamp 在画布内，尺寸下限 MIN_SIZE
+   * ================================================================ */
+  function applyResize(handle, o, dx, dy, shift) {
+    var W = CANVAS_BASE.width, H = CANVAS_BASE.height;
+    var hasW = handle.indexOf('w') !== -1, hasE = handle.indexOf('e') !== -1;
+    var hasN = handle.indexOf('n') !== -1, hasS = handle.indexOf('s') !== -1;
+    var corner = (hasW || hasE) && (hasN || hasS);
+
+    var nx = o.x, ny = o.y, nw = o.width, nh = o.height;
+
+    if (corner) {
+      var rawW = o.width  + (hasE ? dx : -dx);
+      var rawH = o.height + (hasS ? dy : -dy);
+      if (shift) {
+        var k = Math.min(rawW / o.width, rawH / o.height);
+        rawW = o.width * k;
+        rawH = o.height * k;
+      }
+      var dW = rawW - o.width;   // 东向为正
+      var dH = rawH - o.height;  // 南向为正
+      if (hasE) nw = clamp(o.width + dW, MIN_SIZE, W - o.x);
+      if (hasW) { nw = clamp(o.width + dW, MIN_SIZE, o.x + o.width); nx = o.x + (o.width - nw); }
+      if (hasS) nh = clamp(o.height + dH, MIN_SIZE, H - o.y);
+      if (hasN) { nh = clamp(o.height + dH, MIN_SIZE, o.y + o.height); ny = o.y + (o.height - nh); }
+    } else if (hasW || hasE) {
+      var dW2 = dx;
+      nw = hasE
+        ? clamp(o.width + dW2, MIN_SIZE, W - o.x)
+        : (function () { var w2 = clamp(o.width - dW2, MIN_SIZE, o.x + o.width); nx = o.x + (o.width - w2); return w2; })();
+      if (shift) {
+        var nh2 = clamp(o.height * (nw / o.width), MIN_SIZE, H);
+        nh = nh2;
+        ny = clamp(o.y + (o.height - nh) / 2, 0, H - nh);
+      }
+    } else if (hasN || hasS) {
+      var dH2 = dy;
+      nh = hasS
+        ? clamp(o.height + dH2, MIN_SIZE, H - o.y)
+        : (function () { var h2 = clamp(o.height - dH2, MIN_SIZE, o.y + o.height); ny = o.y + (o.height - h2); return h2; })();
+      if (shift) {
+        var nw2 = clamp(o.width * (nh / o.height), MIN_SIZE, W);
+        nw = nw2;
+        nx = clamp(o.x + (o.width - nw) / 2, 0, W - nw);
+      }
+    }
+
+    state.regions[drag.id].x = Math.round(nx);
+    state.regions[drag.id].y = Math.round(ny);
+    state.regions[drag.id].width = Math.round(nw);
+    state.regions[drag.id].height = Math.round(nh);
+  }
+
+  /* ================================================================
+   * Inspector：输入框 -> state（失焦/回车提交，整数 + clamp）
+   * 改 Width/Height 时左/上边缘锚定（x/y 不动）
+   * ================================================================ */
+  function commitField(key, input) {
+    if (!state.selection) return;
+    var v = parseInt(input.value, 10);
+    var r = state.regions[state.selection];
+    if (!isInt(v)) { input.value = r[key]; return; }  // 非法输入回退
+    if (key === 'x')      r.x = clamp(v, 0, CANVAS_BASE.width - r.width);
+    if (key === 'y')      r.y = clamp(v, 0, CANVAS_BASE.height - r.height);
+    if (key === 'width')  r.width  = clamp(v, MIN_SIZE, CANVAS_BASE.width - r.x);
+    if (key === 'height') r.height = clamp(v, MIN_SIZE, CANVAS_BASE.height - r.y);
+    render();
+  }
+  ['x', 'y', 'width', 'height'].forEach(function (key) {
+    inputs[key].addEventListener('change', function () { commitField(key, inputs[key]); });
+  });
+
+  /* ================================================================
+   * 视口：适配窗口 / 1:1 / 滚轮以鼠标为中心缩放
+   * ================================================================ */
+  function viewportSize() {
+    return { w: viewportEl.clientWidth, h: viewportEl.clientHeight };
+  }
+
+  function fitToWindow() {
+    var v = viewportSize();
+    var z = Math.min(
+      (v.w - FIT_MARGIN * 2) / CANVAS_BASE.width,
+      (v.h - FIT_MARGIN * 2) / CANVAS_BASE.height
+    );
+    z = clamp(z, ZOOM_MIN, ZOOM_MAX);
+    state.viewport.zoom = z;
+    state.viewport.offsetX = (v.w - CANVAS_BASE.width * z) / 2;
+    state.viewport.offsetY = (v.h - CANVAS_BASE.height * z) / 2;
+    render();
+  }
+
+  function setZoom(zoom, clientX, clientY) {
+    var newZoom = clamp(zoom, ZOOM_MIN, ZOOM_MAX);
+    var v = viewportSize();
+    var rect = viewportEl.getBoundingClientRect();
+    // 锚点：未指定时取视口中心
+    var cx = (clientX != null) ? clientX - rect.left : v.w / 2;
+    var cy = (clientY != null) ? clientY - rect.top : v.h / 2;
+    var vp = state.viewport;
+    // 保持锚点下的逻辑坐标点不动：screen = offset + logical * zoom
+    var logicalX = (cx - vp.offsetX) / vp.zoom;
+    var logicalY = (cy - vp.offsetY) / vp.zoom;
+    vp.offsetX = cx - logicalX * newZoom;
+    vp.offsetY = cy - logicalY * newZoom;
+    vp.zoom = newZoom;
+    render();
+  }
+
+  viewportEl.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    var factor = e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP;
+    setZoom(state.viewport.zoom * factor, e.clientX, e.clientY);
+  }, { passive: false });
+
+  document.getElementById('btn-fit').addEventListener('click', fitToWindow);
+  document.getElementById('btn-1to1').addEventListener('click', function () { setZoom(1); });
+  document.getElementById('btn-grid').addEventListener('click', function () {
+    state.showGrid = !state.showGrid;
+    this.classList.toggle('active', state.showGrid);
+    render();
+  });
+
+  /* ================================================================
+   * IO：导出 / 导入（V1 冻结格式）
+   * ================================================================ */
+  function toV1() {
+    return {
+      pageId: state.pageId,
+      canvas: { width: state.canvas.width, height: state.canvas.height },
+      regions: {
+        leftText:   { x: state.regions.leftText.x,   y: state.regions.leftText.y,
+                      width: state.regions.leftText.width,  height: state.regions.leftText.height },
+        rightScene: { x: state.regions.rightScene.x, y: state.regions.rightScene.y,
+                      width: state.regions.rightScene.width, height: state.regions.rightScene.height }
+      }
+    };
+  }
+
+  // 返回 V1 JSON 字符串（供 Electron 主进程无副作用调用）；浏览器内同时触发下载
+  function exportJSON() {
+    var json = JSON.stringify(toV1(), null, 2);
+    try {
+      var blob = new Blob([json], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = state.pageId + '.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    } catch (err) { /* 非浏览器环境仅返回字符串 */ }
+    return json;
+  }
+
+  function validateV1(data) {
+    if (!data || typeof data !== 'object') return '根节点必须是对象';
+    if (typeof data.pageId !== 'string' || !data.pageId) return 'pageId 必须是非空字符串';
+    if (!data.canvas || data.canvas.width !== CANVAS_BASE.width ||
+        data.canvas.height !== CANVAS_BASE.height) {
+      return 'canvas 必须为冻结尺寸 1920×1080';
+    }
+    if (!data.regions || typeof data.regions !== 'object') return '缺少 regions';
+    var ids = ['leftText', 'rightScene'];
+    for (var i = 0; i < ids.length; i++) {
+      var r = data.regions[ids[i]];
+      if (!r || typeof r !== 'object') return '缺少 regions.' + ids[i];
+      ['x', 'y', 'width', 'height'].forEach(function (k) {
+        if (!isInt(r[k])) throw new Error(ids[i] + '.' + k + ' 必须是整数');
+      });
+      if (r.x < 0 || r.y < 0 || r.width < 1 || r.height < 1) return ids[i] + ' 存在非正数';
+      if (r.x + r.width > CANVAS_BASE.width || r.y + r.height > CANVAS_BASE.height) {
+        return ids[i] + ' 超出 1920×1080 画布边界';
+      }
+    }
+    return null;
+  }
+
+  // 入参 File；校验通过覆盖业务数据（保留运行时视口），返回 Promise<boolean>
+  function importJSON(file) {
+    return file.text().then(function (text) {
+      var data, err;
+      try { data = JSON.parse(text); } catch (e) { err = 'JSON 解析失败：' + e.message; }
+      if (!err) err = validateV1(data);
+      if (err) { window.alert('导入失败：' + err); return false; }
+      state.pageId = data.pageId;
+      state.canvas = { width: data.canvas.width, height: data.canvas.height };
+      ['leftText', 'rightScene'].forEach(function (id) {
+        state.regions[id] = {
+          x: data.regions[id].x, y: data.regions[id].y,
+          width: data.regions[id].width, height: data.regions[id].height
+        };
+      });
+      state.selection = null;
+      render();
+      return true;
+    });
+  }
+
+  // 拖拽导入：阻止浏览器默认打开 JSON
+  viewportEl.addEventListener('dragover', function (e) {
+    e.preventDefault();
+  });
+  viewportEl.addEventListener('drop', function (e) {
+    e.preventDefault();
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) importJSON(f);
+  });
+
+  document.getElementById('btn-export').addEventListener('click', exportJSON);
+
+  /* ================================================================
+   * 全局挂载（标准接口，供 Electron / 8765 预览页直接调用）
+   * ================================================================ */
+  window.LayoutStudio = {
+    state: state,
+    render: render,
+    exportJSON: exportJSON,
+    importJSON: importJSON,
+    fitToWindow: fitToWindow,
+    setZoom: function (z) { setZoom(z); }
+  };
+
+  // 首次进入自动适配窗口
+  window.addEventListener('resize', function () { render(); });
+  fitToWindow();
+})();
+</script>
+</body>
+</html>

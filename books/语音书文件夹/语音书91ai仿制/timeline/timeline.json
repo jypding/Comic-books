@@ -1,0 +1,10 @@
+{
+  "syncMode": "paragraph",
+  "autoAdvance": true,
+  "sectionGap": 1200,
+  "pagination": {
+    "showPageCard": true,
+    "pageCardHoldMs": 4200,
+    "pageCardTop": "8vh"
+  }
+}

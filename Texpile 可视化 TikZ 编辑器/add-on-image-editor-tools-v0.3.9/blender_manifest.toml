@@ -1,0 +1,29 @@
+schema_version = "1.0.0"
+blender_version_min = "4.2.0"
+version = "0.3.9"
+id = "image_editor_tools"
+name = "Image Editor Master [图像超级工具]"
+tagline = "Super Image Toolbox (color, filters, texture optimization)"
+license = ["SPDX:GPL-3.0-or-later"]
+maintainer = "RARA"
+type = "add-on"
+website = "https://github.com/raracannot/image_editor_tools"
+copyright = ["2026 RARA"]
+tags = ["Paint", "Compositing"]
+
+[permissions]
+files = "Read image from disk"
+clipboard = "Copy image from clipboard"
+
+[build]
+paths_exclude_pattern = [
+    "__pycache__/",
+    ".git/",
+    ".opencode/",
+    "scripts/",
+    "*.zip",
+    ".gitignore",
+    ".gitattributes",
+    "CHANGELOG.md",
+    "README.md",
+]
