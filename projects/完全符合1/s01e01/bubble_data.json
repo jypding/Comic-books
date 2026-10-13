@@ -12,18 +12,6 @@
       "start_sec": 0.0,
       "end_sec": 0.0,
       "scene": "p.0001.w100h100"
-    },
-    {
-      "id": "bubble_343400",
-      "type": "wordballoon",
-      "text": "博物馆 / 场景里\nthat?",
-      "speaker": "",
-      "voice": "",
-      "audio": "",
-      "duration_sec": 0.0,
-      "start_sec": 0.0,
-      "end_sec": 0.0,
-      "scene": ""
     }
   ]
 }
