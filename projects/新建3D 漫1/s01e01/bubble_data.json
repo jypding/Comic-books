@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "bubbles": [
+    {
+      "id": "bubble_562700",
+      "type": "wordballoon",
+      "text": "1满血版",
+      "speaker": "",
+      "voice": "",
+      "audio": "",
+      "duration_sec": 0.0,
+      "start_sec": 0.0,
+      "end_sec": 0.0,
+      "scene": "p.0000.w100h100"
+    }
+  ]
+}

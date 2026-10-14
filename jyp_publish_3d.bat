@@ -68,4 +68,18 @@ if not exist "books\%PROJECT_ID%\book\manifest.json" (
 echo [SUCCESS] Publish complete: %PROJECT_ID%
 echo [INFO]  Target: books\%PROJECT_ID%\book\
 echo [SUCCESS] Publish complete >> "%LOG_FILE%"
+
+echo [INFO] Pushing to gh-pages...
+git add -A
+git commit -m "publish 3d %PROJECT_ID% %date% %time%"
+git push origin gh-pages
+set "PUSH_RC=%ERRORLEVEL%"
+if not "%PUSH_RC%"=="0" (
+    echo [WARN] git push returned %PUSH_RC%
+    echo [WARN] git push returned %PUSH_RC% >> "%LOG_FILE%"
+)
+
+echo [INFO] Opening browser...
+start "" "https://jypding.github.io/Comic-books/books/%PROJECT_ID%/book/index.html"
+
 exit /b 0
