@@ -1,4 +1,6 @@
-
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/OrbitControls.js';
 (function() {
     let renderer, loader;
     let pages = [];
@@ -388,8 +390,7 @@
                 }
                 this.controls = null;
             }
-            if (typeof THREE.OrbitControls !== 'undefined') {
-                this.controls = new THREE.OrbitControls(this.camera, element);
+            this.controls = new OrbitControls(this.camera, element);
                 this.controls.enableDamping = true;
                 this.controls.dampingFactor = 0.05;
                 this.controls.screenSpacePanning = true;
@@ -402,7 +403,6 @@
                 if (element !== renderer.domElement) {
                     // element.style.touchAction = 'none'; // 5.2 REMOVED: Allow page scrolling on mobile
                 }
-            }
         }
     }
 
@@ -425,11 +425,7 @@
             
             container.appendChild(renderer.domElement);
             
-            if (typeof THREE.GLTFLoader === 'undefined') {
-                showError('GLTFLoader 未加载');
-                return;
-            }
-            loader = new THREE.GLTFLoader();
+            loader = new GLTFLoader();
 
             viewMode = window.innerWidth < 768 ? 'scrolling' : 'paging';
             

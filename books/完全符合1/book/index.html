@@ -30,13 +30,16 @@
         </div>
     </div>
 
-    <!-- Vendor Scripts (UMD) -->
-    <script src="assets/js/vendors/three.min.js"></script>
-    <script src="assets/js/vendors/GLTFLoader.js"></script>
-    <script src="assets/js/vendors/OrbitControls.js"></script>
-    
-    <!-- App Script -->
-    <script src="assets/js/app.js"></script>
+    <!-- Vendor Scripts (ESM via importmap) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "./assets/js/vendors/esm/three.module.js",
+        "three/addons/": "./assets/js/vendors/esm/"
+      }
+    }
+    </script>
+    <script type="module" src="assets/js/app.js"></script>
 </body>
 </html>
     <div id="bubble-strip"></div>
