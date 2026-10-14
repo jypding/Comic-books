@@ -1,8 +1,10 @@
-﻿param(
+param(
     [Parameter(Mandatory=$true)]
     [string]$ProjectId,
     [switch]$SetCurrent
 )
+
+$ErrorActionPreference = "Stop"
 
 $root = $PSScriptRoot
 $srcProj = "$root/projects/$ProjectId"
