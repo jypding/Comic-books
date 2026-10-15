@@ -821,3 +821,50 @@ import { OrbitControls } from 'three/addons/OrbitControls.js';
     init();
 })();
 
+
+// ========== 移动端触屏翻页 ==========
+let __touchStartX = 0;
+let __touchPoints = 0;
+const __FLIP_THRESHOLD = Math.max(50, window.innerWidth * 0.15);
+
+window.addEventListener('touchstart', function (e) {
+    __touchPoints = e.touches.length;
+    if (__touchPoints === 1) {
+        __touchStartX = e.touches[0].clientX;
+    }
+}, { passive: true });
+
+window.addEventListener('touchend', function (e) {
+    if (__touchPoints !== 1) return;
+    var delta = e.changedTouches[0].clientX - __touchStartX;
+    if (Math.abs(delta) < __FLIP_THRESHOLD) return;
+    if (delta < 0) {
+        if (typeof nextPage === 'function') nextPage();
+    } else {
+        if (typeof prevPage === 'function') prevPage();
+    }
+});
+
+
+// ========== 移动端触屏翻页 ==========
+(function() {
+    var startX = 0;
+    var pointCount = 0;
+    var threshold = Math.max(50, window.innerWidth * 0.15);
+
+    window.addEventListener('touchstart', function(e) {
+        pointCount = e.touches.length;
+        if (pointCount === 1) startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    window.addEventListener('touchend', function(e) {
+        if (pointCount !== 1) return;
+        var delta = e.changedTouches[0].clientX - startX;
+        if (Math.abs(delta) < threshold) return;
+        if (delta < 0) {
+            if (typeof nextPage === 'function') nextPage();
+        } else {
+            if (typeof prevPage === 'function') prevPage();
+        }
+    });
+})();

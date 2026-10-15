@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "title": "MobileComic",
+  "author": "Author",
+  "mode": "mobile",
+  "html_title": "MobileComic",
+  "created_at": "2026-10-15T11:35:18Z",
+  "resources": [
+    "android/app/src/main/assets/www/index.html",
+    "android/app/src/main/assets/www/assets/css/styles.css",
+    "android/app/src/main/assets/www/assets/js/app.js",
+    "android/app/src/main/assets/www/assets/js/vendors/GLTFLoader.js",
+    "android/app/src/main/assets/www/assets/js/vendors/OrbitControls.js",
+    "android/app/src/main/assets/www/assets/js/vendors/three.min.js",
+    "android/app/src/main/assets/www/pages/dirs.json",
+    "android/app/src/main/assets/www/pages/index.json",
+    "android/app/src/main/assets/www/pages/page0000/page.json",
+    "android/app/src/main/assets/www/pages/page0000/scene.glb",
+    "android/app/src/main/assets/www/pages/page0000/thumb.png",
+    "android/app/src/main/assets/www/pages/page0001/page.json",
+    "android/app/src/main/assets/www/pages/page0001/scene.glb",
+    "android/app/src/main/assets/www/pages/page0001/thumb.png",
+    "android/app/src/main/assets/www/pages/page0002/page.json",
+    "android/app/src/main/assets/www/pages/page0002/scene.glb",
+    "android/app/src/main/assets/www/pages/page0002/thumb.png",
+    "android/app/src/main/assets/www/pages/page0003/page.json",
+    "android/app/src/main/assets/www/pages/page0003/scene.glb",
+    "android/app/src/main/assets/www/pages/page0003/thumb.png",
+    "android/app/src/main/assets/www/manifest.json"
+  ],
+  "flags": {
+    "include_tts_audio": true,
+    "include_gaussian": true,
+    "include_lipsync": true,
+    "include_trellis_actors": true,
+    "minify_html": false,
+    "optimize_images": false
+  },
+  "layout": "mobile_wrapper",
+  "mobile_targets": [
+    "android",
+    "ios"
+  ]
+}

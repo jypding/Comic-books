@@ -79,3 +79,42 @@ body.mode-scrolling #btn-prev, body.mode-scrolling #btn-next, body.mode-scrollin
     padding-right: 4px;
     white-space: nowrap;
 }
+
+/* ========== 移动端适配 ========== */
+@media (max-width: 768px) {
+    button {
+        min-height: 44px !important;
+        min-width: 80px !important;
+        font-size: 16px !important;
+        margin: 4px 6px !important;
+    }
+    .bubble-strip,
+    .bubble-bar {
+        font-size: 14px;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    .page-indicator,
+    .page-info {
+        font-size: 14px;
+        padding-top: env(safe-area-inset-top);
+    }
+    canvas {
+        touch-action: none;
+    }
+}
+
+
+/* ========== 移动端适配 ========== */
+@media screen and (max-width: 768px) {
+    button {
+        min-height: 44px !important;
+        min-width: 80px !important;
+        font-size: 16px !important;
+        margin: 4px 6px !important;
+    }
+    canvas {
+        width: 100% !important;
+        height: auto !important;
+        touch-action: none;
+    }
+}
