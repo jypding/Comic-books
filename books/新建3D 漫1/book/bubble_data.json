@@ -1,4 +1,4 @@
-{
+﻿{
   "version": 1,
   "bubbles": [
     {
@@ -12,6 +12,18 @@
       "start_sec": 0.0,
       "end_sec": 0.0,
       "scene": "p.0000.w100h100"
+    },
+    {
+      "id": "bubble_564000",
+      "type": "wordballoon",
+      "text": "建军85周年暨第十二届全国全军美术作品",
+      "speaker": "老僧",
+      "voice": "夹子",
+      "audio": "D:\\GitRepos\\Comic-books\\books\\新建3D 漫1\\book\\bubble_564000.wav",
+      "duration_sec": 4.72,
+      "start_sec": 0.0,
+      "end_sec": 5.20,
+      "scene": "p.0001.w100h100"
     }
   ]
 }
