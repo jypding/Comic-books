@@ -2,15 +2,15 @@
   "version": 1,
   "bubbles": [
     {
-      "id": "bubble_562700",
+      "id": "bubble_282400",
       "type": "wordballoon",
-      "text": "1满血版",
+      "text": "我们的对话框缺失外白框！",
       "speaker": "",
       "voice": "",
-      "audio": "",
-      "duration_sec": 0.0,
+      "audio": "audio/bubble_282400.wav",
+      "duration_sec": 2.96,
       "start_sec": 0.0,
-      "end_sec": 0.0,
+      "end_sec": 2.96,
       "scene": "p.0000.w100h100"
     },
     {
@@ -22,7 +22,7 @@
       "audio": "audio/bubble_564000.wav",
       "duration_sec": 4.72,
       "start_sec": 0.0,
-      "end_sec": 5.20,
+      "end_sec": 5.2,
       "scene": "p.0001.w100h100"
     }
   ]
